@@ -100,11 +100,13 @@ inline bool ServerType_Parse(
 enum PortfolioSwitchType {
   STRATEGY_SWITCH = 0,
   TRIGGER_SWITCH = 1,
-  ARBITRAGE_SWITCH = 2
+  ARBITRAGE_SWITCH = 2,
+  STOP_GAIN_SWITCH = 3,
+  STOP_LOSS_SWITCH = 4
 };
 bool PortfolioSwitchType_IsValid(int value);
 const PortfolioSwitchType PortfolioSwitchType_MIN = STRATEGY_SWITCH;
-const PortfolioSwitchType PortfolioSwitchType_MAX = ARBITRAGE_SWITCH;
+const PortfolioSwitchType PortfolioSwitchType_MAX = STOP_LOSS_SWITCH;
 const int PortfolioSwitchType_ARRAYSIZE = PortfolioSwitchType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* PortfolioSwitchType_descriptor();
@@ -1336,6 +1338,20 @@ class SwitchPortfolioRequest : public ::google::protobuf::Message {
   inline bool isarbitrage() const;
   inline void set_isarbitrage(bool value);
 
+  // optional bool StopGain = 41;
+  inline bool has_stopgain() const;
+  inline void clear_stopgain();
+  static const int kStopGainFieldNumber = 41;
+  inline bool stopgain() const;
+  inline void set_stopgain(bool value);
+
+  // optional bool StopLoss = 42;
+  inline bool has_stoploss() const;
+  inline void clear_stoploss();
+  static const int kStopLossFieldNumber = 42;
+  inline bool stoploss() const;
+  inline void set_stoploss(bool value);
+
   // @@protoc_insertion_point(class_scope:entity.SwitchPortfolioRequest)
  private:
   inline void set_has_pid();
@@ -1352,6 +1368,10 @@ class SwitchPortfolioRequest : public ::google::protobuf::Message {
   inline void clear_has_enabletrigger();
   inline void set_has_isarbitrage();
   inline void clear_has_isarbitrage();
+  inline void set_has_stopgain();
+  inline void clear_has_stopgain();
+  inline void set_has_stoploss();
+  inline void clear_has_stoploss();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -1362,9 +1382,11 @@ class SwitchPortfolioRequest : public ::google::protobuf::Message {
   bool startstrategy_;
   bool enabletrigger_;
   bool isarbitrage_;
+  bool stopgain_;
+  bool stoploss_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(9 + 31) / 32];
 
   friend void  protobuf_AddDesc_message_2eproto();
   friend void protobuf_AssignDesc_message_2eproto();
@@ -2167,6 +2189,34 @@ class StrategyItem : public ::google::protobuf::Message {
   inline double ar_stddevmultiplier() const;
   inline void set_ar_stddevmultiplier(double value);
 
+  // optional bool AR_UseTargetGain = 103;
+  inline bool has_ar_usetargetgain() const;
+  inline void clear_ar_usetargetgain();
+  static const int kARUseTargetGainFieldNumber = 103;
+  inline bool ar_usetargetgain() const;
+  inline void set_ar_usetargetgain(bool value);
+
+  // optional int32 AR_TargetGain = 104;
+  inline bool has_ar_targetgain() const;
+  inline void clear_ar_targetgain();
+  static const int kARTargetGainFieldNumber = 104;
+  inline ::google::protobuf::int32 ar_targetgain() const;
+  inline void set_ar_targetgain(::google::protobuf::int32 value);
+
+  // optional .entity.CompareCondition AR_StopLossCondition = 105;
+  inline bool has_ar_stoplosscondition() const;
+  inline void clear_ar_stoplosscondition();
+  static const int kARStopLossConditionFieldNumber = 105;
+  inline ::entity::CompareCondition ar_stoplosscondition() const;
+  inline void set_ar_stoplosscondition(::entity::CompareCondition value);
+
+  // optional double AR_StopLossThreshold = 106;
+  inline bool has_ar_stoplossthreshold() const;
+  inline void clear_ar_stoplossthreshold();
+  static const int kARStopLossThresholdFieldNumber = 106;
+  inline double ar_stoplossthreshold() const;
+  inline void set_ar_stoplossthreshold(double value);
+
   // optional string CP_CloseLeg = 201;
   inline bool has_cp_closeleg() const;
   inline void clear_cp_closeleg();
@@ -2467,6 +2517,14 @@ class StrategyItem : public ::google::protobuf::Message {
   inline void clear_has_ar_bollperiod();
   inline void set_has_ar_stddevmultiplier();
   inline void clear_has_ar_stddevmultiplier();
+  inline void set_has_ar_usetargetgain();
+  inline void clear_has_ar_usetargetgain();
+  inline void set_has_ar_targetgain();
+  inline void clear_has_ar_targetgain();
+  inline void set_has_ar_stoplosscondition();
+  inline void clear_has_ar_stoplosscondition();
+  inline void set_has_ar_stoplossthreshold();
+  inline void clear_has_ar_stoplossthreshold();
   inline void set_has_cp_closeleg();
   inline void clear_has_cp_closeleg();
   inline void set_has_cp_closelegside();
@@ -2546,57 +2604,61 @@ class StrategyItem : public ::google::protobuf::Message {
 
   int type_;
   ::google::protobuf::int32 retrytimes_;
-  ::google::protobuf::RepeatedPtrField< ::entity::TriggerItem > triggers_;
   ::google::protobuf::int32 opentimeout_;
   int stopgaincondition_;
+  ::google::protobuf::RepeatedPtrField< ::entity::TriggerItem > triggers_;
   double stopgainthreshold_;
-  double stoplossthreshold_;
   int stoplosscondition_;
   int positiondirection_;
+  double stoplossthreshold_;
   double ar_bollperiod_;
-  double ar_stddevmultiplier_;
   int stoplosstype_;
-  int cp_closelegside_;
+  bool ar_usetargetgain_;
+  double ar_stddevmultiplier_;
+  ::google::protobuf::int32 ar_targetgain_;
+  int ar_stoplosscondition_;
+  double ar_stoplossthreshold_;
   ::std::string* cp_closeleg_;
   double sc_pricetick_;
+  int cp_closelegside_;
   int sc_casele2tick_;
   int sc_casele3tick_;
   int sc_casege4tick_;
   int sc_casenochange_;
   int sc_stoplossstrategy_;
-  ::google::protobuf::int32 hs_short_;
   ::google::protobuf::RepeatedPtrField< ::entity::HistSourceCfg > histsources_;
+  ::google::protobuf::int32 hs_short_;
   ::google::protobuf::int32 hs_long_;
-  ::google::protobuf::int32 hs_m_;
   double hs_faststddiff_;
-  double hs_slowstddiff_;
+  ::google::protobuf::int32 hs_m_;
   ::google::protobuf::int32 hs_fastperiod_;
-  ::google::protobuf::int32 hs_slowperiod_;
+  double hs_slowstddiff_;
   double hs_fastshortemaseed_;
   double hs_fastlongemaseed_;
   double hs_fastsignalemaseed_;
+  ::google::protobuf::int32 hs_slowperiod_;
+  ::google::protobuf::int32 wt_wmaparam_;
   double hs_slowshortemaseed_;
   double hs_slowlongemaseed_;
   double hs_slowsignalemaseed_;
-  ::google::protobuf::int32 wt_wmaparam_;
   ::google::protobuf::int32 wt_man_;
   ::google::protobuf::int32 wt_period_;
   ::google::protobuf::int32 lr_period_;
-  double lr_openthreshold_;
   ::google::protobuf::int32 lr_number_;
-  ::google::protobuf::int32 as_risk_;
+  double lr_openthreshold_;
   double lr_closethreshold_;
+  ::google::protobuf::int32 as_risk_;
   ::google::protobuf::int32 as_avergateperiod_;
   ::google::protobuf::int32 as_breakoutlength_;
   ::google::protobuf::int32 as_period_;
   ::google::protobuf::int32 rt_timeframe_;
   ::google::protobuf::int32 rt_openperiod_;
-  ::google::protobuf::int32 rt_closeperiod_;
   double rt_stoplossfactor_;
   double rt_trendfactor_;
+  ::google::protobuf::int32 rt_closeperiod_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(50 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(54 + 31) / 32];
 
   friend void  protobuf_AddDesc_message_2eproto();
   friend void protobuf_AssignDesc_message_2eproto();
@@ -7720,6 +7782,50 @@ inline void SwitchPortfolioRequest::set_isarbitrage(bool value) {
   isarbitrage_ = value;
 }
 
+// optional bool StopGain = 41;
+inline bool SwitchPortfolioRequest::has_stopgain() const {
+  return (_has_bits_[0] & 0x00000080u) != 0;
+}
+inline void SwitchPortfolioRequest::set_has_stopgain() {
+  _has_bits_[0] |= 0x00000080u;
+}
+inline void SwitchPortfolioRequest::clear_has_stopgain() {
+  _has_bits_[0] &= ~0x00000080u;
+}
+inline void SwitchPortfolioRequest::clear_stopgain() {
+  stopgain_ = false;
+  clear_has_stopgain();
+}
+inline bool SwitchPortfolioRequest::stopgain() const {
+  return stopgain_;
+}
+inline void SwitchPortfolioRequest::set_stopgain(bool value) {
+  set_has_stopgain();
+  stopgain_ = value;
+}
+
+// optional bool StopLoss = 42;
+inline bool SwitchPortfolioRequest::has_stoploss() const {
+  return (_has_bits_[0] & 0x00000100u) != 0;
+}
+inline void SwitchPortfolioRequest::set_has_stoploss() {
+  _has_bits_[0] |= 0x00000100u;
+}
+inline void SwitchPortfolioRequest::clear_has_stoploss() {
+  _has_bits_[0] &= ~0x00000100u;
+}
+inline void SwitchPortfolioRequest::clear_stoploss() {
+  stoploss_ = false;
+  clear_has_stoploss();
+}
+inline bool SwitchPortfolioRequest::stoploss() const {
+  return stoploss_;
+}
+inline void SwitchPortfolioRequest::set_stoploss(bool value) {
+  set_has_stoploss();
+  stoploss_ = value;
+}
+
 // -------------------------------------------------------------------
 
 // ApplyStrategySettingsRequest
@@ -8696,15 +8802,104 @@ inline void StrategyItem::set_ar_stddevmultiplier(double value) {
   ar_stddevmultiplier_ = value;
 }
 
-// optional string CP_CloseLeg = 201;
-inline bool StrategyItem::has_cp_closeleg() const {
+// optional bool AR_UseTargetGain = 103;
+inline bool StrategyItem::has_ar_usetargetgain() const {
   return (_has_bits_[0] & 0x00001000u) != 0;
 }
-inline void StrategyItem::set_has_cp_closeleg() {
+inline void StrategyItem::set_has_ar_usetargetgain() {
   _has_bits_[0] |= 0x00001000u;
 }
-inline void StrategyItem::clear_has_cp_closeleg() {
+inline void StrategyItem::clear_has_ar_usetargetgain() {
   _has_bits_[0] &= ~0x00001000u;
+}
+inline void StrategyItem::clear_ar_usetargetgain() {
+  ar_usetargetgain_ = false;
+  clear_has_ar_usetargetgain();
+}
+inline bool StrategyItem::ar_usetargetgain() const {
+  return ar_usetargetgain_;
+}
+inline void StrategyItem::set_ar_usetargetgain(bool value) {
+  set_has_ar_usetargetgain();
+  ar_usetargetgain_ = value;
+}
+
+// optional int32 AR_TargetGain = 104;
+inline bool StrategyItem::has_ar_targetgain() const {
+  return (_has_bits_[0] & 0x00002000u) != 0;
+}
+inline void StrategyItem::set_has_ar_targetgain() {
+  _has_bits_[0] |= 0x00002000u;
+}
+inline void StrategyItem::clear_has_ar_targetgain() {
+  _has_bits_[0] &= ~0x00002000u;
+}
+inline void StrategyItem::clear_ar_targetgain() {
+  ar_targetgain_ = 0;
+  clear_has_ar_targetgain();
+}
+inline ::google::protobuf::int32 StrategyItem::ar_targetgain() const {
+  return ar_targetgain_;
+}
+inline void StrategyItem::set_ar_targetgain(::google::protobuf::int32 value) {
+  set_has_ar_targetgain();
+  ar_targetgain_ = value;
+}
+
+// optional .entity.CompareCondition AR_StopLossCondition = 105;
+inline bool StrategyItem::has_ar_stoplosscondition() const {
+  return (_has_bits_[0] & 0x00004000u) != 0;
+}
+inline void StrategyItem::set_has_ar_stoplosscondition() {
+  _has_bits_[0] |= 0x00004000u;
+}
+inline void StrategyItem::clear_has_ar_stoplosscondition() {
+  _has_bits_[0] &= ~0x00004000u;
+}
+inline void StrategyItem::clear_ar_stoplosscondition() {
+  ar_stoplosscondition_ = 0;
+  clear_has_ar_stoplosscondition();
+}
+inline ::entity::CompareCondition StrategyItem::ar_stoplosscondition() const {
+  return static_cast< ::entity::CompareCondition >(ar_stoplosscondition_);
+}
+inline void StrategyItem::set_ar_stoplosscondition(::entity::CompareCondition value) {
+  assert(::entity::CompareCondition_IsValid(value));
+  set_has_ar_stoplosscondition();
+  ar_stoplosscondition_ = value;
+}
+
+// optional double AR_StopLossThreshold = 106;
+inline bool StrategyItem::has_ar_stoplossthreshold() const {
+  return (_has_bits_[0] & 0x00008000u) != 0;
+}
+inline void StrategyItem::set_has_ar_stoplossthreshold() {
+  _has_bits_[0] |= 0x00008000u;
+}
+inline void StrategyItem::clear_has_ar_stoplossthreshold() {
+  _has_bits_[0] &= ~0x00008000u;
+}
+inline void StrategyItem::clear_ar_stoplossthreshold() {
+  ar_stoplossthreshold_ = 0;
+  clear_has_ar_stoplossthreshold();
+}
+inline double StrategyItem::ar_stoplossthreshold() const {
+  return ar_stoplossthreshold_;
+}
+inline void StrategyItem::set_ar_stoplossthreshold(double value) {
+  set_has_ar_stoplossthreshold();
+  ar_stoplossthreshold_ = value;
+}
+
+// optional string CP_CloseLeg = 201;
+inline bool StrategyItem::has_cp_closeleg() const {
+  return (_has_bits_[0] & 0x00010000u) != 0;
+}
+inline void StrategyItem::set_has_cp_closeleg() {
+  _has_bits_[0] |= 0x00010000u;
+}
+inline void StrategyItem::clear_has_cp_closeleg() {
+  _has_bits_[0] &= ~0x00010000u;
 }
 inline void StrategyItem::clear_cp_closeleg() {
   if (cp_closeleg_ != &::google::protobuf::internal::kEmptyString) {
@@ -8768,13 +8963,13 @@ inline void StrategyItem::set_allocated_cp_closeleg(::std::string* cp_closeleg) 
 
 // optional .entity.PosiDirectionType CP_CloseLegSide = 202;
 inline bool StrategyItem::has_cp_closelegside() const {
-  return (_has_bits_[0] & 0x00002000u) != 0;
+  return (_has_bits_[0] & 0x00020000u) != 0;
 }
 inline void StrategyItem::set_has_cp_closelegside() {
-  _has_bits_[0] |= 0x00002000u;
+  _has_bits_[0] |= 0x00020000u;
 }
 inline void StrategyItem::clear_has_cp_closelegside() {
-  _has_bits_[0] &= ~0x00002000u;
+  _has_bits_[0] &= ~0x00020000u;
 }
 inline void StrategyItem::clear_cp_closelegside() {
   cp_closelegside_ = 49;
@@ -8791,13 +8986,13 @@ inline void StrategyItem::set_cp_closelegside(::entity::PosiDirectionType value)
 
 // optional double SC_PriceTick = 301;
 inline bool StrategyItem::has_sc_pricetick() const {
-  return (_has_bits_[0] & 0x00004000u) != 0;
+  return (_has_bits_[0] & 0x00040000u) != 0;
 }
 inline void StrategyItem::set_has_sc_pricetick() {
-  _has_bits_[0] |= 0x00004000u;
+  _has_bits_[0] |= 0x00040000u;
 }
 inline void StrategyItem::clear_has_sc_pricetick() {
-  _has_bits_[0] &= ~0x00004000u;
+  _has_bits_[0] &= ~0x00040000u;
 }
 inline void StrategyItem::clear_sc_pricetick() {
   sc_pricetick_ = 0;
@@ -8813,13 +9008,13 @@ inline void StrategyItem::set_sc_pricetick(double value) {
 
 // optional .entity.DirectionDepends SC_CaseLE2Tick = 302;
 inline bool StrategyItem::has_sc_casele2tick() const {
-  return (_has_bits_[0] & 0x00008000u) != 0;
+  return (_has_bits_[0] & 0x00080000u) != 0;
 }
 inline void StrategyItem::set_has_sc_casele2tick() {
-  _has_bits_[0] |= 0x00008000u;
+  _has_bits_[0] |= 0x00080000u;
 }
 inline void StrategyItem::clear_has_sc_casele2tick() {
-  _has_bits_[0] &= ~0x00008000u;
+  _has_bits_[0] &= ~0x00080000u;
 }
 inline void StrategyItem::clear_sc_casele2tick() {
   sc_casele2tick_ = 0;
@@ -8836,13 +9031,13 @@ inline void StrategyItem::set_sc_casele2tick(::entity::DirectionDepends value) {
 
 // optional .entity.DirectionDepends SC_CaseLE3Tick = 303;
 inline bool StrategyItem::has_sc_casele3tick() const {
-  return (_has_bits_[0] & 0x00010000u) != 0;
+  return (_has_bits_[0] & 0x00100000u) != 0;
 }
 inline void StrategyItem::set_has_sc_casele3tick() {
-  _has_bits_[0] |= 0x00010000u;
+  _has_bits_[0] |= 0x00100000u;
 }
 inline void StrategyItem::clear_has_sc_casele3tick() {
-  _has_bits_[0] &= ~0x00010000u;
+  _has_bits_[0] &= ~0x00100000u;
 }
 inline void StrategyItem::clear_sc_casele3tick() {
   sc_casele3tick_ = 0;
@@ -8859,13 +9054,13 @@ inline void StrategyItem::set_sc_casele3tick(::entity::DirectionDepends value) {
 
 // optional .entity.DirectionDepends SC_CaseGE4Tick = 304;
 inline bool StrategyItem::has_sc_casege4tick() const {
-  return (_has_bits_[0] & 0x00020000u) != 0;
+  return (_has_bits_[0] & 0x00200000u) != 0;
 }
 inline void StrategyItem::set_has_sc_casege4tick() {
-  _has_bits_[0] |= 0x00020000u;
+  _has_bits_[0] |= 0x00200000u;
 }
 inline void StrategyItem::clear_has_sc_casege4tick() {
-  _has_bits_[0] &= ~0x00020000u;
+  _has_bits_[0] &= ~0x00200000u;
 }
 inline void StrategyItem::clear_sc_casege4tick() {
   sc_casege4tick_ = 0;
@@ -8882,13 +9077,13 @@ inline void StrategyItem::set_sc_casege4tick(::entity::DirectionDepends value) {
 
 // optional .entity.DirectionDepends SC_CaseNoChange = 305;
 inline bool StrategyItem::has_sc_casenochange() const {
-  return (_has_bits_[0] & 0x00040000u) != 0;
+  return (_has_bits_[0] & 0x00400000u) != 0;
 }
 inline void StrategyItem::set_has_sc_casenochange() {
-  _has_bits_[0] |= 0x00040000u;
+  _has_bits_[0] |= 0x00400000u;
 }
 inline void StrategyItem::clear_has_sc_casenochange() {
-  _has_bits_[0] &= ~0x00040000u;
+  _has_bits_[0] &= ~0x00400000u;
 }
 inline void StrategyItem::clear_sc_casenochange() {
   sc_casenochange_ = 0;
@@ -8905,13 +9100,13 @@ inline void StrategyItem::set_sc_casenochange(::entity::DirectionDepends value) 
 
 // optional .entity.StopLossCloseMethods SC_StopLossStrategy = 306;
 inline bool StrategyItem::has_sc_stoplossstrategy() const {
-  return (_has_bits_[0] & 0x00080000u) != 0;
+  return (_has_bits_[0] & 0x00800000u) != 0;
 }
 inline void StrategyItem::set_has_sc_stoplossstrategy() {
-  _has_bits_[0] |= 0x00080000u;
+  _has_bits_[0] |= 0x00800000u;
 }
 inline void StrategyItem::clear_has_sc_stoplossstrategy() {
-  _has_bits_[0] &= ~0x00080000u;
+  _has_bits_[0] &= ~0x00800000u;
 }
 inline void StrategyItem::clear_sc_stoplossstrategy() {
   sc_stoplossstrategy_ = 0;
@@ -8953,13 +9148,13 @@ StrategyItem::mutable_histsources() {
 
 // optional int32 HS_Short = 501;
 inline bool StrategyItem::has_hs_short() const {
-  return (_has_bits_[0] & 0x00200000u) != 0;
+  return (_has_bits_[0] & 0x02000000u) != 0;
 }
 inline void StrategyItem::set_has_hs_short() {
-  _has_bits_[0] |= 0x00200000u;
+  _has_bits_[0] |= 0x02000000u;
 }
 inline void StrategyItem::clear_has_hs_short() {
-  _has_bits_[0] &= ~0x00200000u;
+  _has_bits_[0] &= ~0x02000000u;
 }
 inline void StrategyItem::clear_hs_short() {
   hs_short_ = 0;
@@ -8975,13 +9170,13 @@ inline void StrategyItem::set_hs_short(::google::protobuf::int32 value) {
 
 // optional int32 HS_Long = 502;
 inline bool StrategyItem::has_hs_long() const {
-  return (_has_bits_[0] & 0x00400000u) != 0;
+  return (_has_bits_[0] & 0x04000000u) != 0;
 }
 inline void StrategyItem::set_has_hs_long() {
-  _has_bits_[0] |= 0x00400000u;
+  _has_bits_[0] |= 0x04000000u;
 }
 inline void StrategyItem::clear_has_hs_long() {
-  _has_bits_[0] &= ~0x00400000u;
+  _has_bits_[0] &= ~0x04000000u;
 }
 inline void StrategyItem::clear_hs_long() {
   hs_long_ = 0;
@@ -8997,13 +9192,13 @@ inline void StrategyItem::set_hs_long(::google::protobuf::int32 value) {
 
 // optional int32 HS_M = 503;
 inline bool StrategyItem::has_hs_m() const {
-  return (_has_bits_[0] & 0x00800000u) != 0;
+  return (_has_bits_[0] & 0x08000000u) != 0;
 }
 inline void StrategyItem::set_has_hs_m() {
-  _has_bits_[0] |= 0x00800000u;
+  _has_bits_[0] |= 0x08000000u;
 }
 inline void StrategyItem::clear_has_hs_m() {
-  _has_bits_[0] &= ~0x00800000u;
+  _has_bits_[0] &= ~0x08000000u;
 }
 inline void StrategyItem::clear_hs_m() {
   hs_m_ = 0;
@@ -9019,13 +9214,13 @@ inline void StrategyItem::set_hs_m(::google::protobuf::int32 value) {
 
 // optional double HS_FastStdDiff = 504;
 inline bool StrategyItem::has_hs_faststddiff() const {
-  return (_has_bits_[0] & 0x01000000u) != 0;
+  return (_has_bits_[0] & 0x10000000u) != 0;
 }
 inline void StrategyItem::set_has_hs_faststddiff() {
-  _has_bits_[0] |= 0x01000000u;
+  _has_bits_[0] |= 0x10000000u;
 }
 inline void StrategyItem::clear_has_hs_faststddiff() {
-  _has_bits_[0] &= ~0x01000000u;
+  _has_bits_[0] &= ~0x10000000u;
 }
 inline void StrategyItem::clear_hs_faststddiff() {
   hs_faststddiff_ = 0;
@@ -9041,13 +9236,13 @@ inline void StrategyItem::set_hs_faststddiff(double value) {
 
 // optional double HS_SlowStdDiff = 505;
 inline bool StrategyItem::has_hs_slowstddiff() const {
-  return (_has_bits_[0] & 0x02000000u) != 0;
+  return (_has_bits_[0] & 0x20000000u) != 0;
 }
 inline void StrategyItem::set_has_hs_slowstddiff() {
-  _has_bits_[0] |= 0x02000000u;
+  _has_bits_[0] |= 0x20000000u;
 }
 inline void StrategyItem::clear_has_hs_slowstddiff() {
-  _has_bits_[0] &= ~0x02000000u;
+  _has_bits_[0] &= ~0x20000000u;
 }
 inline void StrategyItem::clear_hs_slowstddiff() {
   hs_slowstddiff_ = 0;
@@ -9063,13 +9258,13 @@ inline void StrategyItem::set_hs_slowstddiff(double value) {
 
 // optional int32 HS_FastPeriod = 506;
 inline bool StrategyItem::has_hs_fastperiod() const {
-  return (_has_bits_[0] & 0x04000000u) != 0;
+  return (_has_bits_[0] & 0x40000000u) != 0;
 }
 inline void StrategyItem::set_has_hs_fastperiod() {
-  _has_bits_[0] |= 0x04000000u;
+  _has_bits_[0] |= 0x40000000u;
 }
 inline void StrategyItem::clear_has_hs_fastperiod() {
-  _has_bits_[0] &= ~0x04000000u;
+  _has_bits_[0] &= ~0x40000000u;
 }
 inline void StrategyItem::clear_hs_fastperiod() {
   hs_fastperiod_ = 0;
@@ -9085,13 +9280,13 @@ inline void StrategyItem::set_hs_fastperiod(::google::protobuf::int32 value) {
 
 // optional int32 HS_SlowPeriod = 507;
 inline bool StrategyItem::has_hs_slowperiod() const {
-  return (_has_bits_[0] & 0x08000000u) != 0;
+  return (_has_bits_[0] & 0x80000000u) != 0;
 }
 inline void StrategyItem::set_has_hs_slowperiod() {
-  _has_bits_[0] |= 0x08000000u;
+  _has_bits_[0] |= 0x80000000u;
 }
 inline void StrategyItem::clear_has_hs_slowperiod() {
-  _has_bits_[0] &= ~0x08000000u;
+  _has_bits_[0] &= ~0x80000000u;
 }
 inline void StrategyItem::clear_hs_slowperiod() {
   hs_slowperiod_ = 0;
@@ -9107,13 +9302,13 @@ inline void StrategyItem::set_hs_slowperiod(::google::protobuf::int32 value) {
 
 // optional double HS_FastShortEMASeed = 508;
 inline bool StrategyItem::has_hs_fastshortemaseed() const {
-  return (_has_bits_[0] & 0x10000000u) != 0;
+  return (_has_bits_[1] & 0x00000001u) != 0;
 }
 inline void StrategyItem::set_has_hs_fastshortemaseed() {
-  _has_bits_[0] |= 0x10000000u;
+  _has_bits_[1] |= 0x00000001u;
 }
 inline void StrategyItem::clear_has_hs_fastshortemaseed() {
-  _has_bits_[0] &= ~0x10000000u;
+  _has_bits_[1] &= ~0x00000001u;
 }
 inline void StrategyItem::clear_hs_fastshortemaseed() {
   hs_fastshortemaseed_ = 0;
@@ -9129,13 +9324,13 @@ inline void StrategyItem::set_hs_fastshortemaseed(double value) {
 
 // optional double HS_FastLongEMASeed = 509;
 inline bool StrategyItem::has_hs_fastlongemaseed() const {
-  return (_has_bits_[0] & 0x20000000u) != 0;
+  return (_has_bits_[1] & 0x00000002u) != 0;
 }
 inline void StrategyItem::set_has_hs_fastlongemaseed() {
-  _has_bits_[0] |= 0x20000000u;
+  _has_bits_[1] |= 0x00000002u;
 }
 inline void StrategyItem::clear_has_hs_fastlongemaseed() {
-  _has_bits_[0] &= ~0x20000000u;
+  _has_bits_[1] &= ~0x00000002u;
 }
 inline void StrategyItem::clear_hs_fastlongemaseed() {
   hs_fastlongemaseed_ = 0;
@@ -9151,13 +9346,13 @@ inline void StrategyItem::set_hs_fastlongemaseed(double value) {
 
 // optional double HS_FastSignalEMASeed = 510;
 inline bool StrategyItem::has_hs_fastsignalemaseed() const {
-  return (_has_bits_[0] & 0x40000000u) != 0;
+  return (_has_bits_[1] & 0x00000004u) != 0;
 }
 inline void StrategyItem::set_has_hs_fastsignalemaseed() {
-  _has_bits_[0] |= 0x40000000u;
+  _has_bits_[1] |= 0x00000004u;
 }
 inline void StrategyItem::clear_has_hs_fastsignalemaseed() {
-  _has_bits_[0] &= ~0x40000000u;
+  _has_bits_[1] &= ~0x00000004u;
 }
 inline void StrategyItem::clear_hs_fastsignalemaseed() {
   hs_fastsignalemaseed_ = 0;
@@ -9173,13 +9368,13 @@ inline void StrategyItem::set_hs_fastsignalemaseed(double value) {
 
 // optional double HS_SlowShortEMASeed = 511;
 inline bool StrategyItem::has_hs_slowshortemaseed() const {
-  return (_has_bits_[0] & 0x80000000u) != 0;
+  return (_has_bits_[1] & 0x00000008u) != 0;
 }
 inline void StrategyItem::set_has_hs_slowshortemaseed() {
-  _has_bits_[0] |= 0x80000000u;
+  _has_bits_[1] |= 0x00000008u;
 }
 inline void StrategyItem::clear_has_hs_slowshortemaseed() {
-  _has_bits_[0] &= ~0x80000000u;
+  _has_bits_[1] &= ~0x00000008u;
 }
 inline void StrategyItem::clear_hs_slowshortemaseed() {
   hs_slowshortemaseed_ = 0;
@@ -9195,13 +9390,13 @@ inline void StrategyItem::set_hs_slowshortemaseed(double value) {
 
 // optional double HS_SlowLongEMASeed = 512;
 inline bool StrategyItem::has_hs_slowlongemaseed() const {
-  return (_has_bits_[1] & 0x00000001u) != 0;
+  return (_has_bits_[1] & 0x00000010u) != 0;
 }
 inline void StrategyItem::set_has_hs_slowlongemaseed() {
-  _has_bits_[1] |= 0x00000001u;
+  _has_bits_[1] |= 0x00000010u;
 }
 inline void StrategyItem::clear_has_hs_slowlongemaseed() {
-  _has_bits_[1] &= ~0x00000001u;
+  _has_bits_[1] &= ~0x00000010u;
 }
 inline void StrategyItem::clear_hs_slowlongemaseed() {
   hs_slowlongemaseed_ = 0;
@@ -9217,13 +9412,13 @@ inline void StrategyItem::set_hs_slowlongemaseed(double value) {
 
 // optional double HS_SlowSignalEMASeed = 513;
 inline bool StrategyItem::has_hs_slowsignalemaseed() const {
-  return (_has_bits_[1] & 0x00000002u) != 0;
+  return (_has_bits_[1] & 0x00000020u) != 0;
 }
 inline void StrategyItem::set_has_hs_slowsignalemaseed() {
-  _has_bits_[1] |= 0x00000002u;
+  _has_bits_[1] |= 0x00000020u;
 }
 inline void StrategyItem::clear_has_hs_slowsignalemaseed() {
-  _has_bits_[1] &= ~0x00000002u;
+  _has_bits_[1] &= ~0x00000020u;
 }
 inline void StrategyItem::clear_hs_slowsignalemaseed() {
   hs_slowsignalemaseed_ = 0;
@@ -9239,13 +9434,13 @@ inline void StrategyItem::set_hs_slowsignalemaseed(double value) {
 
 // optional int32 WT_WmaParam = 521;
 inline bool StrategyItem::has_wt_wmaparam() const {
-  return (_has_bits_[1] & 0x00000004u) != 0;
+  return (_has_bits_[1] & 0x00000040u) != 0;
 }
 inline void StrategyItem::set_has_wt_wmaparam() {
-  _has_bits_[1] |= 0x00000004u;
+  _has_bits_[1] |= 0x00000040u;
 }
 inline void StrategyItem::clear_has_wt_wmaparam() {
-  _has_bits_[1] &= ~0x00000004u;
+  _has_bits_[1] &= ~0x00000040u;
 }
 inline void StrategyItem::clear_wt_wmaparam() {
   wt_wmaparam_ = 0;
@@ -9261,13 +9456,13 @@ inline void StrategyItem::set_wt_wmaparam(::google::protobuf::int32 value) {
 
 // optional int32 WT_MaN = 522;
 inline bool StrategyItem::has_wt_man() const {
-  return (_has_bits_[1] & 0x00000008u) != 0;
+  return (_has_bits_[1] & 0x00000080u) != 0;
 }
 inline void StrategyItem::set_has_wt_man() {
-  _has_bits_[1] |= 0x00000008u;
+  _has_bits_[1] |= 0x00000080u;
 }
 inline void StrategyItem::clear_has_wt_man() {
-  _has_bits_[1] &= ~0x00000008u;
+  _has_bits_[1] &= ~0x00000080u;
 }
 inline void StrategyItem::clear_wt_man() {
   wt_man_ = 0;
@@ -9283,13 +9478,13 @@ inline void StrategyItem::set_wt_man(::google::protobuf::int32 value) {
 
 // optional int32 WT_Period = 523;
 inline bool StrategyItem::has_wt_period() const {
-  return (_has_bits_[1] & 0x00000010u) != 0;
+  return (_has_bits_[1] & 0x00000100u) != 0;
 }
 inline void StrategyItem::set_has_wt_period() {
-  _has_bits_[1] |= 0x00000010u;
+  _has_bits_[1] |= 0x00000100u;
 }
 inline void StrategyItem::clear_has_wt_period() {
-  _has_bits_[1] &= ~0x00000010u;
+  _has_bits_[1] &= ~0x00000100u;
 }
 inline void StrategyItem::clear_wt_period() {
   wt_period_ = 0;
@@ -9305,13 +9500,13 @@ inline void StrategyItem::set_wt_period(::google::protobuf::int32 value) {
 
 // optional int32 LR_Period = 531;
 inline bool StrategyItem::has_lr_period() const {
-  return (_has_bits_[1] & 0x00000020u) != 0;
+  return (_has_bits_[1] & 0x00000200u) != 0;
 }
 inline void StrategyItem::set_has_lr_period() {
-  _has_bits_[1] |= 0x00000020u;
+  _has_bits_[1] |= 0x00000200u;
 }
 inline void StrategyItem::clear_has_lr_period() {
-  _has_bits_[1] &= ~0x00000020u;
+  _has_bits_[1] &= ~0x00000200u;
 }
 inline void StrategyItem::clear_lr_period() {
   lr_period_ = 0;
@@ -9327,13 +9522,13 @@ inline void StrategyItem::set_lr_period(::google::protobuf::int32 value) {
 
 // optional int32 LR_Number = 532;
 inline bool StrategyItem::has_lr_number() const {
-  return (_has_bits_[1] & 0x00000040u) != 0;
+  return (_has_bits_[1] & 0x00000400u) != 0;
 }
 inline void StrategyItem::set_has_lr_number() {
-  _has_bits_[1] |= 0x00000040u;
+  _has_bits_[1] |= 0x00000400u;
 }
 inline void StrategyItem::clear_has_lr_number() {
-  _has_bits_[1] &= ~0x00000040u;
+  _has_bits_[1] &= ~0x00000400u;
 }
 inline void StrategyItem::clear_lr_number() {
   lr_number_ = 0;
@@ -9349,13 +9544,13 @@ inline void StrategyItem::set_lr_number(::google::protobuf::int32 value) {
 
 // optional double LR_OpenThreshold = 533;
 inline bool StrategyItem::has_lr_openthreshold() const {
-  return (_has_bits_[1] & 0x00000080u) != 0;
+  return (_has_bits_[1] & 0x00000800u) != 0;
 }
 inline void StrategyItem::set_has_lr_openthreshold() {
-  _has_bits_[1] |= 0x00000080u;
+  _has_bits_[1] |= 0x00000800u;
 }
 inline void StrategyItem::clear_has_lr_openthreshold() {
-  _has_bits_[1] &= ~0x00000080u;
+  _has_bits_[1] &= ~0x00000800u;
 }
 inline void StrategyItem::clear_lr_openthreshold() {
   lr_openthreshold_ = 0;
@@ -9371,13 +9566,13 @@ inline void StrategyItem::set_lr_openthreshold(double value) {
 
 // optional double LR_CloseThreshold = 534;
 inline bool StrategyItem::has_lr_closethreshold() const {
-  return (_has_bits_[1] & 0x00000100u) != 0;
+  return (_has_bits_[1] & 0x00001000u) != 0;
 }
 inline void StrategyItem::set_has_lr_closethreshold() {
-  _has_bits_[1] |= 0x00000100u;
+  _has_bits_[1] |= 0x00001000u;
 }
 inline void StrategyItem::clear_has_lr_closethreshold() {
-  _has_bits_[1] &= ~0x00000100u;
+  _has_bits_[1] &= ~0x00001000u;
 }
 inline void StrategyItem::clear_lr_closethreshold() {
   lr_closethreshold_ = 0;
@@ -9393,13 +9588,13 @@ inline void StrategyItem::set_lr_closethreshold(double value) {
 
 // optional int32 AS_Risk = 541;
 inline bool StrategyItem::has_as_risk() const {
-  return (_has_bits_[1] & 0x00000200u) != 0;
+  return (_has_bits_[1] & 0x00002000u) != 0;
 }
 inline void StrategyItem::set_has_as_risk() {
-  _has_bits_[1] |= 0x00000200u;
+  _has_bits_[1] |= 0x00002000u;
 }
 inline void StrategyItem::clear_has_as_risk() {
-  _has_bits_[1] &= ~0x00000200u;
+  _has_bits_[1] &= ~0x00002000u;
 }
 inline void StrategyItem::clear_as_risk() {
   as_risk_ = 0;
@@ -9415,13 +9610,13 @@ inline void StrategyItem::set_as_risk(::google::protobuf::int32 value) {
 
 // optional int32 AS_AvergatePeriod = 542;
 inline bool StrategyItem::has_as_avergateperiod() const {
-  return (_has_bits_[1] & 0x00000400u) != 0;
+  return (_has_bits_[1] & 0x00004000u) != 0;
 }
 inline void StrategyItem::set_has_as_avergateperiod() {
-  _has_bits_[1] |= 0x00000400u;
+  _has_bits_[1] |= 0x00004000u;
 }
 inline void StrategyItem::clear_has_as_avergateperiod() {
-  _has_bits_[1] &= ~0x00000400u;
+  _has_bits_[1] &= ~0x00004000u;
 }
 inline void StrategyItem::clear_as_avergateperiod() {
   as_avergateperiod_ = 0;
@@ -9437,13 +9632,13 @@ inline void StrategyItem::set_as_avergateperiod(::google::protobuf::int32 value)
 
 // optional int32 AS_BreakOutLength = 543;
 inline bool StrategyItem::has_as_breakoutlength() const {
-  return (_has_bits_[1] & 0x00000800u) != 0;
+  return (_has_bits_[1] & 0x00008000u) != 0;
 }
 inline void StrategyItem::set_has_as_breakoutlength() {
-  _has_bits_[1] |= 0x00000800u;
+  _has_bits_[1] |= 0x00008000u;
 }
 inline void StrategyItem::clear_has_as_breakoutlength() {
-  _has_bits_[1] &= ~0x00000800u;
+  _has_bits_[1] &= ~0x00008000u;
 }
 inline void StrategyItem::clear_as_breakoutlength() {
   as_breakoutlength_ = 0;
@@ -9459,13 +9654,13 @@ inline void StrategyItem::set_as_breakoutlength(::google::protobuf::int32 value)
 
 // optional int32 AS_Period = 544;
 inline bool StrategyItem::has_as_period() const {
-  return (_has_bits_[1] & 0x00001000u) != 0;
+  return (_has_bits_[1] & 0x00010000u) != 0;
 }
 inline void StrategyItem::set_has_as_period() {
-  _has_bits_[1] |= 0x00001000u;
+  _has_bits_[1] |= 0x00010000u;
 }
 inline void StrategyItem::clear_has_as_period() {
-  _has_bits_[1] &= ~0x00001000u;
+  _has_bits_[1] &= ~0x00010000u;
 }
 inline void StrategyItem::clear_as_period() {
   as_period_ = 0;
@@ -9481,13 +9676,13 @@ inline void StrategyItem::set_as_period(::google::protobuf::int32 value) {
 
 // optional int32 RT_TimeFrame = 551;
 inline bool StrategyItem::has_rt_timeframe() const {
-  return (_has_bits_[1] & 0x00002000u) != 0;
+  return (_has_bits_[1] & 0x00020000u) != 0;
 }
 inline void StrategyItem::set_has_rt_timeframe() {
-  _has_bits_[1] |= 0x00002000u;
+  _has_bits_[1] |= 0x00020000u;
 }
 inline void StrategyItem::clear_has_rt_timeframe() {
-  _has_bits_[1] &= ~0x00002000u;
+  _has_bits_[1] &= ~0x00020000u;
 }
 inline void StrategyItem::clear_rt_timeframe() {
   rt_timeframe_ = 0;
@@ -9503,13 +9698,13 @@ inline void StrategyItem::set_rt_timeframe(::google::protobuf::int32 value) {
 
 // optional int32 RT_OpenPeriod = 552;
 inline bool StrategyItem::has_rt_openperiod() const {
-  return (_has_bits_[1] & 0x00004000u) != 0;
+  return (_has_bits_[1] & 0x00040000u) != 0;
 }
 inline void StrategyItem::set_has_rt_openperiod() {
-  _has_bits_[1] |= 0x00004000u;
+  _has_bits_[1] |= 0x00040000u;
 }
 inline void StrategyItem::clear_has_rt_openperiod() {
-  _has_bits_[1] &= ~0x00004000u;
+  _has_bits_[1] &= ~0x00040000u;
 }
 inline void StrategyItem::clear_rt_openperiod() {
   rt_openperiod_ = 0;
@@ -9525,13 +9720,13 @@ inline void StrategyItem::set_rt_openperiod(::google::protobuf::int32 value) {
 
 // optional int32 RT_ClosePeriod = 553;
 inline bool StrategyItem::has_rt_closeperiod() const {
-  return (_has_bits_[1] & 0x00008000u) != 0;
+  return (_has_bits_[1] & 0x00080000u) != 0;
 }
 inline void StrategyItem::set_has_rt_closeperiod() {
-  _has_bits_[1] |= 0x00008000u;
+  _has_bits_[1] |= 0x00080000u;
 }
 inline void StrategyItem::clear_has_rt_closeperiod() {
-  _has_bits_[1] &= ~0x00008000u;
+  _has_bits_[1] &= ~0x00080000u;
 }
 inline void StrategyItem::clear_rt_closeperiod() {
   rt_closeperiod_ = 0;
@@ -9547,13 +9742,13 @@ inline void StrategyItem::set_rt_closeperiod(::google::protobuf::int32 value) {
 
 // optional double RT_StopLossFactor = 554;
 inline bool StrategyItem::has_rt_stoplossfactor() const {
-  return (_has_bits_[1] & 0x00010000u) != 0;
+  return (_has_bits_[1] & 0x00100000u) != 0;
 }
 inline void StrategyItem::set_has_rt_stoplossfactor() {
-  _has_bits_[1] |= 0x00010000u;
+  _has_bits_[1] |= 0x00100000u;
 }
 inline void StrategyItem::clear_has_rt_stoplossfactor() {
-  _has_bits_[1] &= ~0x00010000u;
+  _has_bits_[1] &= ~0x00100000u;
 }
 inline void StrategyItem::clear_rt_stoplossfactor() {
   rt_stoplossfactor_ = 0;
@@ -9569,13 +9764,13 @@ inline void StrategyItem::set_rt_stoplossfactor(double value) {
 
 // optional double RT_TrendFactor = 555;
 inline bool StrategyItem::has_rt_trendfactor() const {
-  return (_has_bits_[1] & 0x00020000u) != 0;
+  return (_has_bits_[1] & 0x00200000u) != 0;
 }
 inline void StrategyItem::set_has_rt_trendfactor() {
-  _has_bits_[1] |= 0x00020000u;
+  _has_bits_[1] |= 0x00200000u;
 }
 inline void StrategyItem::clear_has_rt_trendfactor() {
-  _has_bits_[1] &= ~0x00020000u;
+  _has_bits_[1] &= ~0x00200000u;
 }
 inline void StrategyItem::clear_rt_trendfactor() {
   rt_trendfactor_ = 0;

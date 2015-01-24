@@ -88,6 +88,7 @@ void CArbitrageStrategy::Apply( const entity::StrategyItem& strategyItem, bool w
 	m_stdDevMultiplier = (int)strategyItem.ar_stddevmultiplier();
 	m_openTimeout = strategyItem.opentimeout();
 	m_retryTimes = strategyItem.retrytimes();
+	m_useTargetGain = strategyItem.ar_usetargetgain();
 
 	// make sure following parameters having values
 	if(m_openTimeout == 0)
@@ -182,9 +183,6 @@ void CArbitrageStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, bo
 		m_bollBottom = m_bollDataSet->GetRef(IND_BOTTOM, 1);
 	}
 
-	if (!IsRunning())
-		return;
-
 	CPortfolioArbitrageOrderPlacer* pOrderPlacer = dynamic_cast<CPortfolioArbitrageOrderPlacer*>(pPortfolio->OrderPlacer());
 
 	// if working with order, don't need to test strategy but check for retry
@@ -194,6 +192,25 @@ void CArbitrageStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, bo
 		pOrderPlacer->OnQuoteReceived(timestamp, pQuote);
 		return;
 	}
+	else if (pOrderPlacer->IsOpened())
+	{
+		bool forceClosing = IsForceClosing() || OutOfTradingWindow(currentBarIdx);
+		if (forceClosing) // This close condition check is only effective on the bar after open
+		{
+			entity::PosiDirectionType side = pOrderPlacer->PosiDirection();
+			m_closePositionPurpose = CLOSE_POSITION_FORCE;
+			LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) Forcibly Closing position")
+				% pPortfolio->InvestorId() % pPortfolio->ID()));
+			ARBI_DIFF_CALC forceClosePx = { side == entity::LONG ? SHORT_DIFF : LONG_DIFF, 0, 0, 0 };
+			pPortfolio->CalculateDiff(&forceClosePx, FAST_DEAL);
+			pPortfolio->PrintLegsQuote();
+			ClosePosition(pOrderPlacer, forceClosePx, pQuote, timestamp, "手动平仓", trade::SR_Manual);
+			return;
+		}
+	}
+
+	if (!IsRunning())
+		return;
 
 	if (!pPortfolio->LegsTimestampAligned())
 		return;
@@ -228,21 +245,8 @@ void CArbitrageStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, bo
 
 	if (pOrderPlacer->IsOpened())
 	{
-		bool meetCloseCondition = false;
 		entity::PosiDirectionType side = pOrderPlacer->PosiDirection();
 		ARBI_DIFF_CALC& diffPrices = side == entity::LONG ? structShortDiff : structLongDiff;
-		bool forceClosing = IsForceClosing() || OutOfTradingWindow(currentBarIdx);
-		if(forceClosing) // This close condition check is only effective on the bar after open
-		{
-			m_closePositionPurpose = CLOSE_POSITION_FORCE;
-			LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) Forcibly Closing position")
-				% pPortfolio->InvestorId() % pPortfolio->ID()));
-			ARBI_DIFF_CALC forceClosePx = { side == entity::LONG ? SHORT_DIFF : LONG_DIFF, 0, 0, 0};
-			pPortfolio->CalculateDiff(&forceClosePx, FAST_DEAL);
-			pPortfolio->PrintLegsQuote();
-			ClosePosition(pOrderPlacer, forceClosePx, pQuote, timestamp, "手动平仓", trade::SR_Manual); 
-			return;
-		}
 		
 		// Stop gain/loss logic in ArbitrageStrategy
 		if (directionFast != entity::NET && side != directionFast)
@@ -374,7 +378,7 @@ void CArbitrageStrategy::GetStrategyUpdate( entity::PortfolioUpdateItem* pPortfU
 {
 	CStrategy::GetStrategyUpdate(pPortfUpdateItem);
 
-	pPortfUpdateItem->set_ar_diff(m_lastDiff);
+	pPortfUpdateItem->set_ar_diff(m_lastDiff);o
 	pPortfUpdateItem->set_ar_longdiff(m_longDiff);
 	pPortfUpdateItem->set_ar_longsize(m_longDiffSize);
 	pPortfUpdateItem->set_ar_shortdiff(m_shortDiff);

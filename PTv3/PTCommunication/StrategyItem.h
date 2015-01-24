@@ -129,6 +129,54 @@ public:
 		}
 	}
 
+	property bool UseTargetGain
+	{
+		bool get()
+		{
+			return _useTargetGain;
+		}
+		void set(bool val)
+		{
+			_useTargetGain = val;
+		}
+	}
+
+	property int TargetGain
+	{
+		int get()
+		{
+			return _targetGain;
+		}
+		void set(int val)
+		{
+			_targetGain = val;
+		}
+	}
+
+	property CompareCondition StoplossCondition
+	{
+		CompareCondition get()
+		{
+			return _stoplossCondition;
+		}
+		void set(CompareCondition val)
+		{
+			_stoplossCondition = val;
+		}
+	}
+
+	property double StopLossThreshold
+	{
+		double get()
+		{
+			return _stopLossThreshold;
+		}
+		void set(double val)
+		{
+			_stopLossThreshold = val;
+		}
+	}
+
 private:
 
 	String^ _firstLegSymbol;
@@ -137,6 +185,10 @@ private:
 
 	double _bollPeriod;
 	double _stdDevMultiplier;
+	bool _useTargetGain;
+	int _targetGain;
+	CompareCondition _stoplossCondition;
+	double _stopLossThreshold;
 };
 
 public ref class ChangePositionStrategyItem : StrategyItem

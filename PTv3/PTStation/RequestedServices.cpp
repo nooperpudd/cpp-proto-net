@@ -117,6 +117,11 @@ void PortfolioSwitchService::handle( LogicalConnection* pClient, IncomingPacket*
 		{
 			pPortf->SetHedgeFlag(switchPortfReq.isarbitrage() ? trade::ARBITRAGE : trade::SPECULATION);
 		}
+		else if (switchPortfReq.switchtype() == entity::STOP_LOSS_SWITCH
+			&& switchPortfReq.has_stopgain())
+		{
+			pPortf->SwitchStopLoss(switchPortfReq.stopgain());
+		}
 	}
 }
 

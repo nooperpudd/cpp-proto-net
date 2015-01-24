@@ -33,6 +33,10 @@ void ArbitrageStrategyItem::To( entity::StrategyItem* pNativeStrategyItem )
 
 		pNativeStrategyItem->set_ar_bollperiod(_bollPeriod);
 		pNativeStrategyItem->set_ar_stddevmultiplier(_stdDevMultiplier);
+		pNativeStrategyItem->set_ar_usetargetgain(_useTargetGain);
+		pNativeStrategyItem->set_ar_targetgain(_targetGain);
+		pNativeStrategyItem->set_ar_stoplosscondition(static_cast<entity::CompareCondition>(_stoplossCondition));
+		pNativeStrategyItem->set_ar_stoplossthreshold(_stopLossThreshold);
 
 		entity::HistSourceCfg* firstLegSourceCfg = pNativeStrategyItem->add_histsources();
 		firstLegSourceCfg->set_symbol((char*)firstLegPtr.ToPointer());

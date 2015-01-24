@@ -88,6 +88,8 @@ CPortfolio::CPortfolio(CAvatarClient* client, const entity::PortfolioItem& srcPo
 	, m_maxCancel(450)
 	, m_totalOpenLimit(450)
 	, m_hedgeFlag(trade::SPECULATION)
+	, m_stopGain(false)
+	, m_stopLoss(false)
 {
 	// Backup created portfolio item
 	m_portfolioItem.CopyFrom(srcPortfolioItem);

@@ -6,6 +6,7 @@
 #include "entity/message.pb.h"
 #include "entity/quote.pb.h"
 #include "entity/trade.pb.h"
+#include <boost/atomic.hpp>
 
 enum DIFF_TYPE 
 {
@@ -67,6 +68,10 @@ public:
 	void StrategyForceOpen();
 	void StrategyForceClose();
 	void PushMessage(const string& msg);
+	void SwitchStopLoss(bool enableStopLoss){ m_stopLoss.store(true, boost::memory_order_release); }
+	void SwitchStopGain(bool enableStopGain){ m_stopGain.store(true, boost::memory_order_release); }
+	bool StopLossEnabled() { return m_stopLoss.load(boost::memory_order_acquire); }
+	bool StopGainEnabled() { return m_stopGain.load(boost::memory_order_acquire); }
 
 	// legs
 	vector<LegPtr>& Legs(){ return m_legs;}
@@ -132,6 +137,8 @@ private:
 
 	// HedgeFlag
 	trade::HedgeFlagType m_hedgeFlag;
+	boost::atomic<bool> m_stopGain;
+	boost::atomic<bool> m_stopLoss;
 
 	// end time points
 	vector<string> m_endTimePoints;

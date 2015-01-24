@@ -76,6 +76,8 @@ enum PortfolioSwitchType
 	STRATEGY_SWITCH = 0;
 	TRIGGER_SWITCH = 1;
 	ARBITRAGE_SWITCH = 2;
+	STOP_GAIN_SWITCH = 3;
+	STOP_LOSS_SWITCH = 4;
 }
 
 message SwitchPortfolioRequest
@@ -91,6 +93,9 @@ message SwitchPortfolioRequest
 	optional bool EnableTrigger = 22;
 	// Arbitrage
 	optional bool IsArbitrage = 31;
+	// Stop Gain/Loss
+	optional bool StopGain = 41;
+	optional bool StopLoss = 42;
 }
 
 message ApplyStrategySettingsRequest
@@ -174,6 +179,10 @@ message StrategyItem
 	// Arbitrage
 	optional double AR_BollPeriod = 101;
 	optional double AR_StdDevMultiplier = 102;
+	optional bool AR_UseTargetGain = 103;
+	optional int32 AR_TargetGain = 104;
+	optional CompareCondition AR_StopLossCondition = 105;
+	optional double AR_StopLossThreshold = 106;
 
 	// Change Position
 	optional string CP_CloseLeg = 201;

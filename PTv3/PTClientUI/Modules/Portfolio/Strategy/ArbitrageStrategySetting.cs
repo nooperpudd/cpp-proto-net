@@ -214,6 +214,40 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         }
         #endregion
 
+        #region UseTargetGain
+        private bool _useTargetGain;
+
+        public bool UseTargetGain
+        {
+            get { return _useTargetGain; }
+            set
+            {
+                if (_useTargetGain != value)
+                {
+                    _useTargetGain = value;
+                    RaisePropertyChanged("UseTargetGain");
+                }
+            }
+        }
+        #endregion
+
+        #region TargetGain
+        private int targetGain;
+
+        public int TargetGain
+        {
+            get { return targetGain; }
+            set
+            {
+                if (targetGain != value)
+                {
+                    targetGain = value;
+                    RaisePropertyChanged("TargetGain");
+                }
+            }
+        }
+        #endregion
+
         public ArbitrageStrategySetting()
         {
 			BollPeriod = 26;
@@ -232,7 +266,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         public override string Persist()
         {
             XElement elem = new XElement("arbitrageStrategySetting");
-            elem.Add(new XAttribute("direction", Direction.ToString()));
+            elem.Add(new XAttribute("direction", Direction.ToString()),
+                new XAttribute("useTargetGain", UseTargetGain),
+                new XAttribute("targetGain", TargetGain));
 			
 			XElement elemHistSource = new XElement("histSource",
                 new XAttribute("firstLeg", FirstLegSymbol),
@@ -266,6 +302,12 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             XAttribute attr = elem.Attribute("direction");
             if (attr != null)
                 Direction = (PTEntity.PosiDirectionType)Enum.Parse(typeof(PTEntity.PosiDirectionType), attr.Value);
+            attr = elem.Attribute("useTargetGain");
+            if (attr != null)
+                UseTargetGain = bool.Parse(attr.Value);
+            attr = elem.Attribute("targetGain");
+            if (attr != null)
+                TargetGain = int.Parse(attr.Value);
 				
 			XElement elemHistSource = elem.Element("histSource");
 			attr = elemHistSource.Attribute("firstLeg");
@@ -348,7 +390,10 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
 			strategyItem.FirstLegSymbol = FirstLegSymbol;
 			strategyItem.SecondLegSymbol = SecondLegSymbol;
 			strategyItem.TimeFrame = TimeFrame;
-			
+
+            strategyItem.UseTargetGain = UseTargetGain;
+            strategyItem.TargetGain = TargetGain;
+
             PTEntity.ArbitrageTriggerItem openTrigger = new PTEntity.ArbitrageTriggerItem()
             {
                 Condition = OpenCondition,
