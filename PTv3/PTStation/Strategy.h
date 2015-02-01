@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Trigger.h"
+#include "PortfolioOrderPlacer.h"
+
 #include "entity/message.pb.h"
 #include "entity/quote.pb.h"
 #include "entity/trade.pb.h"
@@ -9,6 +11,7 @@
 #include <boost/atomic.hpp>
 
 class CPortfolio;
+class COrderProcessor;
 
 class CStrategy
 {
@@ -32,12 +35,8 @@ public:
 	virtual void OnLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume){}
 
 	bool IsRunning(){ return m_running.load(boost::memory_order_acquire); }
-	virtual void Start(){ 
-		m_running.store(true, boost::memory_order_release); 
-		ResetForceOpen();
-		ResetForceClose();
-	}
-	virtual void Stop(){ m_running.store(false, boost::memory_order_release); }
+	virtual void Start();
+	virtual void Stop();
 
 	static double CalcOrderProfit(const trade::MultiLegOrder& openOrder);
 	static int CalcOffsetBarsBeforeMktCls(int minutesBeforeMktCls, int timeFrame);
@@ -51,6 +50,10 @@ public:
 	bool IsForceClosing(){ return m_forceClosing.load(boost::memory_order_acquire); };
 
 	bool IsMarketOpen(entity::Quote* pQuote);
+
+	CPortfolioOrderPlacer* OrderPlacer() { return m_orderPlacer.get(); }
+	void SetOrderPlacer(OrderPlacerPtr& orderPlacer){ m_orderPlacer = orderPlacer; }
+	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc);
 
 protected:
 
@@ -75,6 +78,8 @@ protected:
 
 	bool m_marketOpen;
 	int m_endTradingBar;
+
+	OrderPlacerPtr m_orderPlacer;
 };
 
 typedef boost::shared_ptr<CStrategy> StrategyPtr;

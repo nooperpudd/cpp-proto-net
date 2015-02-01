@@ -183,6 +183,7 @@ namespace PortfolioTrading.Modules.Account
                 setting.TimeFrame = 60;
                 setting.FirstLegSymbol = Symbol1;
                 setting.SecondLegSymbol = Symbol2;
+                setting.MaxPosition = MaxPosition;
 
                 foreach(var l in portf.Legs)
                 {
@@ -608,6 +609,24 @@ namespace PortfolioTrading.Modules.Account
             }
         }
         #endregion
+
+        #region MaxPosition
+        private int _maxPosition;
+
+        public int MaxPosition
+        {
+            get { return _maxPosition; }
+            set
+            {
+                if (_maxPosition != value)
+                {
+                    _maxPosition = value;
+                    RaisePropertyChanged("MaxPosition");
+                }
+            }
+        }
+        #endregion
+
 
         #region RetryTimes
         private int _retryTimes = 8;

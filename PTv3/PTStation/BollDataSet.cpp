@@ -3,6 +3,7 @@
 #include "globalmembers.h"
 #include "OHLCRecordSet.h"
 #include "DiffRecordSet.h"
+#include "Portfolio.h"
 
 #include <ta-lib/ta_libc.h>
 
@@ -34,13 +35,13 @@ void CBollDataSet::Calculate( COHLCRecordSet* ohlcRecordSet )
 	CalculateRaw((ohlcRecordSet->CloseSeries).get(), lastIdx);
 }
 
-void CBollDataSet::Calculate( CDiffRecordSet* diffRecordSet )
+void CBollDataSet::Calculate(CDiffRecordSet* diffRecordSet, CPortfolio* pPortfolio)
 {
 	int lastIdx = diffRecordSet->GetEndIndex();
 	if(lastIdx < 0) return;
 
-	logger.Info(boost::str(boost::format("Calculating BOLL with DiffRecordSet: lastIdx - %d, last price - %f")
-		% lastIdx % (diffRecordSet->DiffSeries)[lastIdx]));
+	logger.Info(boost::str(boost::format("[%s] Calculating BOLL with DiffRecordSet: lastIdx - %d, last price - %f")
+		% pPortfolio->ID() % lastIdx % (diffRecordSet->DiffSeries)[lastIdx]));
 
 	//CalculateTA((diffRecordSet->DiffSeries).get(), lastIdx);
 	CalculateRaw((diffRecordSet->DiffSeries).get(), lastIdx);

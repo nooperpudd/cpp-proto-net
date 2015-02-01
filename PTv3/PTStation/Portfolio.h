@@ -2,7 +2,6 @@
 
 #include "Strategy.h"
 #include "Leg.h"
-#include "PortfolioOrderPlacer.h"
 #include "entity/message.pb.h"
 #include "entity/quote.pb.h"
 #include "entity/trade.pb.h"
@@ -51,7 +50,7 @@ public:
 	double Profit() { return m_profit; }
 	double AvgCost() { return m_avgCost; }
 	const string& InvestorId();
-	CPortfolioOrderPlacer* OrderPlacer() { return m_orderPlacer.get(); }
+	CPortfolioOrderPlacer* OrderPlacer() { return m_strategy->OrderPlacer(); }
 
 	entity::StrategyType StrategyType(){ return m_strategyType; }
 	trade::HedgeFlagType HedgeFlag(){ return m_hedgeFlag; }
@@ -160,7 +159,6 @@ private:
 
 	CAvatarClient* m_avatar;
 
-	OrderPlacerPtr m_orderPlacer;
 };
 
 typedef boost::shared_ptr<CPortfolio> PortfolioPtr;

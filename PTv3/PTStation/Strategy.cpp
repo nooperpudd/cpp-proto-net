@@ -174,3 +174,28 @@ void CStrategy::CalculateEndBar( int offset, int timeFrame, int histDataSize )
 	int forceCloseOffset = CalcOffsetBarsBeforeMktCls(offset, timeFrame);
 	m_endTradingBar = histDataSize - forceCloseOffset;
 }
+
+void CStrategy::Start()
+{
+	if (m_orderPlacer.get() != NULL)
+		m_orderPlacer->Prepare();
+
+	m_running.store(true, boost::memory_order_release);
+	ResetForceOpen();
+	ResetForceClose();
+}
+
+void CStrategy::Stop()
+{
+	m_running.store(false, boost::memory_order_release);
+
+	if (m_orderPlacer.get() != NULL)
+		m_orderPlacer->Cleanup();
+}
+
+void CStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc)
+{
+	if (m_orderPlacer.get() != NULL)
+		m_orderPlacer->Initialize(pPortf, pOrderProc);
+
+}

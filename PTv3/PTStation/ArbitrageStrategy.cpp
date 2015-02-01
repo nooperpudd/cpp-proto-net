@@ -150,6 +150,9 @@ void CArbitrageStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, bo
 	if (currentBarIdx < m_bollPeriod)
 		return;
 
+	if (!pPortfolio->LegsTimestampAligned())
+		return;
+
 	ARBI_DIFF_CALC structLastDiff = { LAST_DIFF, 0, 0, 0 };
 	ARBI_DIFF_CALC structLongDiff = { LONG_DIFF, 0, 0, 0 };
 	ARBI_DIFF_CALC structShortDiff = { SHORT_DIFF, 0, 0, 0 };
@@ -169,7 +172,7 @@ void CArbitrageStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, bo
 	m_longDiffSize = 0;
 	m_shortDiffSize = 0;
 
-	m_bollDataSet->Calculate(m_diffRecordSet.get());
+	m_bollDataSet->Calculate(m_diffRecordSet.get(), pPortfolio);
 
 	double actualMid = 0;
 	if (m_useTargetGain)
@@ -210,9 +213,6 @@ void CArbitrageStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, bo
 	}
 
 	if (!IsRunning())
-		return;
-
-	if (!pPortfolio->LegsTimestampAligned())
 		return;
 
 	entity::PosiDirectionType direction = GetTradeDirection();
@@ -378,7 +378,7 @@ void CArbitrageStrategy::GetStrategyUpdate( entity::PortfolioUpdateItem* pPortfU
 {
 	CStrategy::GetStrategyUpdate(pPortfUpdateItem);
 
-	pPortfUpdateItem->set_ar_diff(m_lastDiff);o
+	pPortfUpdateItem->set_ar_diff(m_lastDiff);
 	pPortfUpdateItem->set_ar_longdiff(m_longDiff);
 	pPortfUpdateItem->set_ar_longsize(m_longDiffSize);
 	pPortfUpdateItem->set_ar_shortdiff(m_shortDiff);

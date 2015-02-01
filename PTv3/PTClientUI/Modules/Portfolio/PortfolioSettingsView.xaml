@@ -62,13 +62,10 @@
                                 </DockPanel>
                             </StackPanel>
                         </Border>
-                        <Border>
+                        <Border DataContext="{Binding Settings}">
                             <DockPanel>
-                                <TextBlock VerticalAlignment="Center" Margin="4">套利方向</TextBlock>
-                                <ComboBox Margin="4, 0" ItemsSource="{Binding DirectionItemsSource}"
-                                  SelectedValuePath="Direction" SelectedValue="{Binding Settings.Direction, Mode=TwoWay}"
-                                  ItemTemplate="{StaticResource combItemTemplate}" Name="combArbitrageDirection">
-                                </ComboBox>
+                                <TextBlock VerticalAlignment="Center" Margin="4">最大持仓</TextBlock>
+                                <xctk:DecimalUpDown Value="{Binding MaxPosition, Mode=TwoWay}" />
                             </DockPanel>
                         </Border>
                         <Border>

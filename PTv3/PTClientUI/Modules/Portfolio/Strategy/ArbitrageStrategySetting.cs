@@ -248,11 +248,30 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         }
         #endregion
 
+        #region MaxPosition
+        private int _maxPosition;
+
+        public int MaxPosition
+        {
+            get { return _maxPosition; }
+            set
+            {
+                if (_maxPosition != value)
+                {
+                    _maxPosition = value;
+                    RaisePropertyChanged("MaxPosition");
+                }
+            }
+        }
+        #endregion
+        
+
         public ArbitrageStrategySetting()
         {
 			BollPeriod = 26;
 			StdDevMultiplier = 2;
 			TimeFrame = 60;
+            MaxPosition = 1;
 		
             Direction = PTEntity.PosiDirectionType.LONG;
             OpenCondition = PTEntity.CompareCondition.LESS_EQUAL_THAN;
@@ -268,7 +287,8 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             XElement elem = new XElement("arbitrageStrategySetting");
             elem.Add(new XAttribute("direction", Direction.ToString()),
                 new XAttribute("useTargetGain", UseTargetGain),
-                new XAttribute("targetGain", TargetGain));
+                new XAttribute("targetGain", TargetGain),
+                new XAttribute("maxPosition", MaxPosition));
 			
 			XElement elemHistSource = new XElement("histSource",
                 new XAttribute("firstLeg", FirstLegSymbol),
@@ -308,6 +328,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             attr = elem.Attribute("targetGain");
             if (attr != null)
                 TargetGain = int.Parse(attr.Value);
+            attr = elem.Attribute("maxPosition");
+            if (attr != null)
+                MaxPosition = int.Parse(attr.Value);
 				
 			XElement elemHistSource = elem.Element("histSource");
 			attr = elemHistSource.Attribute("firstLeg");
@@ -390,6 +413,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
 			strategyItem.FirstLegSymbol = FirstLegSymbol;
 			strategyItem.SecondLegSymbol = SecondLegSymbol;
 			strategyItem.TimeFrame = TimeFrame;
+            strategyItem.MaxPosition = MaxPosition;
 
             strategyItem.UseTargetGain = UseTargetGain;
             strategyItem.TargetGain = TargetGain;
@@ -413,6 +437,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
 			this.FirstLegSymbol = strategySettings.FirstLegSymbol;
 			this.SecondLegSymbol = strategySettings.SecondLegSymbol;
 			this.TimeFrame = strategySettings.TimeFrame;
+            this.MaxPosition = strategySettings.MaxPosition;
+            this.UseTargetGain = strategySettings.UseTargetGain;
+            this.TargetGain = strategySettings.TargetGain;
 			
             this.Direction = strategySettings.Direction;
             this.OpenCondition = strategySettings.OpenCondition;

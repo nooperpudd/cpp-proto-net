@@ -47,12 +47,25 @@ public:
 		}
 	}
 
+	property int MaxPosition
+	{
+		int get()
+		{
+			return _maxPosition;
+		}
+		void set(int val)
+		{
+			_maxPosition = val;
+		}
+	}
+
 	virtual void To(entity::StrategyItem* pNativeStrategyItem);
 
 protected:
 	StrategyType _type;
 	int _retryTimes;
 	int _openTimeout;
+	int _maxPosition;
 
 	List<TriggerItem^> ^_triggers;
 };

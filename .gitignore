@@ -1,0 +1,6 @@
+Client
+Debug
+/PTv3/*.sdf
+/PTv3/ipch/ptcommunication-e3ef4958/*.ipch
+*.ipch
+/PTv3/*.suo

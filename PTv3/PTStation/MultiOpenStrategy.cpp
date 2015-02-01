@@ -14,7 +14,12 @@ CMultiOpenStrategy::~CMultiOpenStrategy()
 
 void CMultiOpenStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp)
 {
+	boost::mutex::scoped_lock l(m_mut);
+
 	CTechAnalyStrategy::Test(pQuote, pPortfolio, timestamp);
+
+	if (!IsMarketOpen(pQuote))
+		return;
 
 	// 1. Feed quote to strategy executors that is opening/closing position
 
@@ -31,3 +36,20 @@ void CMultiOpenStrategy::TestWorkingExecutors(entity::Quote* pQuote)
 		(*iter)->OnWorking(pQuote);
 	}
 }
+
+void CMultiOpenStrategy::Apply(const entity::StrategyItem& strategyItem, bool withTriggers)
+{
+	boost::mutex::scoped_lock l(m_mut);
+
+	CTechAnalyStrategy::Apply(strategyItem, withTriggers);
+
+	OnApply(strategyItem, withTriggers);
+
+	// make sure following parameters having values
+	if (m_openTimeout == 0)
+		m_openTimeout = 350;
+	if (m_retryTimes == 0)
+		m_retryTimes = 8;
+
+}
+

@@ -1,6 +1,6 @@
 #include "StdAfx.h"
 #include "Portfolio.h"
-#include "ArbitrageStrategy.h"
+#include "ArbitrageMultiStrategy.h"
 #include "ChangePositionStrategy.h"
 #include "ScalperStrategy.h"
 #include "HistSlopeStrategy.h"
@@ -112,8 +112,7 @@ CPortfolio::CPortfolio(CAvatarClient* client, const entity::PortfolioItem& srcPo
 
 	// Initialize strategy
 	m_strategy = CreateStrategy(srcPortfolioItem.strategy());
-	assert(m_orderPlacer.get() != NULL);
-	m_orderPlacer->Initialize(this, &(client->OrderProcessor()));
+	m_strategy->InitOrderPlacer(this, &(client->OrderProcessor()));
 
 	// Initialize strategy type in update item
 	m_portfolioUpdate.set_strategy(m_strategyType);
@@ -185,40 +184,40 @@ StrategyPtr CPortfolio::CreateStrategy( const entity::StrategyItem& strategyItem
 	switch(m_strategyType)
 	{
 	case entity::ARBITRAGE:
-		created = StrategyPtr(new CArbitrageStrategy(strategyItem, m_avatar, this));
-		m_orderPlacer = OrderPlacerPtr(new CPortfolioArbitrageOrderPlacer);
+		created = StrategyPtr(new CArbitrageMultiStrategy(strategyItem, m_avatar, this));
+		//created->SetOrderPlacer(OrderPlacerPtr(new CPortfolioArbitrageOrderPlacer));
 		break;
 	case entity::CHANGE_POSITION:
 		created = StrategyPtr(new CChangePositionStrategy(strategyItem, m_avatar, this));
-		m_orderPlacer = OrderPlacerPtr(new CPortfolioOrderPlacer);
+		created->SetOrderPlacer(OrderPlacerPtr(new CPortfolioOrderPlacer));
 		break;
 	case entity::SCALPER:
 		created = StrategyPtr(new CScalperStrategy(strategyItem));
-		m_orderPlacer = OrderPlacerPtr(new CPortfolioScalperOrderPlacer);
+		created->SetOrderPlacer(OrderPlacerPtr(new CPortfolioScalperOrderPlacer));
 		break;
 	case entity::HIST_SLOPE:
 		created = StrategyPtr(new CHistSlopeStrategy(strategyItem, m_avatar));
-		m_orderPlacer = OrderPlacerPtr(new CPortfolioTrendOrderPlacer);
+		created->SetOrderPlacer(OrderPlacerPtr(new CPortfolioTrendOrderPlacer));
 		break;
 	case entity::WMA_TREND:
 		created = StrategyPtr(new CWMATrendStrategy(strategyItem, m_avatar));
-		m_orderPlacer = OrderPlacerPtr(new CPortfolioTrendOrderPlacer);
+		created->SetOrderPlacer(OrderPlacerPtr(new CPortfolioTrendOrderPlacer));
 		break;
 	case entity::LINER_REGRESSION:
 		created = StrategyPtr(new CLinerRegressionStrategy(strategyItem, m_avatar));
-		m_orderPlacer = OrderPlacerPtr(new CPortfolioTrendOrderPlacer);
+		created->SetOrderPlacer(OrderPlacerPtr(new CPortfolioTrendOrderPlacer));
 		break;
 	case entity::ASC_TREND:
 		created = StrategyPtr(new CASCTrendStrategy(strategyItem, m_avatar));
-		m_orderPlacer = OrderPlacerPtr(new CPortfolioTrendOrderPlacer);
+		created->SetOrderPlacer(OrderPlacerPtr(new CPortfolioTrendOrderPlacer));
 		break;
 	case entity::RANGE_TREND:
 		created = StrategyPtr(new CRangeTrendStrategy(strategyItem, m_avatar));
-		m_orderPlacer = OrderPlacerPtr(new CPortfolioTrendOrderPlacer);
+		created->SetOrderPlacer(OrderPlacerPtr(new CPortfolioTrendOrderPlacer));
 		break;
 	case entity::MANUAL:
 		created = StrategyPtr(new CManualStrategy(strategyItem));
-		m_orderPlacer = OrderPlacerPtr(new CManualOrderPlacer);
+		created->SetOrderPlacer(OrderPlacerPtr(new CManualOrderPlacer));
 		break;
   }
 	
@@ -326,7 +325,7 @@ void CPortfolio::StartStrategy(int lastOrderId)
 	m_targetEnd.clear();
 	if(lastOrderId >= m_serialOrderId)
 		m_serialOrderId = lastOrderId;
-	m_orderPlacer->Prepare();
+	
 	m_strategy->Start();
 }
 
@@ -336,7 +335,6 @@ void CPortfolio::StopStrategy()
 	if (m_strategy->IsRunning())
 	{
 		m_strategy->Stop();
-		m_orderPlacer->Cleanup();
 	}
 }
 

@@ -7,6 +7,7 @@
 #define IND_BOTTOM "BOTTOM"
 
 class CDiffRecordSet;
+class CPortfolio;
 
 class CBollDataSet : public CTaIndicatorSet
 {
@@ -21,7 +22,7 @@ public:
 	int GetP(){ return m_paramP; }
 
 	void Calculate(COHLCRecordSet* ohlcRecordSet);
-	void Calculate(CDiffRecordSet* diffRecordSet);
+	void Calculate(CDiffRecordSet* diffRecordSet, CPortfolio* pPortfolio);
 private:
 
 	void CalculateRaw(double* pxArray, int lastIdx);

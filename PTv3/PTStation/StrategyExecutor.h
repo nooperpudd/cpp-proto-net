@@ -11,19 +11,22 @@ enum ExecutorState
 	PENDING_CLOSE
 };
 
+struct StrategyContext {};
+
 class CStrategyExecutor
 {
 public:
 	CStrategyExecutor();
-	~CStrategyExecutor();
+	virtual ~CStrategyExecutor();
 
-	void OnWorking(entity::Quote* pQuote){}
-	void OnTestForOpen(entity::Quote* pQuote){}
-	void OnTestForClose(entity::Quote* pQuote){}
+	virtual void OnWorking(entity::Quote* pQuote, const StrategyContext* pContext){}
+	virtual void OnTestForOpen(entity::Quote* pQuote, const StrategyContext* pContext){}
+	virtual void OnTestForClose(entity::Quote* pQuote, const StrategyContext* pContext){}
 
 	ExecutorState State(){ return m_currentState.load(boost::memory_order_consume); }
 	void SetState(ExecutorState state){ m_currentState.store(state, boost::memory_order_release); }
-private:
+
+protected:
 
 	boost::shared_ptr<void> m_fsm;
 	boost::atomic<ExecutorState> m_currentState;

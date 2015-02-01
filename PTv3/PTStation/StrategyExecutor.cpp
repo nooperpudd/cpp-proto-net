@@ -26,10 +26,10 @@ namespace strategy// Concrete FSM implementation
 
 	struct ExecutorFront_ : public msm::front::state_machine_def < ExecutorFront_ >
 	{
-		CStrategyExecutor* m_executor;
+		CStrategyExecutor* Executor;
 
 		// constructor with arguments
-		ExecutorFront_(CStrategyExecutor* pExecutor) :m_executor(pExecutor)
+		ExecutorFront_(CStrategyExecutor* pExecutor) :Executor(pExecutor)
 		{}
 
 		// state machines also have entry/exit actions 
@@ -46,7 +46,7 @@ namespace strategy// Concrete FSM implementation
 #ifdef LOG_FOR_TRADE
 				LOG_DEBUG(logger, "executor entering: EmptyPosition");
 #endif
-				//fsm.m_pPlacer->OnFilled(evt.m_pOrd);
+				fsm.Executor->SetState(EMPTY_POSITION);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
@@ -62,7 +62,7 @@ namespace strategy// Concrete FSM implementation
 #ifdef LOG_FOR_TRADE
 				LOG_DEBUG(logger, "executor entering: HoldPosition");
 #endif
-				//fsm.m_pPlacer->OnFilled(evt.m_pOrd);
+				fsm.Executor->SetState(HOLD_POSITION);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
@@ -78,7 +78,7 @@ namespace strategy// Concrete FSM implementation
 #ifdef LOG_FOR_TRADE
 				LOG_DEBUG(logger, "executor entering: PendingOpen");
 #endif
-				//fsm.m_pPlacer->OnFilled(evt.m_pOrd);
+				fsm.Executor->SetState(PENDING_OPEN);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
@@ -94,7 +94,7 @@ namespace strategy// Concrete FSM implementation
 #ifdef LOG_FOR_TRADE
 				LOG_DEBUG(logger, "executor entering: PendingClose");
 #endif
-				//fsm.m_pPlacer->OnFilled(evt.m_pOrd);
+				fsm.Executor->SetState(PENDING_CLOSE);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
@@ -107,7 +107,7 @@ namespace strategy// Concrete FSM implementation
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
-				//fsm.m_pPlacer->OnError(evt.m_ErrorMsg);
+				fsm.Executor->SetState(EXECUTOR_IDLE);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
@@ -122,7 +122,7 @@ namespace strategy// Concrete FSM implementation
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
-				//fsm.m_pPlacer->OnError(evt.m_ErrorMsg);
+				fsm.Executor->SetState(EXECUTOR_IDLE);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>

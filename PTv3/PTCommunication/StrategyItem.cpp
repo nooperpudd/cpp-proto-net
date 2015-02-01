@@ -6,6 +6,7 @@ namespace PTEntity {
 StrategyItem::StrategyItem(void)
 {
 	_triggers = gcnew List<TriggerItem^>();
+	_maxPosition = 1;	// default to 1
 }
 
 void StrategyItem::To( entity::StrategyItem* pNativeStrategyItem )
@@ -13,6 +14,7 @@ void StrategyItem::To( entity::StrategyItem* pNativeStrategyItem )
 	pNativeStrategyItem->set_type(static_cast<entity::StrategyType>(_type));
 	pNativeStrategyItem->set_retrytimes(_retryTimes);
 	pNativeStrategyItem->set_opentimeout(_openTimeout);
+	pNativeStrategyItem->set_maxposition(_maxPosition);
 
 	for each(TriggerItem ^tr in _triggers)
 	{

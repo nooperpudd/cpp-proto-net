@@ -168,13 +168,15 @@ message StrategyItem
 	required int32 RetryTimes = 2;
 	required int32 OpenTimeout = 3;
 	repeated TriggerItem Triggers = 4;
+	required int32 MaxPosition = 5;
+	
 	// MANUAL
-	optional CompareCondition StopGainCondition = 5;
-	optional double StopGainThreshold = 6;
-	optional CompareCondition StopLossCondition = 7;
-	optional double StopLossThreshold = 8;
-	optional PosiDirectionType PositionDirection = 9;
-	optional StopPriceType StopLossType = 10;
+	optional CompareCondition StopGainCondition = 21;
+	optional double StopGainThreshold = 22;
+	optional CompareCondition StopLossCondition = 23;
+	optional double StopLossThreshold = 24;
+	optional PosiDirectionType PositionDirection = 25;
+	optional StopPriceType StopLossType = 26;
 	
 	// Arbitrage
 	optional double AR_BollPeriod = 101;
