@@ -354,6 +354,10 @@ typedef char TUstpFtdcOffsetFlagType;
 #define USTP_FTDC_OPT_AnyPrice '1'
 ///限价
 #define USTP_FTDC_OPT_LimitPrice '2'
+///最优价
+#define USTP_FTDC_OPT_BestPrice '3'
+///五档价
+#define USTP_FTDC_OPT_FiveLevelPrice '4'
 
 typedef char TUstpFtdcOrderPriceTypeType;
 
@@ -470,6 +474,8 @@ typedef char TUstpFtdcAccountDirectionType;
 #define USTP_FTDC_CHF_Arbitrage '2'
 ///套保
 #define USTP_FTDC_CHF_Hedge '3'
+///做市商
+#define USTP_FTDC_CHF_MarketMaker '4'
 
 typedef char TUstpFtdcHedgeFlagType;
 
