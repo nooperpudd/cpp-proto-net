@@ -15,6 +15,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PTStationFM", "PTStation\PT
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "QuoteStationFM", "PTStation\QuoteStationFM.vcxproj", "{0777086E-C240-4D77-BD6A-FA6E10A414BA}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PTStationZeus", "PTStation\PTStationZeus.vcxproj", "{0713804F-C564-45EB-BC4A-96B764EA1DEB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +105,20 @@ Global
 		{0777086E-C240-4D77-BD6A-FA6E10A414BA}.Release|Win32.Build.0 = Release|Win32
 		{0777086E-C240-4D77-BD6A-FA6E10A414BA}.Release|x86.ActiveCfg = Release|Win32
 		{0777086E-C240-4D77-BD6A-FA6E10A414BA}.Release|x86.Build.0 = Release|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Debug|Win32.ActiveCfg = Debug|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Debug|Win32.Build.0 = Debug|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Debug|x86.ActiveCfg = Debug|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Debug|x86.Build.0 = Debug|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Release|Any CPU.ActiveCfg = Release|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Release|Win32.ActiveCfg = Release|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Release|Win32.Build.0 = Release|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Release|x86.ActiveCfg = Release|Win32
+		{0713804F-C564-45EB-BC4A-96B764EA1DEB}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

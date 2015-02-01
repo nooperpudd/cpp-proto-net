@@ -2,12 +2,14 @@ CC = g++
 INC_DIR=-I../dev/pushframework-2.2.1/include
 CFLAGS=$(INC_DIR) -DUSE_NET_LIBS -O3
 FM_FLAGS=-DUSE_FEMAS_API
+ZE_FLAGS=-DUSE_ZEUSING_API
 # -DFAKE_DEAL  -DLOG_FOR_TRADE -DLOG_FOR_TECH_CALC
 PROTO_DIR = ./proto
 SRC = ./src
 ENTITY_DIR = ./src/entity
 OBJ_DIR = ./obj
 FS_FM_OBJ_DIR = $(OBJ_DIR)/fs_fm
+FS_ZE_OBJ_DIR = $(OBJ_DIR)/fs_zeusing
 QS_OBJ_DIR = $(OBJ_DIR)/qs
 QS_FM_OBJ_DIR = $(OBJ_DIR)/qs_fm
 LIBS = -lPushFramework -lboost_thread -lboost_program_options -lboost_filesystem -lboost_chrono -lboost_date_time -lprotobuf -llog4cpp -lta_lib
@@ -15,6 +17,7 @@ CTP_TD_LIBS = -lthosttraderapi
 CTP_MD_LIBS = -lthostmduserapi
 FM_TD_LIBS = -lUSTPtraderapi
 FM_MD_LIBS = -lUSTPmduserapi
+ZE_TD_LIBS = -lzeusingtraderapi
 
 _ENTITY_FILES = packet enum quote trade message  
 ENTITY_FILES = $(patsubst %, $(ENTITY_DIR)/%.pb.cc, $(_ENTITY_FILES))
@@ -49,11 +52,14 @@ _FS_OBJS = stdafx \
 _FS_CTP_OBJS = InputOrder RtnOrderWrapper TradeAgent 
 
 _FS_FM_OBJS = InputOrder_FM RtnOrderWrapper_FM TradeAgent_FM 
+_FS_ZE_OBJS = InputOrder_Zeus RtnOrderWrapper_Zeus TradeAgent_Zeus 
 
 FS_COM_CTP_OBJS = $(patsubst %, $(OBJ_DIR)/%.o, $(_FS_OBJS))
 FS_COM_FM_OBJS = $(patsubst %, $(FS_FM_OBJ_DIR)/%.o, $(_FS_OBJS))
+FS_COM_ZE_OBJS = $(patsubst %, $(FS_ZE_OBJ_DIR)/%.o, $(_FS_OBJS))
 FS_CTP_OBJS = $(patsubst %, $(OBJ_DIR)/%.o, $(_FS_CTP_OBJS))
 FS_FM_OBJS = $(patsubst %, $(FS_FM_OBJ_DIR)/%.o, $(_FS_FM_OBJS))
+FS_ZE_OBJS = $(patsubst %, $(FS_ZE_OBJ_DIR)/%.o, $(_FS_ZE_OBJS))
 
 _QS_OBJS = stdafx \
 		FileOperations MarketLoginWaiter MdSpi QS_Configuration QS_LogManager \
@@ -72,6 +78,9 @@ pt-station: $(ENTITY_OBJS) $(FS_COM_CTP_OBJS) $(FS_CTP_OBJS)
 pt-station-fm: $(ENTITY_OBJS) $(FS_COM_FM_OBJS) $(FS_FM_OBJS)
 	$(CC) -o PTStationFM $^ $(LIBS) $(FM_TD_LIBS) -Wall
 
+pt-station-ze: $(ENTITY_OBJS) $(FS_COM_ZE_OBJS) $(FS_ZE_OBJS)
+	$(CC) -o PTStationZE $^ $(LIBS) $(ZE_TD_LIBS) -Wall
+
 quote-station: $(QS_OBJS)
 	$(CC) -o QuoteStation $^ $(LIBS) $(CTP_MD_LIBS) -Wall
 
@@ -89,6 +98,10 @@ $(OBJ_DIR)/%.o: $(SRC)/%.cpp
 # Compile pt station Femas main cpp
 $(FS_FM_OBJ_DIR)/%.o: $(SRC)/%.cpp
 	$(CC) -c -o $@ $< $(CFLAGS) $(FM_FLAGS)
+
+# Compile pt station Femas main cpp
+$(FS_ZE_OBJ_DIR)/%.o: $(SRC)/%.cpp
+	$(CC) -c -o $@ $< $(CFLAGS) $(ZE_FLAGS)
 
 # Compile quote station CTP cpp
 $(QS_OBJ_DIR)/%.o: $(SRC)/%.cpp

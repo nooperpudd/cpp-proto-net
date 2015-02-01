@@ -8,14 +8,20 @@
 #include "PortfolioOrderPlacer.h"
 
 #ifndef USE_FEMAS_API
+
+#ifdef USE_ZEUSING_API
+#include "InputOrder_Zeus.h"
+#include "TradeAgent_Zeus.h"
+#else
 #include "InputOrder.h"
 #include "TradeAgent.h"
+#endif
 #define ORDER_REF_FORMAT "%12d"
 #else
 #include "InputOrder_FM.h"
 #include "TradeAgent_FM.h"
 #define ORDER_REF_FORMAT "%012d"
-#endif // !USE_FEMAS_API
+#endif
 
 #include <boost/date_time.hpp>
 

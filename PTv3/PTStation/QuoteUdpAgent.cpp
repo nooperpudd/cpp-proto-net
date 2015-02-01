@@ -1,6 +1,10 @@
 #include "StdAfx.h"
 #include "QuoteUdpAgent.h"
 
+#ifdef USE_ZEUSING_API
+#include "ParseZeusingMarketData.h"
+#endif // USE_ZEUSING_API
+
 #include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 
@@ -88,11 +92,20 @@ bool CQuoteUdpAgent::UnSubscribesQuotes(vector<string>& unSubscribeArr)
 	return true;
 }
 
+#ifdef USE_ZEUSING_API
+CThostFtdcDepthMarketDataField g_DepthMarketData;
+#endif
+
 void CQuoteUdpAgent::OnUdpDataReceived(char* pData, std::size_t nSize)
 {
 	boost::mutex::scoped_lock lock(m_mutSymbol);
 
+#ifdef USE_ZEUSING_API
+	ParseMarketData(pData, nSize, &g_DepthMarketData);
+	CThostFtdcDepthMarketDataField *pDepthMarketData = &g_DepthMarketData;
+#else
 	CThostFtdcDepthMarketDataField *pDepthMarketData = reinterpret_cast<CThostFtdcDepthMarketDataField*>(pData);
+#endif
 	
 	set<string>::iterator iterFound = m_symbols.find(pDepthMarketData->InstrumentID);
 	if (iterFound != m_symbols.end())
@@ -101,3 +114,5 @@ void CQuoteUdpAgent::OnUdpDataReceived(char* pData, std::size_t nSize)
 		m_pCallback->OnQuoteReceived(pDepthMarketData, timestamp);
 	}
 }
+
+

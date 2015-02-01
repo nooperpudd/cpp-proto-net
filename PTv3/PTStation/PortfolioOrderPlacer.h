@@ -5,10 +5,16 @@
 #include "entity/quote.pb.h"
 
 #ifndef USE_FEMAS_API
+
+#ifdef USE_ZEUSING_API
+#include "RtnOrderWrapper_Zeus.h"
+#else
 #include "RtnOrderWrapper.h"
+#endif
+
 #else
 #include "RtnOrderWrapper_FM.h"
-#endif // !USE_FEMAS_API
+#endif
 
 #include <boost/atomic.hpp>
 

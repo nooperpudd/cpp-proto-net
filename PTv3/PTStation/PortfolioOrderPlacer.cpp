@@ -9,10 +9,16 @@
 #include "BuildOrderException.h"
 
 #ifndef USE_FEMAS_API
+
+#ifdef USE_ZEUSING_API
+#include "InputOrder_Zeus.h"
+#else
 #include "InputOrder.h"
+#endif
+
 #else
 #include "InputOrder_FM.h"
-#endif // !USE_FEMAS_API
+#endif
 
 #include <boost/date_time.hpp>
 

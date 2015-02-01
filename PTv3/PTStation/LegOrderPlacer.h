@@ -6,12 +6,17 @@
 #include "entity/quote.pb.h"
 
 #ifndef USE_FEMAS_API
+#ifdef USE_ZEUSING_API
+#include "InputOrder_Zeus.h"
+#include "RtnOrderWrapper_Zeus.h"
+#else
 #include "InputOrder.h"
 #include "RtnOrderWrapper.h"
+#endif
 #else
 #include "InputOrder_FM.h"
 #include "RtnOrderWrapper_FM.h"
-#endif // !USE_FEMAS_API
+#endif
 
 class CPortfolioOrderPlacer;
 

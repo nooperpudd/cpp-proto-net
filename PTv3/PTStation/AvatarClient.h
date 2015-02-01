@@ -8,10 +8,14 @@
 #include "entity/message.pb.h"
 
 #ifndef USE_FEMAS_API
+#ifdef USE_ZEUSING_API
+#include "TradeAgent_Zeus.h"
+#else
 #include "TradeAgent.h"
+#endif
 #else
 #include "TradeAgent_FM.h"
-#endif // !USE_FEMAS_API
+#endif
 
 
 #include <boost/date_time.hpp>
