@@ -5,3 +5,5 @@
 /PTv3/*.sdf
 /PTv3/*.suo
 /PTv3/ipch
+/PTv3/PTStation/*.user
+/PTv3/*.opensdf
