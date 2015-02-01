@@ -1,6 +1,7 @@
-Client
-Debug
+/PTv3/Bin
+/PTv3/PTClientUI/obj
+/PTv3/PTCommunication/Debug
+/PTv3/PTStation/Debug
 /PTv3/*.sdf
-/PTv3/ipch/ptcommunication-e3ef4958/*.ipch
-*.ipch
 /PTv3/*.suo
+/PTv3/ipch
