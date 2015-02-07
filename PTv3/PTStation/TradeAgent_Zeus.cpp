@@ -15,6 +15,9 @@
 #define _strdup strdup
 #endif
 
+#define USER_PRODUCT_INFO "client01"
+#define AUTH_CODE "AWFOJVQ0665AXS3Q"
+
 enum {
 	DISCONNECT_TIMEOUT_SECOND = 1,
 	CONNECT_TIMEOUT_SECONDS = 3,
@@ -66,6 +69,7 @@ CTradeAgent::CTradeAgent(void)
 	, m_isConnected(false)
 	, m_isLogged(false)
 	, m_isConfirmed(false)
+	, m_isAuthenticated(false)
 	, m_isWorking(false)
 	, FRONT_ID(0)
 	, SESSION_ID(0)
@@ -141,6 +145,23 @@ boost::tuple<bool, string> CTradeAgent::Login(const string& frontAddr, const str
 				return boost::make_tuple(false, m_loginErr);
 			}
 		}
+
+		// wait for Authenticate
+		{
+			boost::unique_lock<boost::mutex> lock(m_mutAuth);
+			Authenticate();
+
+			if (!m_condAuth.timed_wait(lock, boost::posix_time::seconds(CONNECT_TIMEOUT_SECONDS)))
+			{
+				m_loginErr = boost::str(boost::format("Authentcation %s time out") % m_investorId);
+				logger.Warning(m_loginErr);
+				return boost::make_tuple(false, m_loginErr);
+			}
+			if (!m_isAuthenticated)
+			{
+				return boost::make_tuple(false, m_loginErr);
+			}
+		}
 		
 		// wait for login
 		{
@@ -149,7 +170,7 @@ boost::tuple<bool, string> CTradeAgent::Login(const string& frontAddr, const str
 
 			if(!m_condLogin.timed_wait(lock, boost::posix_time::seconds(CONNECT_TIMEOUT_SECONDS)))
 			{
-				m_loginErr = boost::str(boost::format("Login %s time out") % userId);
+				m_loginErr = boost::str(boost::format("Login %s time out") % m_investorId);
 				logger.Warning(m_loginErr);
 				return boost::make_tuple(false, m_loginErr);
 			}
@@ -315,6 +336,8 @@ void CTradeAgent::OnRspUserLogin( CZeusingFtdcRspUserLoginField *pRspUserLogin, 
 	}
 
 	m_condLogin.notify_one();
+
+	m_orderProcessor->OnRspUserLogin(m_isLogged, m_loginErr, m_maxOrderRef);
 }
 
 void CTradeAgent::ReqSettlementInfoConfirm()
@@ -592,6 +615,7 @@ bool CTradeAgent::SubmitOrderAction( trade::InputOrderAction* pInputOrderAction 
 	strcpy_s(req.OrderSysID, pInputOrderAction->ordersysid().c_str());
 	///操作标志
 	req.ActionFlag = ZEUSING_FTDC_AF_Delete;	// Cancel order
+	req.Direction = pInputOrderAction->direction();
 	///价格
 	//	TZeusingFtdcPriceType	LimitPrice;
 	///数量变化
@@ -927,5 +951,31 @@ void CTradeAgent::OnRspQryInstrument( CZeusingFtdcInstrumentField *pInstrument, 
 	}
 	// something wrong
 	m_symbInfoReqFactory.Response(nRequestID, false, NULL);
+}
+
+void CTradeAgent::Authenticate()
+{
+	CZeusingFtdcReqAuthenticateField req;
+	memset(&req, 0, sizeof(req));
+	strcpy(req.BrokerID, m_brokerId.c_str());
+	strcpy(req.UserID, m_investorId.c_str());
+	strcpy(req.UserProductInfo, USER_PRODUCT_INFO);
+	strcpy(req.AuthCode, AUTH_CODE);
+	m_pUserApi->ReqAuthenticate(&req, RequestIDIncrement());
+}
+
+void CTradeAgent::OnRspAuthenticate(CZeusingFtdcRspAuthenticateField *pRspAuthenticateField, CZeusingFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast)
+{
+	if (bIsLast)
+	{
+		boost::unique_lock<boost::mutex> lock(m_mutAuth);
+
+		m_isAuthenticated = IsErrorRspInfo(pRspInfo);
+		if (!m_isAuthenticated)
+		{
+			GB2312ToUTF_8(m_loginErr, pRspInfo->ErrorMsg);
+		}
+		m_condAuth.notify_one();
+	}
 }
 

@@ -48,6 +48,7 @@ public:
 	const string& ExchId(){ return m_exchId; }
 	const string& OrderSysId(){ return m_ordSysId; }
 	const string& UserId(){ return m_userId; }
+	trade::TradeDirectionType Direction(){ return m_inputOrder.Direction(); }
 
 	int SubmitTimes() { return m_submitTimes; }
 	int AddSubmitTimes() { return ++m_submitTimes; }

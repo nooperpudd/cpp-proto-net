@@ -131,7 +131,7 @@ void CQuoteAggregator::OnQuoteReceived(const string& connectIP, CUstpFtdcDepthMa
 	QuoteTimestampMapIter iter = m_lastQuoteTimestamp.find(symbol);
 	if(iter == m_lastQuoteTimestamp.end())
 	{
-		TimestampPtr ts(new QuoteTimestamp(pDepthMarketData->UpdateTime, pDepthMarketData->UpdateMillisec));
+		TimestampPtr ts(new CQuoteTimestamp(pDepthMarketData->UpdateTime, pDepthMarketData->UpdateMillisec));
 		ts->LastTime = boost::chrono::steady_clock::now();
 		m_lastQuoteTimestamp.insert(make_pair(symbol, ts));
 		m_quoteFeeder->Put(pDepthMarketData);

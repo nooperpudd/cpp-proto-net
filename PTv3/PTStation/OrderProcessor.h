@@ -46,7 +46,8 @@ public:
 					 const string& exchId, 
 					 const string& ordSysId, 
 					 const string& userId,
-					 const string& symbol);
+					 const string& symbol,
+					 trade::TradeDirectionType direction);
 
 	boost::tuple<bool, string> PlaceOrder( const string& symbol, 
 										   trade::TradeDirectionType direction, 

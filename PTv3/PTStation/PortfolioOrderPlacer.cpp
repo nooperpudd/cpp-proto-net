@@ -717,7 +717,7 @@ void CPortfolioOrderPlacer::OnCanceling()
 	
 	m_pOrderProcessor->CancelOrder(m_activeOrdPlacer->OrderRef(), 
 		m_activeOrdPlacer->ExchId(), m_activeOrdPlacer->OrderSysId(), 
-		m_activeOrdPlacer->UserId(), m_activeOrdPlacer->Symbol());
+		m_activeOrdPlacer->UserId(), m_activeOrdPlacer->Symbol(), m_activeOrdPlacer->Direction());
 }
 
 void CPortfolioOrderPlacer::OnLegCanceled(const RtnOrderWrapperPtr& pRtnOrder )

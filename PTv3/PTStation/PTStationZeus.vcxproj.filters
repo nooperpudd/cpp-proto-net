@@ -366,7 +366,10 @@
       <Filter>Header Files\trade</Filter>
     </ClInclude>
     <ClInclude Include="ParseZeusingMarketData.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="QuoteTimestamp.h">
+      <Filter>Header Files\quote</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -638,7 +641,7 @@
       <Filter>Source Files\trade</Filter>
     </ClCompile>
     <ClCompile Include="ParseZeusingMarketData.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -53,6 +53,9 @@ public:
 	///当客户端与交易后台通信连接断开时，该方法被调用。当发生这个情况后，API会自动重新连接，客户端可不做处理。
 	virtual void OnFrontDisconnected(int nReason);
 
+	///客户端认证响应
+	virtual void OnRspAuthenticate(CZeusingFtdcRspAuthenticateField *pRspAuthenticateField, CZeusingFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
+
 	///登录请求响应
 	virtual void OnRspUserLogin(CZeusingFtdcRspUserLoginField *pRspUserLogin,	CZeusingFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast);
 
@@ -98,6 +101,7 @@ private:
 
 	void RunTradingFunc(string address);
 	void Login();
+	void Authenticate();
 	void ReqSettlementInfoConfirm();
 	int RequestIDIncrement() { return ++m_iRequestID; }
 	bool IsMyOrder(CZeusingFtdcOrderField *pOrder)
@@ -122,6 +126,7 @@ private:
 	bool m_isConnected;
 	bool m_isLogged;
 	bool m_isConfirmed;
+	bool m_isAuthenticated;
 	string m_loginErr;
 
 	boost::thread m_thTrading;
@@ -134,6 +139,8 @@ private:
 	boost::condition_variable m_condLogin;
 	boost::mutex m_mutConfirm;
 	boost::condition_variable m_condConfirm;
+	boost::mutex m_mutAuth;
+	boost::condition_variable m_condAuth;
 
 	CSyncRequestFactory<entity::Quote> m_requestFactory;
 	CSyncRequestFactory<CSymbolInfo> m_symbInfoReqFactory;

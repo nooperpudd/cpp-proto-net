@@ -21,7 +21,7 @@ boost::tuple<bool, string> CQuoteAgentFacade::Login(const string& frontAddr, con
 {
 	if (IfQuoteUdpBroadcast(frontAddr))
 	{
-		m_quoteAgentUnderlying = QuoteAgentBasePtr(new CQuoteUdpAgent(m_pCallback));
+		m_quoteAgentUnderlying = QuoteAgentBasePtr(new CQuoteUdpMultiAgent(m_pCallback));
 	}
 	else
 	{

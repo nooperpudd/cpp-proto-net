@@ -137,7 +137,7 @@ void COrderProcessor::PrintOrderStatus( trade::Order* order )
 		% order->orderref().c_str() % GetSumbitStatusText(submitStatus) % GetStatusText(status)));
 }
 
-void COrderProcessor::CancelOrder(const std::string& ordRef, const std::string& exchId, const std::string& ordSysId, const std::string& userId, const std::string& symbol)
+void COrderProcessor::CancelOrder(const std::string& ordRef, const std::string& exchId, const std::string& ordSysId, const std::string& userId, const std::string& symbol, trade::TradeDirectionType direction)
 {
 	boost::shared_ptr<trade::InputOrderAction> orderAction(new trade::InputOrderAction);
 #ifdef USE_FEMAS_API
@@ -166,6 +166,8 @@ void COrderProcessor::CancelOrder(const std::string& ordRef, const std::string& 
 
 	///操作标志
 	orderAction->set_actionflag(trade::AF_Delete);	// Cancel order
+
+	orderAction->set_direction(direction);
 
 	///交易所代码
 	orderAction->set_exchangeid(exchId);

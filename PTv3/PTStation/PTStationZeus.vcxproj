@@ -132,6 +132,7 @@ copy /y ZeusingAPI\*.dll $(OutDir)</Command>
     <ClInclude Include="PortfolioArbitrageOrderPlacer.h" />
     <ClInclude Include="QuoteAgentBase.h" />
     <ClInclude Include="QuoteAgentFacade.h" />
+    <ClInclude Include="QuoteTimestamp.h" />
     <ClInclude Include="QuoteUdpAgent.h" />
     <ClInclude Include="RangeTrendStrategy.h" />
     <ClInclude Include="RtnOrderWrapper_Zeus.h" />

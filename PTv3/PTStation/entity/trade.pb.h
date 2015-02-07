@@ -3494,6 +3494,13 @@ class InputOrderAction : public ::google::protobuf::Message {
   inline ::std::string* release_instrumentid();
   inline void set_allocated_instrumentid(::std::string* instrumentid);
 
+  // required .trade.TradeDirectionType Direction = 15;
+  inline bool has_direction() const;
+  inline void clear_direction();
+  static const int kDirectionFieldNumber = 15;
+  inline ::trade::TradeDirectionType direction() const;
+  inline void set_direction(::trade::TradeDirectionType value);
+
   // @@protoc_insertion_point(class_scope:trade.InputOrderAction)
  private:
   inline void set_has_brokerid();
@@ -3524,6 +3531,8 @@ class InputOrderAction : public ::google::protobuf::Message {
   inline void clear_has_userid();
   inline void set_has_instrumentid();
   inline void clear_has_instrumentid();
+  inline void set_has_direction();
+  inline void clear_has_direction();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
@@ -3539,11 +3548,12 @@ class InputOrderAction : public ::google::protobuf::Message {
   ::std::string* ordersysid_;
   double limitprice_;
   ::std::string* userid_;
-  ::std::string* instrumentid_;
   ::google::protobuf::int32 volumechange_;
+  int direction_;
+  ::std::string* instrumentid_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(14 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(15 + 31) / 32];
 
   friend void  protobuf_AddDesc_trade_2eproto();
   friend void protobuf_AssignDesc_trade_2eproto();
@@ -12423,6 +12433,29 @@ inline void InputOrderAction::set_allocated_instrumentid(::std::string* instrume
     clear_has_instrumentid();
     instrumentid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
+}
+
+// required .trade.TradeDirectionType Direction = 15;
+inline bool InputOrderAction::has_direction() const {
+  return (_has_bits_[0] & 0x00004000u) != 0;
+}
+inline void InputOrderAction::set_has_direction() {
+  _has_bits_[0] |= 0x00004000u;
+}
+inline void InputOrderAction::clear_has_direction() {
+  _has_bits_[0] &= ~0x00004000u;
+}
+inline void InputOrderAction::clear_direction() {
+  direction_ = 48;
+  clear_has_direction();
+}
+inline ::trade::TradeDirectionType InputOrderAction::direction() const {
+  return static_cast< ::trade::TradeDirectionType >(direction_);
+}
+inline void InputOrderAction::set_direction(::trade::TradeDirectionType value) {
+  assert(::trade::TradeDirectionType_IsValid(value));
+  set_has_direction();
+  direction_ = value;
 }
 
 // -------------------------------------------------------------------
