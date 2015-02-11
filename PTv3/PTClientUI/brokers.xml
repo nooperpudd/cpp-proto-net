@@ -95,6 +95,15 @@
           <item>117.184.207.110:17101</item>
         </MarketData>
       </Server>
+      <Server>
+        <Name>中信仿真</Name>
+        <Trading>
+          <item>180.169.101.189:24505</item>
+        </Trading>
+        <MarketData>
+          <item>udp://255.255.255.255:41115</item>
+        </MarketData>
+      </Server>
 		</Servers>
 	</broker>
 </root>

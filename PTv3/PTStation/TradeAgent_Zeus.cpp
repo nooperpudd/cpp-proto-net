@@ -957,10 +957,10 @@ void CTradeAgent::Authenticate()
 {
 	CZeusingFtdcReqAuthenticateField req;
 	memset(&req, 0, sizeof(req));
-	strcpy(req.BrokerID, m_brokerId.c_str());
-	strcpy(req.UserID, m_investorId.c_str());
-	strcpy(req.UserProductInfo, USER_PRODUCT_INFO);
-	strcpy(req.AuthCode, AUTH_CODE);
+	strcpy_s(req.BrokerID, m_brokerId.c_str());
+	strcpy_s(req.UserID, m_investorId.c_str());
+	strcpy_s(req.UserProductInfo, USER_PRODUCT_INFO);
+	strcpy_s(req.AuthCode, AUTH_CODE);
 	m_pUserApi->ReqAuthenticate(&req, RequestIDIncrement());
 }
 
@@ -970,10 +970,14 @@ void CTradeAgent::OnRspAuthenticate(CZeusingFtdcRspAuthenticateField *pRspAuthen
 	{
 		boost::unique_lock<boost::mutex> lock(m_mutAuth);
 
-		m_isAuthenticated = IsErrorRspInfo(pRspInfo);
-		if (!m_isAuthenticated)
+		bool hasError = IsErrorRspInfo(pRspInfo);
+		if (hasError)
 		{
 			GB2312ToUTF_8(m_loginErr, pRspInfo->ErrorMsg);
+		}
+		else
+		{
+			m_isAuthenticated = true;
 		}
 		m_condAuth.notify_one();
 	}
