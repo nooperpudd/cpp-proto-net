@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "QuoteUdpAgent.h"
+#include "globalmembers.h"
 
 #ifdef USE_ZEUSING_API
 #include "ParseZeusingMarketData.h"
@@ -136,6 +137,7 @@ bool CQuoteUdpAgent::SubscribesQuotes(vector<string>& subscribeArr)
 	for (vector<string>::iterator iter = subscribeArr.begin(); iter != subscribeArr.end(); ++iter)
 	{
 		m_symbols.insert(*iter);
+		LOG_DEBUG(logger, boost::str(boost::format("Subscribe %s") % (*iter)));
 	}
 	return true;
 }
@@ -168,12 +170,13 @@ void CQuoteUdpAgent::OnUdpDataReceived(char* pData, std::size_t nSize)
 #else
 	CThostFtdcDepthMarketDataField *pDepthMarketData = reinterpret_cast<CThostFtdcDepthMarketDataField*>(pData);
 #endif
-	
+	LOG_DEBUG(logger, boost::str(boost::format("Symbol coming %s") % pDepthMarketData->InstrumentID));
 	boost::unordered_set<string>::iterator iterFound = m_symbols.find(pDepthMarketData->InstrumentID);
 	if (iterFound != m_symbols.end())
 	{
 		longlong timestamp = boost::chrono::steady_clock::now().time_since_epoch().count();
 		m_parentAgent->OnQuoteReceived(m_nPort, pDepthMarketData, timestamp);
+		LOG_DEBUG(logger, boost::str(boost::format("Passed down quote for Symbol %s") % pDepthMarketData->InstrumentID));
 	}
 }
 
