@@ -8,3 +8,6 @@
 /PTv3/PTStation/*.user
 /PTv3/*.opensdf
 /PTv3/pt-station-linux
+/PTv3/QuoteBroadcast/Debug
+/PTv3/QuoteBroadcast/*.filters
+/PTv3/QuoteBroadcast/*.user
