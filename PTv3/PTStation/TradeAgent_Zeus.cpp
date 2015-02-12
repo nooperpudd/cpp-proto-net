@@ -15,8 +15,13 @@
 #define _strdup strdup
 #endif
 
+#ifdef _DEBUG
 #define USER_PRODUCT_INFO "client01"
 #define AUTH_CODE "AWFOJVQ0665AXS3Q"
+#else
+#define USER_PRODUCT_INFO "wlm"
+#define AUTH_CODE "VCNJK1U5969OAPBI"
+#endif
 
 enum {
 	DISCONNECT_TIMEOUT_SECOND = 1,
