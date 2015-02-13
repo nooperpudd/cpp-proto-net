@@ -57,6 +57,22 @@ int main(int argc, char* argv[])
 		ifstream f(tickFilePath.c_str());
 		if (f.good())
 		{
+			// Prepare for broadcast quotes
+			ostringstream timeStream;
+			boost::posix_time::time_facet* const timeFormat = new boost::posix_time::time_facet("%H:%M:%S");
+			timeStream.imbue(std::locale(timeStream.getloc(), timeFormat));
+
+			boost::array<char, 1024> send_buf;
+			//strcpy_s(send_buf.c_array(), 20, "test string to send");
+
+			CThostFtdcDepthMarketDataField mktDataField;
+			memset(&mktDataField, 0, sizeof(mktDataField));
+			strcpy_s(mktDataField.InstrumentID, options.getSymbol().c_str());
+			strcpy_s(mktDataField.TradingDay, options.getDate().c_str());
+
+			int millisec = 500 / options.getRate();
+			boost::posix_time::millisec interval(millisec);
+
 			while (!f.eof())
 			{
 				f.getline(buf, HIST_LINE_MAX_LENGTH);
@@ -67,55 +83,34 @@ int main(int argc, char* argv[])
 				bool succ = ParseLine(buf, &timestamp, &millisec, &last, &ask, &bid);
 				if (succ)
 				{
-					
+					if (options.AfterFromTime(timestamp))
+					{
+						strcpy_s(mktDataField.UpdateTime, timestamp.c_str());
+						mktDataField.UpdateMillisec = millisec;
+
+						mktDataField.LastPrice = last;
+						mktDataField.AskPrice1 = ask;
+						mktDataField.BidPrice1 = bid;
+
+						send_buf.fill('\0');
+						memcpy(send_buf.c_array(), &mktDataField, sizeof(mktDataField));
+
+						socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);
+						std::cout << mktDataField.InstrumentID << "\t " << mktDataField.LastPrice << "\t " << mktDataField.UpdateTime << " " << mktDataField.UpdateMillisec << std::endl;
+
+						boost::this_thread::sleep(interval);
+					}
 				}
+				else
+				{
+					std::cout << "Failed to parse line: " << buf << std::endl;
+					return -3;
+				}
+				
 			}
 		}
-		ostringstream timeStream;
-		boost::posix_time::time_facet* const timeFormat = new boost::posix_time::time_facet("%H:%M:%S");
-		timeStream.imbue(std::locale(timeStream.getloc(), timeFormat));
 
-		boost::array<char, 1024> send_buf;
-		//strcpy_s(send_buf.c_array(), 20, "test string to send");
-
-
-
-		CThostFtdcDepthMarketDataField mktDataField;
-		memset(&mktDataField, 0, sizeof(mktDataField));
-
-		strcpy_s(mktDataField.InstrumentID, "IF1502");
-
-		for (int i = 0; i < 6000; ++i)
-		{
-			mktDataField.LastPrice = 3200;
-			mktDataField.AskPrice1 = 3201;
-			mktDataField.BidPrice1 = 3200;
-
-			const boost::posix_time::ptime now = boost::posix_time::second_clock::local_time();
-			timeStream << now;
-			string timeText = timeStream.str();
-			strcpy_s(mktDataField.UpdateTime, timeText.c_str());
-			timeStream.str("");
-			timeStream.clear();
-
-			send_buf.fill('\0');
-			memcpy(send_buf.c_array(), &mktDataField, sizeof(mktDataField));
-
-			socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);
-			std::cout << "Sent " << i << ": " << timeText << std::endl;
-			boost::this_thread::sleep(boost::posix_time::seconds(1));
-		}
-
-		/*
-		boost::array<char, 128> recv_buf;
-		udp::endpoint sender_endpoint;
-		size_t len = socket.receive_from(
-		boost::asio::buffer(recv_buf), sender_endpoint);
-
-		std::cout.write(recv_buf.data(), len);
-		*/
-
-		std::cout << "Send All Done" << std::endl;
+		std::cout << "Done broadcasting quote for " << options.getSymbol() << " " << options.getDate() << std::endl;
 	}
 	catch (std::exception& e)
 	{

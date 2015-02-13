@@ -8,6 +8,7 @@
 namespace po = boost::program_options;
 
 COptionReader::COptionReader()
+	: m_rate("1")
 {
 }
 
@@ -23,12 +24,12 @@ bool COptionReader::Load(int argc, char* argv[])
 		// allowed only on command line
 		po::options_description generic("Startup options");
 		generic.add_options()
-			("date,d", po::value<string>(&m_date),
-			"Specify trading date")
-			("symbol,s", po::value<string>(&m_symbol),
-			"Specify symbol which quotes will be broadcasted")
-			("port,p", po::value<string>(&m_port),
-			"Specify port to broadcast udp packets");
+			("date,d", po::value<string>(&m_date), "Trading date")
+			("symbol,s", po::value<string>(&m_symbol), "Symbol which quotes will be broadcasted")
+			("port,p", po::value<string>(&m_port), "Port to broadcast udp packets")
+			("rate,r", po::value<string>(&m_rate)->default_value("1"), "Playback rate")
+			("from,f", po::value<string>(&m_fromTime), "Timestamp(hh:mm:ss) from when to playback")
+			;
 
 		po::options_description cmdline_options;
 		cmdline_options.add(generic);
@@ -55,4 +56,19 @@ bool COptionReader::Load(int argc, char* argv[])
 int COptionReader::getPort()
 {
 	return boost::lexical_cast<int>(m_port.c_str());
+}
+
+int COptionReader::getRate()
+{
+	return boost::lexical_cast<int>(m_rate.c_str());
+}
+
+bool COptionReader::AfterFromTime(const string& timestamp)
+{
+	if (!m_fromTime.empty())
+	{
+		return m_fromTime.compare(timestamp) < 0;
+	}
+
+	return true;
 }
