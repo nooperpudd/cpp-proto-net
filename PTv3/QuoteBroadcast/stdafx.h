@@ -11,6 +11,9 @@
 #include <tchar.h>
 #include <iostream>
 #include <string>
+#include <vector>
+
+#include <boost/shared_ptr.hpp>
 
 using namespace std;
 

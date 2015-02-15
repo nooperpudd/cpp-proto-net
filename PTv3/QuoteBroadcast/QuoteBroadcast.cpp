@@ -4,22 +4,18 @@
 #include "stdafx.h"
 
 #include "OptionReader.h"
+#include "TickDataReader.h"
 
 #include <sstream>
 #include <boost/array.hpp>
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 #include <boost/date_time.hpp>
-#include <boost/format.hpp>
-#include <boost/filesystem.hpp>
+
 
 #include "../PTStation/ThostTraderApi/ThostFtdcUserApiStruct.h"
 
 using boost::asio::ip::udp;
-using namespace std;
-using namespace boost::filesystem;
-
-#define HIST_LINE_MAX_LENGTH 256
 
 bool ParseLine(char* pBuf, string* timestamp, int* millisec, double* last, double* ask, double* bid);
 
@@ -32,17 +28,16 @@ int main(int argc, char* argv[])
 		if (!succ)
 			return -1;
 
-		string tickFilePath = boost::str(boost::format("TickData/%s_%s.csv") 
-			% options.getSymbol() % options.getDate());
-
-		cout << "Checking tick historical data file ...";
-		path today(tickFilePath);
-		if (!exists(today))
+		vector<TickDataReaderPtr> tickDataReaders;
+		const vector<string>& symbolList = options.getSymbolList();
+		for (vector<string>::const_iterator iter = symbolList.begin(); iter != symbolList.end(); ++iter)
 		{
-			cout << "   Not found!" << endl;
-			return -2;
+			TickDataReaderPtr reader(new CTickDataReader);
+			reader->Open(*iter, options.getDate());
+			tickDataReaders.push_back(reader);
 		}
-		cout << "   OK" << endl;
+
+		
 		int port = options.getPort();
 		cout << "Begin broadcasting quote to " << port << endl;
 
@@ -53,64 +48,32 @@ int main(int argc, char* argv[])
 
 		udp::endpoint receiver_endpoint(boost::asio::ip::address_v4::broadcast(), port);
 
-		char buf[HIST_LINE_MAX_LENGTH];
-		ifstream f(tickFilePath.c_str());
-		if (f.good())
+		boost::array<char, 1024> send_buf;
+		int millisec = 500 / options.getRate();
+		boost::posix_time::millisec interval(millisec);
+
+		bool broadcasting = true;
+		while (broadcasting)
 		{
-			// Prepare for broadcast quotes
-			ostringstream timeStream;
-			boost::posix_time::time_facet* const timeFormat = new boost::posix_time::time_facet("%H:%M:%S");
-			timeStream.imbue(std::locale(timeStream.getloc(), timeFormat));
-
-			boost::array<char, 1024> send_buf;
-			//strcpy_s(send_buf.c_array(), 20, "test string to send");
-
-			CThostFtdcDepthMarketDataField mktDataField;
-			memset(&mktDataField, 0, sizeof(mktDataField));
-			strcpy_s(mktDataField.InstrumentID, options.getSymbol().c_str());
-			strcpy_s(mktDataField.TradingDay, options.getDate().c_str());
-
-			int millisec = 500 / options.getRate();
-			boost::posix_time::millisec interval(millisec);
-
-			while (!f.eof())
+			for (vector<TickDataReaderPtr>::iterator iter = tickDataReaders.begin();
+				iter != tickDataReaders.end(); ++iter)
 			{
-				f.getline(buf, HIST_LINE_MAX_LENGTH);
-
-				string timestamp;
-				int millisec;
-				double last, ask, bid;
-				bool succ = ParseLine(buf, &timestamp, &millisec, &last, &ask, &bid);
-				if (succ)
+				CThostFtdcDepthMarketDataField* pMktDataField = NULL;
+				broadcasting = (*iter)->Read(&pMktDataField, &options);
+				if (broadcasting)
 				{
-					if (options.AfterFromTime(timestamp))
-					{
-						strcpy_s(mktDataField.UpdateTime, timestamp.c_str());
-						mktDataField.UpdateMillisec = millisec;
+					send_buf.fill('\0');
+					memcpy(send_buf.c_array(), pMktDataField, sizeof(CThostFtdcDepthMarketDataField));
 
-						mktDataField.LastPrice = last;
-						mktDataField.AskPrice1 = ask;
-						mktDataField.BidPrice1 = bid;
-
-						send_buf.fill('\0');
-						memcpy(send_buf.c_array(), &mktDataField, sizeof(mktDataField));
-
-						socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);
-						std::cout << mktDataField.InstrumentID << "\t " << mktDataField.LastPrice << "\t " << mktDataField.UpdateTime << " " << mktDataField.UpdateMillisec << std::endl;
-
-						boost::this_thread::sleep(interval);
-					}
+					socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);
+					std::cout << pMktDataField->InstrumentID << "\t " << pMktDataField->LastPrice << "\t " << pMktDataField->UpdateTime << " " << pMktDataField->UpdateMillisec << std::endl;
 				}
-				else
-				{
-					std::cout << "Failed to parse line: " << buf << std::endl;
-					return -3;
-				}
-				
 			}
+
+			boost::this_thread::sleep(interval);
 		}
 
-		std::cout << "Done broadcasting quote for " << options.getSymbol() << " " << options.getDate() << std::endl;
+		std::cout << "Done broadcasting quote for " << options.getSymbols() << " " << options.getDate() << std::endl;
 	}
 	catch (std::exception& e)
 	{
@@ -120,17 +83,3 @@ int main(int argc, char* argv[])
 	return 0;
 }
 
-bool ParseLine(char* pBuf, string* timestamp, int* millisec, double* last, double* ask, double* bid)
-{
-	static int h, m, s, ms;
-	static char date[12];
-	static int vol;
-	static int position;
-	static double close;
-
-	int got = sscanf(pBuf, "%s %d:%d:%d.%d,%lf,%lf,%lf,%lf,%d,%d", 
-		date, &h, &m, &s, &ms, last, ask, bid, &close, &vol, &position);
-	*timestamp = boost::str(boost::format("%02d:%02d:%02d") % h % m % s);
-	*millisec = ms < 500 ? 0 : 500;
-	return got == 11;
-}

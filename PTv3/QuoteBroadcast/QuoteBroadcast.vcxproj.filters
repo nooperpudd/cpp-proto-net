@@ -27,6 +27,9 @@
     <ClInclude Include="OptionReader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TickDataReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -36,6 +39,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="OptionReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TickDataReader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

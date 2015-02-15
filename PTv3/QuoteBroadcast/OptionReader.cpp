@@ -4,6 +4,7 @@
 #include <boost/date_time.hpp>
 #include <boost/program_options.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace po = boost::program_options;
 
@@ -25,7 +26,7 @@ bool COptionReader::Load(int argc, char* argv[])
 		po::options_description generic("Startup options");
 		generic.add_options()
 			("date,d", po::value<string>(&m_date), "Trading date")
-			("symbol,s", po::value<string>(&m_symbol), "Symbol which quotes will be broadcasted")
+			("symbol,s", po::value<string>(&m_symbols), "Symbol which quotes will be broadcasted")
 			("port,p", po::value<string>(&m_port), "Port to broadcast udp packets")
 			("rate,r", po::value<string>(&m_rate)->default_value("1"), "Playback rate")
 			("from,f", po::value<string>(&m_fromTime), "Timestamp(hh:mm:ss) from when to playback")
@@ -38,8 +39,10 @@ bool COptionReader::Load(int argc, char* argv[])
 		po::store(po::parse_command_line(argc, argv, cmdline_options), vm);
 		po::notify(vm);
 
+		boost::split(m_symbolList, m_symbols, boost::is_any_of(","));
+		
 		if (m_date.length() > 0
-			&& m_symbol.length() > 0
+			&& m_symbolList.size() > 0
 			&& m_port.length() > 0)
 			return true;
 	}
