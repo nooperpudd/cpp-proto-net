@@ -12,12 +12,26 @@
 #include <boost/thread.hpp>
 #include <boost/date_time.hpp>
 
-
 #include "../PTStation/ThostTraderApi/ThostFtdcUserApiStruct.h"
 
 using boost::asio::ip::udp;
 
-bool ParseLine(char* pBuf, string* timestamp, int* millisec, double* last, double* ask, double* bid);
+boost::chrono::steady_clock::time_point GetTimepointFromString(const string& timeString, int millisec)
+{
+	int hh, mm, ss;
+	int got = sscanf(timeString.c_str(), "%d:%d:%d", &hh, &mm, &ss);
+	if (got == 3)
+	{
+		boost::chrono::steady_clock::duration d =
+			boost::chrono::hours(hh)
+			+ boost::chrono::minutes(mm)
+			+ boost::chrono::seconds(ss)
+			+ boost::chrono::milliseconds(millisec);
+		return boost::chrono::steady_clock::time_point(d);
+	}
+
+	return boost::chrono::steady_clock::time_point();
+}
 
 int main(int argc, char* argv[])
 {
@@ -52,15 +66,21 @@ int main(int argc, char* argv[])
 		int millisec = 500 / options.getRate();
 		boost::posix_time::millisec interval(millisec);
 
+		boost::chrono::steady_clock::time_point expected = 
+			options.getFromTime().empty() ?
+				GetTimepointFromString("9:15:00") : 
+				GetTimepointFromString(options.getFromTime());
+
 		bool broadcasting = true;
 		while (broadcasting)
 		{
+			int eof = 0;
 			for (vector<TickDataReaderPtr>::iterator iter = tickDataReaders.begin();
 				iter != tickDataReaders.end(); ++iter)
 			{
 				CThostFtdcDepthMarketDataField* pMktDataField = NULL;
-				broadcasting = (*iter)->Read(&pMktDataField, &options);
-				if (broadcasting)
+				READ_TICK_STATUS status = (*iter)->Read(expected, &pMktDataField);
+				if (status == DATA_READY)
 				{
 					send_buf.fill('\0');
 					memcpy(send_buf.c_array(), pMktDataField, sizeof(CThostFtdcDepthMarketDataField));
@@ -68,8 +88,20 @@ int main(int argc, char* argv[])
 					socket.send_to(boost::asio::buffer(send_buf), receiver_endpoint);
 					std::cout << pMktDataField->InstrumentID << "\t " << pMktDataField->LastPrice << "\t " << pMktDataField->UpdateTime << " " << pMktDataField->UpdateMillisec << std::endl;
 				}
+				else if (status == DATA_NOT_AVAIL_FOR_TICK)
+				{
+					std::cout << "No tick data for " << (*iter)->Symbol() << std::endl;
+				}
+				else // EOF
+				{
+					eof += 1;
+				}
 			}
+			
+			if (eof == tickDataReaders.size())
+				break;
 
+			expected += boost::chrono::milliseconds(500);
 			boost::this_thread::sleep(interval);
 		}
 

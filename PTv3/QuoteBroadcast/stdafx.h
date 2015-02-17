@@ -14,9 +14,10 @@
 #include <vector>
 
 #include <boost/shared_ptr.hpp>
+#include <boost/chrono.hpp>
 
 using namespace std;
 
-
+boost::chrono::steady_clock::time_point GetTimepointFromString(const string& timeString, int millisec = 0);
 
 // TODO: reference additional headers your program requires here

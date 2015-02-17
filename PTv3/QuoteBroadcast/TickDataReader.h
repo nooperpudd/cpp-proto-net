@@ -8,7 +8,12 @@
 
 using namespace boost::filesystem;
 
-class COptionReader;
+enum READ_TICK_STATUS
+{
+	DATA_READY = 0,
+	DATA_NOT_AVAIL_FOR_TICK = -1,
+	END_OF_FILE = -2
+};
 
 class CTickDataReader
 {
@@ -17,8 +22,8 @@ public:
 	~CTickDataReader();
 
 	bool Open(const string& sybmol, const string& date);
-
-	bool Read(CThostFtdcDepthMarketDataField** pOutMarketData, COptionReader* pOptions = NULL);
+	const char* Symbol(){ return mktDataField.InstrumentID; }
+	READ_TICK_STATUS Read(boost::chrono::steady_clock::time_point expected, CThostFtdcDepthMarketDataField** pOutMarketData);
 
 private:
 
@@ -28,6 +33,7 @@ private:
 	char m_buf[HIST_LINE_MAX_LENGTH];
 
 	CThostFtdcDepthMarketDataField mktDataField;
+	boost::chrono::steady_clock::time_point m_tpTimestamp;
 
 	// for ParseLine
 	int h, m, s, ms;

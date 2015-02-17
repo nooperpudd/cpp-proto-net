@@ -12,6 +12,7 @@ public:
 	const vector<string>& getSymbolList() { return m_symbolList; }
 	int getPort();
 	int getRate();
+	const string& getFromTime(){ return m_fromTime; }
 	bool AfterFromTime(const string& timestamp);
 
 private:
