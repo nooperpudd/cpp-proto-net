@@ -2,6 +2,9 @@
 #include "AvatarClient.h"
 #include "ProtobufPacket.h"
 #include "ProtocolIDs.h"
+#include "globalmembers.h"
+
+const int WAIT_CURRENT_SENDING_DONE_MILLISEC = 300;
 
 CAvatarClient::CAvatarClient(const string& sessionId)
 	: m_sessionId(sessionId)
@@ -17,13 +20,21 @@ CAvatarClient::CAvatarClient(const string& sessionId)
 	m_orderProcessor.Initialize(this, &m_tradeAgent);
 }
 
-
 CAvatarClient::~CAvatarClient(void)
 {
+	m_orderProcessor.ReleaseAvatar();
 	m_portfolioMgr.Clear();
-	m_quoteRepositry.Init(NULL); // detach QuoteAgent
-	m_quoteAgent.SetCallbackHanlder(NULL);
-	m_destroyed = true;
+
+	// wait 300 milliseconds for current sending done
+	LOG_DEBUG(logger, boost::str(boost::format("Avatar %s waits %d milliseconds before destruction") 
+		% m_investorId % WAIT_CURRENT_SENDING_DONE_MILLISEC));
+	boost::this_thread::sleep_for(boost::chrono::milliseconds(WAIT_CURRENT_SENDING_DONE_MILLISEC));
+	{
+		boost::mutex::scoped_lock l(m_mutConnection);
+		m_quoteRepositry.Init(NULL); // detach QuoteAgent
+		m_quoteAgent.SetCallbackHanlder(NULL);
+		m_destroyed = true;
+	}
 }
 
 boost::tuple<bool, string> CAvatarClient::TradeLogin(const string& address, const string& brokerId, const string& investorId, const string& userId, const string& password)
@@ -93,5 +104,18 @@ void CAvatarClient::PublishTradeUpdate( trade::Trade* pTrade )
 void CAvatarClient::PublishPositionDetail( trade::PositionDetailInfo* pPosiDetailInfo )
 {
 
+}
+
+void CAvatarClient::UnderlyingPushPacket(OutgoingPacket* pPacket)
+{
+	boost::mutex::scoped_lock l(m_mutConnection);
+	if (!IsInactive())
+	{
+		SendResult res = PushPacket(pPacket);
+		if (res == SendResult_NotOK)
+		{
+			logger.Warning(boost::str(boost::format("Error sending packet for Avatar %s") % m_investorId));
+		}
+	}
 }
 

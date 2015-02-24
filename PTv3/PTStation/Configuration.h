@@ -3,13 +3,13 @@
 #ifndef USE_FEMAS_API
 
 #ifdef USE_ZEUSING_API
-#define APP_VERSION "4.4.2 for Zeusing"
+#define APP_VERSION "4.4.3 for Zeusing"
 #else
-#define APP_VERSION "4.4.2"
+#define APP_VERSION "4.4.3"
 #endif
 
 #else
-#define APP_VERSION "4.4.2 for Femas"
+#define APP_VERSION "4.4.3 for Femas"
 #endif
 
 class CConfiguration

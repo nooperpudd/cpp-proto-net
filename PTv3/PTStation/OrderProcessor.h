@@ -34,6 +34,7 @@ public:
 	~COrderProcessor(void);
 
 	void Initialize(CAvatarClient* pClientAgent, CTradeAgent* pTradeAgent);
+	void ReleaseAvatar(){ m_pClientAgent = NULL; }
 
 	void AddOrderPlacer(CPortfolioOrderPlacer* pOrdPlacer);
 	void RemoveOrderPlacer(const string& placerId /* order ref*/);

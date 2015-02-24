@@ -11,3 +11,7 @@
 /PTv3/QuoteBroadcast/Debug
 /PTv3/QuoteBroadcast/*.filters
 /PTv3/QuoteBroadcast/*.user
+/PTv3/PTStation/Release/PTStationFM
+/PTv3/PTStation/Release/PTStationZeus
+/PTv3/quote-broadcast
+/PTv3/PTCommunication/Release

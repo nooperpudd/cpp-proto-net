@@ -42,6 +42,7 @@ public:
 
 	// properties
 	CAvatarClient* ParentAvatar(){ return m_avatar; }
+	void ReleaseAvatar(){ m_avatar = NULL; }
 	const string& ID(){ return m_portfolioItem.id(); }
 	int Quantity(){ return m_portfolioItem.quantity(); }
 	int Count(){ return m_legs.size(); }

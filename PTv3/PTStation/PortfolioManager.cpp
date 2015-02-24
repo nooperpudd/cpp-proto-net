@@ -32,3 +32,14 @@ CPortfolio* CPortfolioManager::Get( const string& portfolioId )
 
 	return NULL;
 }
+
+void CPortfolioManager::Clear()
+{
+	for (std::vector<PortfolioPtr>::iterator iter = m_portfolios.begin();
+		iter != m_portfolios.end(); ++iter)
+	{
+		(*iter)->ReleaseAvatar();
+	}
+
+	m_portfolios.clear();
+}

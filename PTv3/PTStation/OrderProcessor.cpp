@@ -67,7 +67,6 @@ m_bIsSubmitting(false)
 	memset(&m_orderRefBuf, 0, sizeof(m_orderRefBuf));
 }
 
-
 COrderProcessor::~COrderProcessor(void)
 {
 	m_condQryAcct.notify_one();
@@ -231,22 +230,26 @@ int COrderProcessor::GenerateOrderRef( string& outOrdRef )
 
 void COrderProcessor::PublishMultiLegOrderUpdate( trade::MultiLegOrder* pOrder )
 {
-	m_pClientAgent->PublishMultiLegOrderUpdate(pOrder);
+	if (m_pClientAgent != NULL)
+		m_pClientAgent->PublishMultiLegOrderUpdate(pOrder);
 }
 
 void COrderProcessor::PublishOrderUpdate( const string& portfId, const string& mlOrderId, trade::Order* legOrd )
 {
-	m_pClientAgent->PublishLegOrderUpdate(portfId, mlOrderId, legOrd);
+	if (m_pClientAgent != NULL)
+		m_pClientAgent->PublishLegOrderUpdate(portfId, mlOrderId, legOrd);
 }
 
 void COrderProcessor::PublishTradeUpdate( trade::Trade* pTrade )
 {
-	m_pClientAgent->PublishTradeUpdate(pTrade);
+	if (m_pClientAgent != NULL)
+		m_pClientAgent->PublishTradeUpdate(pTrade);
 }
 
 void COrderProcessor::PublishPositionDetail( trade::PositionDetailInfo* pPosiDetailInfo )
 {
-	m_pClientAgent->PublishPositionDetail(pPosiDetailInfo);
+	if (m_pClientAgent != NULL)
+		m_pClientAgent->PublishPositionDetail(pPosiDetailInfo);
 }
 
 void COrderProcessor::Initialize( CAvatarClient* pClientAgent, CTradeAgent* pTradeAgent )

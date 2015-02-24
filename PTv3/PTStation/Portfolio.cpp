@@ -122,6 +122,7 @@ CPortfolio::CPortfolio(CAvatarClient* client, const entity::PortfolioItem& srcPo
 
 CPortfolio::~CPortfolio(void)
 {
+	ReleaseAvatar();
 	Cleanup();
 }
 
@@ -314,7 +315,8 @@ void CPortfolio::RemovePosition(const trade::MultiLegOrder& closeOrder, int actu
 
 void CPortfolio::PushUpdate()
 {
-	m_avatar->PublishPortfolioUpdate(m_portfolioUpdate);
+	if (m_avatar != NULL)
+		m_avatar->PublishPortfolioUpdate(m_portfolioUpdate);
 }
 
 void CPortfolio::StartStrategy(int lastOrderId)
@@ -353,7 +355,7 @@ void CPortfolio::EnableTrigger( int triggerIdx, bool enabled )
 
 const string& CPortfolio::InvestorId()
 {
-	return m_avatar->Pseudo();
+	return m_avatar != NULL ? m_avatar->Pseudo() : "Unknown InvestorId";
 }
 
 void CPortfolio::InitOpenCancelLimit( const entity::PortfolioItem &srcPortfolioItem )

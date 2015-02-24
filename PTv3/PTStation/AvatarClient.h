@@ -52,11 +52,7 @@ public:
 
 private:
 
-	void UnderlyingPushPacket(OutgoingPacket* pPacket)
-	{
-		if(!IsInactive())
-			TryPushPacket(pPacket);
-	}
+	void UnderlyingPushPacket(OutgoingPacket* pPacket);
 
 	string				m_sessionId;
 	string				m_investorId;
@@ -68,6 +64,8 @@ private:
 	CQuoteAgentFacade	m_quoteAgent;
 	CPortfolioManager	m_portfolioMgr;
 	COrderProcessor		m_orderProcessor;
+
+	boost::mutex		m_mutConnection;
 	
 	bool m_tradeLogged;
 	bool m_quoteLogged;
