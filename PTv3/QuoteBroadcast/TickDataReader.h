@@ -2,7 +2,7 @@
 
 #include <boost/filesystem.hpp>
 
-#include "../PTStation/ThostTraderApi/ThostFtdcUserApiStruct.h"
+#include "ThostFtdcUserApiStruct.h"
 
 #define HIST_LINE_MAX_LENGTH 256
 
@@ -29,7 +29,7 @@ private:
 
 	bool ParseLine(char* pBuf, string* timestamp, int* millisec, double* last, double* ask, double* bid);
 
-	ifstream m_tickDataFile;
+	std::ifstream m_tickDataFile;
 	char m_buf[HIST_LINE_MAX_LENGTH];
 
 	CThostFtdcDepthMarketDataField mktDataField;

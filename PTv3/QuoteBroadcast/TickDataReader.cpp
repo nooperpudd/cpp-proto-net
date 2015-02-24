@@ -4,6 +4,10 @@
 
 #define TICK_DATA_DIRECTORY "TickData"
 
+#ifndef WIN32
+#define strcpy_s strcpy
+#endif
+
 CTickDataReader::CTickDataReader()
 {
 	memset(&mktDataField, 0, sizeof(mktDataField));
@@ -28,7 +32,7 @@ bool CTickDataReader::Open(const string& sybmol, const string& date)
 	}
 	cout << "   OK" << endl;
 
-	m_tickDataFile.open(tickFilePath);
+	m_tickDataFile.open(tickFilePath.c_str());
 
 	strcpy_s(mktDataField.InstrumentID, sybmol.c_str());
 	strcpy_s(mktDataField.TradingDay, date.c_str());

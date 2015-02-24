@@ -133,6 +133,10 @@ boost::tuple<bool, string> CTradeAgent::Login(const string& frontAddr, const str
 
 		logger.Info(boost::str(boost::format("Try to connect trade server (%s) ...") % frontAddr));
 
+#ifdef FAKE_LOGIN
+		return boost::make_tuple(true, m_loginErr);
+#endif
+
 		// wait for connected event
 		{
 			boost::unique_lock<boost::mutex> lock(m_mutConnecting);

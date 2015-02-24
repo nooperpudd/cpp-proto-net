@@ -148,11 +148,9 @@ void CQuoteStore::GetQuote( entity::Quote* outQuote )
 	outQuote->set_ask_5(m_cachedQuoteData.AskPrice5);
 	outQuote->set_ask_size_5(m_cachedQuoteData.AskVolume5);
 	*/
-#ifndef USE_FEMAS_API
 	outQuote->set_exchange_id(m_cachedQuoteData.ExchangeID);
 	outQuote->set_exchange_symbol_id(m_cachedQuoteData.ExchangeInstID);
 	outQuote->set_average_price(m_cachedQuoteData.AveragePrice);
-#endif
 	
 }
 

@@ -12,8 +12,6 @@
 #include <boost/thread.hpp>
 #include <boost/date_time.hpp>
 
-#include "../PTStation/ThostTraderApi/ThostFtdcUserApiStruct.h"
-
 using boost::asio::ip::udp;
 
 boost::chrono::steady_clock::time_point GetTimepointFromString(const string& timeString, int millisec)

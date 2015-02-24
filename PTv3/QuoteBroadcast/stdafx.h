@@ -5,10 +5,10 @@
 
 #pragma once
 
+#ifdef WIN32
 #include "targetver.h"
-
+#endif
 #include <stdio.h>
-#include <tchar.h>
 #include <iostream>
 #include <string>
 #include <vector>
