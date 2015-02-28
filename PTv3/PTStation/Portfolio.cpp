@@ -257,9 +257,10 @@ void CPortfolio::OnQuoteRecevied( boost::chrono::steady_clock::time_point& times
 	cout << "Quote incoming: " << pQuote->symbol() << ", " << pQuote->last() << ", " << pQuote->update_time() << endl; 
 #endif
 	*/
+#ifdef LOG_FOR_TECH_CALC
 	LOG_DEBUG(logger, boost::str(boost::format("Portfolio %s received quote %s, %.2f, %s %d")
 		% ID() % pQuote->symbol() % pQuote->last() % pQuote->update_time() % pQuote->update_millisec()));
-
+#endif
 	CheckForStart(pQuote->update_time());
 
 	// Update leg's last with income quote in CStrategy::Test
@@ -353,9 +354,10 @@ void CPortfolio::EnableTrigger( int triggerIdx, bool enabled )
 	m_strategy->Triggers().at(triggerIdx)->Enable(enabled);
 }
 
+const string UnknownInvestorId = "Unknown InvestorId";
 const string& CPortfolio::InvestorId()
 {
-	return m_avatar != NULL ? m_avatar->Pseudo() : "Unknown InvestorId";
+	return m_avatar != NULL ? m_avatar->Pseudo() : UnknownInvestorId;
 }
 
 void CPortfolio::InitOpenCancelLimit( const entity::PortfolioItem &srcPortfolioItem )
