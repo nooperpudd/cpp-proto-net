@@ -8,10 +8,14 @@
 #include "entity/message.pb.h"
 
 #ifndef USE_FEMAS_API
+#ifdef USE_ZEUSING_API
+#include "TradeAgent_Zeus.h"
+#else
 #include "TradeAgent.h"
+#endif
 #else
 #include "TradeAgent_FM.h"
-#endif // !USE_FEMAS_API
+#endif
 
 
 #include <boost/date_time.hpp>
@@ -48,11 +52,7 @@ public:
 
 private:
 
-	void UnderlyingPushPacket(OutgoingPacket* pPacket)
-	{
-		if(!IsInactive())
-			TryPushPacket(pPacket);
-	}
+	void UnderlyingPushPacket(OutgoingPacket* pPacket);
 
 	string				m_sessionId;
 	string				m_investorId;
@@ -64,6 +64,8 @@ private:
 	CQuoteAgentFacade	m_quoteAgent;
 	CPortfolioManager	m_portfolioMgr;
 	COrderProcessor		m_orderProcessor;
+
+	boost::mutex		m_mutConnection;
 	
 	bool m_tradeLogged;
 	bool m_quoteLogged;

@@ -763,6 +763,8 @@ message InputOrderAction
 	required string	UserID = 13;
 	///合约代码
 	required string	InstrumentID = 14;
+	///买卖方向
+	required TradeDirectionType	Direction = 15;
 }
 
 enum SubmitReason

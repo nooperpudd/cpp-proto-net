@@ -9,10 +9,16 @@
 #include "BuildOrderException.h"
 
 #ifndef USE_FEMAS_API
+
+#ifdef USE_ZEUSING_API
+#include "InputOrder_Zeus.h"
+#else
 #include "InputOrder.h"
+#endif
+
 #else
 #include "InputOrder_FM.h"
-#endif // !USE_FEMAS_API
+#endif
 
 #include <boost/date_time.hpp>
 
@@ -711,7 +717,7 @@ void CPortfolioOrderPlacer::OnCanceling()
 	
 	m_pOrderProcessor->CancelOrder(m_activeOrdPlacer->OrderRef(), 
 		m_activeOrdPlacer->ExchId(), m_activeOrdPlacer->OrderSysId(), 
-		m_activeOrdPlacer->UserId(), m_activeOrdPlacer->Symbol());
+		m_activeOrdPlacer->UserId(), m_activeOrdPlacer->Symbol(), m_activeOrdPlacer->Direction());
 }
 
 void CPortfolioOrderPlacer::OnLegCanceled(const RtnOrderWrapperPtr& pRtnOrder )

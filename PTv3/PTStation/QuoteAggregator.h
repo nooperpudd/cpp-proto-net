@@ -1,35 +1,18 @@
 #pragma once
 #include "ShmQuoteSubscribe.h"
 #include "ShmQuoteFeed.h"
+#include "QuoteTimestamp.h"
 
 #include "ThostTraderApi/ThostFtdcMdApi.h"
 #ifdef USE_FEMAS_API
 #include "FemasAPI/USTPFtdcMduserApi.h"
 #endif
 
-#include <boost/unordered_map.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread.hpp>
-#include <boost/chrono.hpp>
 
 typedef boost::function<void(char** symbolArr, int symCount)> OnSubscribeQuoteFunc;
 typedef boost::function<void(void)> OnQuotingEndFunc;
-
-class QuoteTimestamp
-{
-public:
-	QuoteTimestamp(const char* updateTime, int milliseconds)
-		: UpdateTime(updateTime), MilliSeconds(milliseconds)
-	{}
-
-	string UpdateTime;
-	int	MilliSeconds;
-	boost::chrono::steady_clock::time_point LastTime;
-};
-
-typedef boost::shared_ptr<QuoteTimestamp> TimestampPtr;
-typedef boost::unordered_map<string, TimestampPtr> QuoteTimestampMap;
-typedef QuoteTimestampMap::iterator QuoteTimestampMapIter;
 
 class CQuoteAggregator
 {

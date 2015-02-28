@@ -90,9 +90,21 @@
         <Name>国泰仿真</Name>
         <Trading>
           <item>117.184.207.110:17131</item>
+          <item>117.184.207.108:6666</item>
         </Trading>
         <MarketData>
           <item>117.184.207.110:17101</item>
+          <item>udp://255.255.255.255:41115</item>
+        </MarketData>
+      </Server>
+      <Server>
+        <Name>中信</Name>
+        <Trading>
+          <item>172.31.76.74:44505</item>
+          <item>180.169.101.189:24505</item>
+        </Trading>
+        <MarketData>
+          <item>udp://255.255.255.255:28444</item>
         </MarketData>
       </Server>
 		</Servers>

@@ -54,7 +54,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;USE_NET_LIBS;LOG_FOR_TRADE;LOG_FOR_TECH_CALC;QUOTE_TIME_EMU;BOOST_ASIO_DISABLE_STD_CHRONO;USE_FEMAS_API;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;USE_NET_LIBS;LOG_FOR_TRADE;LOG_FOR_TECH_CALC;BOOST_ASIO_DISABLE_STD_CHRONO;USE_FEMAS_API;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>D:\Dev\boost_1_56_0;D:\Dev\log4cpp\include;D:\Dev\protobuf-2.5.0\src;D:\Dev\PushFramework_2.2.1\include;D:\Dev\ta-lib\ta-lib\c\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
@@ -85,7 +85,7 @@ copy /y FemasAPI\*.dll $(OutDir)</Command>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>D:\Dev\boost_1_56_0\stage\lib;D:\Dev\log4cpp\lib\vc120\release;D:\Dev\protobuf-2.5.0\lib\release;D:\Dev\PushFramework_2.2.1\lib\release;D:\Dev\ta-lib\ta-lib\c\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>libprotobuf.lib;log4cppLIB.lib;PushFramework.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>libprotobuf.lib;log4cppLIB.lib;PushFramework.lib;ws2_32.lib;ta_libc_cdr.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>copy /y log4cpp.property $(OutDir)
@@ -131,6 +131,7 @@ copy /y FemasAPI\*.dll $(OutDir)</Command>
     <ClInclude Include="PortfolioArbitrageOrderPlacer.h" />
     <ClInclude Include="QuoteAgentBase.h" />
     <ClInclude Include="QuoteAgentFacade.h" />
+    <ClInclude Include="QuoteTimestamp.h" />
     <ClInclude Include="QuoteUdpAgent.h" />
     <ClInclude Include="RangeTrendStrategy.h" />
     <ClInclude Include="RtnOrderWrapper_FM.h" />

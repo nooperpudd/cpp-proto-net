@@ -123,6 +123,7 @@ CPortfolio::CPortfolio(CAvatarClient* client, const entity::PortfolioItem& srcPo
 
 CPortfolio::~CPortfolio(void)
 {
+	ReleaseAvatar();
 	Cleanup();
 }
 
@@ -252,8 +253,14 @@ void CPortfolio::SubscribeQuotes( CQuoteRepositry* pQuoteRepo )
 
 void CPortfolio::OnQuoteRecevied( boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote )
 {
+	/*
 #ifdef _DEBUG
 	cout << "Quote incoming: " << pQuote->symbol() << ", " << pQuote->last() << ", " << pQuote->update_time() << endl; 
+#endif
+	*/
+#ifdef LOG_FOR_TECH_CALC
+	LOG_DEBUG(logger, boost::str(boost::format("Portfolio %s received quote %s, %.2f, %s %d")
+		% ID() % pQuote->symbol() % pQuote->last() % pQuote->update_time() % pQuote->update_millisec()));
 #endif
 	CheckForStart(pQuote->update_time());
 
@@ -310,7 +317,8 @@ void CPortfolio::RemovePosition(const trade::MultiLegOrder& closeOrder, int actu
 
 void CPortfolio::PushUpdate()
 {
-	m_avatar->PublishPortfolioUpdate(m_portfolioUpdate);
+	if (m_avatar != NULL)
+		m_avatar->PublishPortfolioUpdate(m_portfolioUpdate);
 }
 
 void CPortfolio::StartStrategy(int lastOrderId)
@@ -346,9 +354,10 @@ void CPortfolio::EnableTrigger( int triggerIdx, bool enabled )
 	m_strategy->Triggers().at(triggerIdx)->Enable(enabled);
 }
 
+const string UnknownInvestorId = "Unknown InvestorId";
 const string& CPortfolio::InvestorId()
 {
-	return m_avatar->Pseudo();
+	return m_avatar != NULL ? m_avatar->Pseudo() : UnknownInvestorId;
 }
 
 void CPortfolio::InitOpenCancelLimit( const entity::PortfolioItem &srcPortfolioItem )

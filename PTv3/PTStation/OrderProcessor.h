@@ -5,10 +5,16 @@
 #include "entity/quote.pb.h"
 
 #ifndef USE_FEMAS_API
+
+#ifdef USE_ZEUSING_API
+#include "RtnOrderWrapper_Zeus.h"
+#else
 #include "RtnOrderWrapper.h"
+#endif
+
 #else
 #include "RtnOrderWrapper_FM.h"
-#endif // !USE_FEMAS_API
+#endif
 
 #include <boost/tuple/tuple.hpp>
 #include <boost/unordered_map.hpp>
@@ -28,6 +34,7 @@ public:
 	~COrderProcessor(void);
 
 	void Initialize(CAvatarClient* pClientAgent, CTradeAgent* pTradeAgent);
+	void ReleaseAvatar(){ m_pClientAgent = NULL; }
 
 	void AddOrderPlacer(CPortfolioOrderPlacer* pOrdPlacer);
 	void RemoveOrderPlacer(const string& placerId /* order ref*/);
@@ -40,7 +47,8 @@ public:
 					 const string& exchId, 
 					 const string& ordSysId, 
 					 const string& userId,
-					 const string& symbol);
+					 const string& symbol,
+					 trade::TradeDirectionType direction);
 
 	boost::tuple<bool, string> PlaceOrder( const string& symbol, 
 										   trade::TradeDirectionType direction, 

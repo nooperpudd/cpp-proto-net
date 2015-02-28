@@ -8,14 +8,20 @@
 #include "PortfolioOrderPlacer.h"
 
 #ifndef USE_FEMAS_API
+
+#ifdef USE_ZEUSING_API
+#include "InputOrder_Zeus.h"
+#include "TradeAgent_Zeus.h"
+#else
 #include "InputOrder.h"
 #include "TradeAgent.h"
+#endif
 #define ORDER_REF_FORMAT "%12d"
 #else
 #include "InputOrder_FM.h"
 #include "TradeAgent_FM.h"
 #define ORDER_REF_FORMAT "%012d"
-#endif // !USE_FEMAS_API
+#endif
 
 #include <boost/date_time.hpp>
 
@@ -60,7 +66,6 @@ m_bIsSubmitting(false)
 {
 	memset(&m_orderRefBuf, 0, sizeof(m_orderRefBuf));
 }
-
 
 COrderProcessor::~COrderProcessor(void)
 {
@@ -131,7 +136,7 @@ void COrderProcessor::PrintOrderStatus( trade::Order* order )
 		% order->orderref().c_str() % GetSumbitStatusText(submitStatus) % GetStatusText(status)));
 }
 
-void COrderProcessor::CancelOrder(const std::string& ordRef, const std::string& exchId, const std::string& ordSysId, const std::string& userId, const std::string& symbol)
+void COrderProcessor::CancelOrder(const std::string& ordRef, const std::string& exchId, const std::string& ordSysId, const std::string& userId, const std::string& symbol, trade::TradeDirectionType direction)
 {
 	boost::shared_ptr<trade::InputOrderAction> orderAction(new trade::InputOrderAction);
 #ifdef USE_FEMAS_API
@@ -160,6 +165,8 @@ void COrderProcessor::CancelOrder(const std::string& ordRef, const std::string& 
 
 	///操作标志
 	orderAction->set_actionflag(trade::AF_Delete);	// Cancel order
+
+	orderAction->set_direction(direction);
 
 	///交易所代码
 	orderAction->set_exchangeid(exchId);
@@ -223,22 +230,26 @@ int COrderProcessor::GenerateOrderRef( string& outOrdRef )
 
 void COrderProcessor::PublishMultiLegOrderUpdate( trade::MultiLegOrder* pOrder )
 {
-	m_pClientAgent->PublishMultiLegOrderUpdate(pOrder);
+	if (m_pClientAgent != NULL)
+		m_pClientAgent->PublishMultiLegOrderUpdate(pOrder);
 }
 
 void COrderProcessor::PublishOrderUpdate( const string& portfId, const string& mlOrderId, trade::Order* legOrd )
 {
-	m_pClientAgent->PublishLegOrderUpdate(portfId, mlOrderId, legOrd);
+	if (m_pClientAgent != NULL)
+		m_pClientAgent->PublishLegOrderUpdate(portfId, mlOrderId, legOrd);
 }
 
 void COrderProcessor::PublishTradeUpdate( trade::Trade* pTrade )
 {
-	m_pClientAgent->PublishTradeUpdate(pTrade);
+	if (m_pClientAgent != NULL)
+		m_pClientAgent->PublishTradeUpdate(pTrade);
 }
 
 void COrderProcessor::PublishPositionDetail( trade::PositionDetailInfo* pPosiDetailInfo )
 {
-	m_pClientAgent->PublishPositionDetail(pPosiDetailInfo);
+	if (m_pClientAgent != NULL)
+		m_pClientAgent->PublishPositionDetail(pPosiDetailInfo);
 }
 
 void COrderProcessor::Initialize( CAvatarClient* pClientAgent, CTradeAgent* pTradeAgent )

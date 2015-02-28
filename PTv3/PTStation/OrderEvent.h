@@ -1,10 +1,16 @@
 #pragma once
 
 #ifndef USE_FEMAS_API
+
+#ifdef USE_ZEUSING_API
+#include "RtnOrderWrapper_Zeus.h"
+#else
 #include "RtnOrderWrapper.h"
+#endif
+
 #else
 #include "RtnOrderWrapper_FM.h"
-#endif // !USE_FEMAS_API
+#endif
 
 struct evtOrder
 {

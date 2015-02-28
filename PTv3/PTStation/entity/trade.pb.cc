@@ -361,7 +361,7 @@ void protobuf_AssignDesc_trade_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(Trade));
   InputOrderAction_descriptor_ = file->message_type(6);
-  static const int InputOrderAction_offsets_[14] = {
+  static const int InputOrderAction_offsets_[15] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InputOrderAction, brokerid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InputOrderAction, investorid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InputOrderAction, orderactionref_),
@@ -376,6 +376,7 @@ void protobuf_AssignDesc_trade_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InputOrderAction, volumechange_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InputOrderAction, userid_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InputOrderAction, instrumentid_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(InputOrderAction, direction_),
   };
   InputOrderAction_reflection_ =
     new ::google::protobuf::internal::GeneratedMessageReflection(
@@ -617,7 +618,7 @@ void protobuf_AddDesc_trade_2eproto() {
     "LocalID\030\027 \002(\t\022\026\n\016ClearingPartID\030\030 \002(\t\022\024\n"
     "\014BusinessUnit\030\031 \002(\t\022\022\n\nSequenceNo\030\032 \002(\005\022"
     "\022\n\nTradingDay\030\033 \002(\t\022\024\n\014SettlementID\030\034 \002("
-    "\005\022\026\n\016BrokerOrderSeq\030\035 \002(\005\"\274\002\n\020InputOrder"
+    "\005\022\026\n\016BrokerOrderSeq\030\035 \002(\005\"\352\002\n\020InputOrder"
     "Action\022\020\n\010BrokerID\030\001 \002(\t\022\022\n\nInvestorID\030\002"
     " \002(\t\022\026\n\016OrderActionRef\030\003 \002(\t\022\020\n\010OrderRef"
     "\030\004 \002(\t\022\021\n\tRequestID\030\005 \002(\005\022\017\n\007FrontID\030\006 \002"
@@ -625,82 +626,83 @@ void protobuf_AddDesc_trade_2eproto() {
     "\t\022\022\n\nOrderSysID\030\t \002(\t\022)\n\nActionFlag\030\n \002("
     "\0162\025.trade.ActionFlagType\022\022\n\nLimitPrice\030\013"
     " \002(\001\022\024\n\014VolumeChange\030\014 \002(\005\022\016\n\006UserID\030\r \002"
-    "(\t\022\024\n\014InstrumentID\030\016 \002(\t\"\371\001\n\rMultiLegOrd"
-    "er\022\017\n\007OrderId\030\001 \002(\t\022\023\n\013PortfolioId\030\002 \002(\t"
-    "\022\020\n\010Quantity\030\003 \002(\005\022\032\n\004Legs\030\004 \003(\0132\014.trade"
-    ".Order\022\023\n\013OpenOrderId\030\005 \002(\t\022\020\n\010OpenDate\030"
-    "\006 \002(\t\022#\n\006Reason\030\007 \002(\0162\023.trade.SubmitReas"
-    "on\022\017\n\007HasWarn\030\010 \002(\010\022\021\n\tStatusMsg\030\t \002(\t\022$"
-    "\n\006Offset\030\n \002(\0162\024.trade.MlOrderOffset*1\n\021"
-    "PosiDirectionType\022\007\n\003NET\0201\022\010\n\004LONG\0202\022\t\n\005"
-    "SHORT\0203*:\n\rHedgeFlagType\022\017\n\013SPECULATION\020"
-    "1\022\r\n\tARBITRAGE\0202\022\t\n\005HEDGE\0203*\221\003\n\022OrderPri"
-    "ceTypeType\022\r\n\tANY_PRICE\0201\022\017\n\013LIMIT_PRICE"
-    "\0202\022\016\n\nBEST_PRICE\0203\022\016\n\nLAST_PRICE\0204\022\035\n\031LA"
-    "ST_PRICE_PLUS_ONE_TICKS\0205\022\035\n\031LAST_PRICE_"
-    "PLUS_TWO_TICKS\0206\022\037\n\033LAST_PRICE_PLUS_THRE"
-    "E_TICKS\0207\022\016\n\nASK_PRICE1\0208\022\035\n\031ASK_PRICE1_"
-    "PLUS_ONE_TICKS\0209\022\035\n\031ASK_PRICE1_PLUS_TWO_"
-    "TICKS\020A\022\037\n\033ASK_PRICE1_PLUS_THREE_TICKS\020B"
-    "\022\016\n\nBID_PRICE1\020C\022\035\n\031BID_PRICE1_PLUS_ONE_"
-    "TICKS\020D\022\035\n\031BID_PRICE1_PLUS_TWO_TICKS\020E\022\037"
-    "\n\033BID_PRICE1_PLUS_THREE_TICKS\020F*\'\n\022Trade"
-    "DirectionType\022\007\n\003BUY\0200\022\010\n\004SELL\0201*[\n\021Time"
-    "ConditionType\022\n\n\006TC_IOC\0201\022\n\n\006TC_GFS\0202\022\n\n"
-    "\006TC_GFD\0203\022\n\n\006TC_GTD\0204\022\n\n\006TC_GTC\0205\022\n\n\006TC_"
-    "GFA\0206*6\n\023VolumeConditionType\022\t\n\005VC_AV\0201\022"
-    "\t\n\005VC_MV\0202\022\t\n\005VC_CV\0203*\261\004\n\027ContingentCond"
-    "itionType\022\017\n\013IMMEDIATELY\0201\022\t\n\005TOUCH\0202\022\020\n"
-    "\014TOUCH_PROFIT\0203\022\020\n\014PARKED_ORDER\0204\022&\n\"LAS"
-    "T_PRICE_GREATER_THAN_STOP_PRICE\0205\022\'\n#LAS"
-    "T_PRICE_GREATER_EQUAL_STOP_PRICE\0206\022%\n!LA"
-    "ST_PRICE_LESSER_THAN_STOP_PRICE\0207\022&\n\"LAS"
-    "T_PRICE_LESSER_EQUAL_STOP_PRICE\0208\022%\n!ASK"
-    "_PRICE_GREATER_THAN_STOP_PRICE\0209\022&\n\"ASK_"
-    "PRICE_GREATER_EQUAL_STOP_PRICE\020A\022$\n ASK_"
-    "PRICE_LESSER_THAN_STOP_PRICE\020B\022%\n!ASK_PR"
-    "ICE_LESSER_EQUAL_STOP_PRICE\020C\022%\n!BID_PRI"
-    "CE_GREATER_THAN_STOP_PRICE\020D\022&\n\"BID_PRIC"
-    "E_GREATER_EQUAL_STOP_PRICE\020E\022$\n BID_PRIC"
-    "E_LESSER_THAN_STOP_PRICE\020F\022%\n!BID_PRICE_"
-    "LESSER_EQUAL_STOP_PRICE\020G*\277\001\n\024ForceClose"
-    "ReasonType\022\023\n\017NOT_FORCE_CLOSE\0200\022\020\n\014LACK_"
-    "DEPOSIT\0201\022\036\n\032CLIENT_OVER_POSITION_LIMIT\020"
-    "2\022\036\n\032MEMBER_OVER_POSITION_LIMIT\0203\022\020\n\014NOT"
-    "_MULTIPLE\0204\022\r\n\tVIOLATION\0205\022\r\n\tFCC_OTHER\020"
-    "6\022\020\n\014PERSON_DELIV\0207*\271\001\n\025OrderSubmitStatu"
-    "sType\022\021\n\rNOT_SUBMITTED\020/\022\024\n\020INSERT_SUBMI"
-    "TTED\0200\022\024\n\020CANCEL_SUBMITTED\0201\022\024\n\020MODIFY_S"
-    "UBMITTED\0202\022\014\n\010ACCEPTED\0203\022\023\n\017INSERT_REJEC"
-    "TED\0204\022\023\n\017CANCEL_REJECTED\0205\022\023\n\017MODIFY_REJ"
-    "ECTED\0206*5\n\017OrderSourceType\022\017\n\013PARTICIPAN"
-    "T\0200\022\021\n\rADMINISTRATOR\0201*\364\001\n\017OrderStatusTy"
-    "pe\022\016\n\nALL_TRADED\0200\022\030\n\024PART_TRADED_QUEUEI"
-    "NG\0201\022\034\n\030PART_TRADED_NOT_QUEUEING\0202\022\025\n\021NO"
-    "_TRADE_QUEUEING\0203\022\031\n\025NO_TRADE_NOT_QUEUEI"
-    "NG\0204\022\022\n\016ORDER_CANCELED\0205\022\025\n\021ACCEPTED_NO_"
-    "REPLY\0206\022\022\n\016STATUS_UNKNOWN\020a\022\025\n\021ORDER_NOT"
-    "_TOUCHED\020b\022\021\n\rORDER_TOUCHED\020c*\215\001\n\rOrderT"
-    "ypeType\022\020\n\014NORMAL_ORDER\0200\022\025\n\021DERIVE_FROM"
-    "_QUOTE\0201\022\033\n\027DERIVE_FROM_COMBINATION\0202\022\017\n"
-    "\013COMBINATION\0203\022\025\n\021CONDITIONAL_ORDER\0204\022\016\n"
-    "\nSWAP_ORDER\0205*;\n\017TradingRoleType\022\r\n\tER_B"
-    "ROKER\0201\022\013\n\007ER_HOST\0202\022\014\n\010ER_MAKER\0203*\227\001\n\016O"
-    "ffsetFlagType\022\013\n\007OF_OPEN\0200\022\014\n\010OF_CLOSE\0201"
-    "\022\022\n\016OF_FORCE_CLOSE\0202\022\022\n\016OF_CLOSE_TODAY\0203"
-    "\022\026\n\022OF_CLOSE_YESTERDAY\0204\022\020\n\014OF_FORCE_OFF"
-    "\0205\022\030\n\024OF_LOCAL_FORCE_CLOSE\0206*~\n\rTradeTyp"
-    "eType\022\017\n\013TRDT_COMMON\0200\022\032\n\026TRDT_OPTIONS_E"
-    "XECUTION\0201\022\014\n\010TRDT_OTC\0202\022\024\n\020TRDT_EFP_DER"
-    "IVED\0203\022\034\n\030TRDT_COMBINATION_DERIVED\0204*C\n\017"
-    "PriceSourceType\022\023\n\017PSRC_LAST_PRICE\0200\022\014\n\010"
-    "PSRC_BUY\0201\022\r\n\tPSRC_SELL\0202*.\n\016ActionFlagT"
-    "ype\022\r\n\tAF_Delete\0200\022\r\n\tAF_Modify\0203*\200\001\n\014Su"
-    "bmitReason\022\r\n\tSR_Manual\020\000\022\017\n\013SR_AutoOpen"
-    "\020\001\022\017\n\013SR_StopGain\020\002\022\017\n\013SR_StopLoss\020\003\022\021\n\r"
-    "SR_AutoSwitch\020\004\022\r\n\tSR_Scalpe\020\005\022\014\n\010SR_Tre"
-    "nd\020\006*A\n\rMlOrderOffset\022\016\n\nML_OF_OPEN\020\000\022\017\n"
-    "\013ML_OF_CLOSE\020\001\022\017\n\013ML_OF_OTHER\020\002", 8471);
+    "(\t\022\024\n\014InstrumentID\030\016 \002(\t\022,\n\tDirection\030\017 "
+    "\002(\0162\031.trade.TradeDirectionType\"\371\001\n\rMulti"
+    "LegOrder\022\017\n\007OrderId\030\001 \002(\t\022\023\n\013PortfolioId"
+    "\030\002 \002(\t\022\020\n\010Quantity\030\003 \002(\005\022\032\n\004Legs\030\004 \003(\0132\014"
+    ".trade.Order\022\023\n\013OpenOrderId\030\005 \002(\t\022\020\n\010Ope"
+    "nDate\030\006 \002(\t\022#\n\006Reason\030\007 \002(\0162\023.trade.Subm"
+    "itReason\022\017\n\007HasWarn\030\010 \002(\010\022\021\n\tStatusMsg\030\t"
+    " \002(\t\022$\n\006Offset\030\n \002(\0162\024.trade.MlOrderOffs"
+    "et*1\n\021PosiDirectionType\022\007\n\003NET\0201\022\010\n\004LONG"
+    "\0202\022\t\n\005SHORT\0203*:\n\rHedgeFlagType\022\017\n\013SPECUL"
+    "ATION\0201\022\r\n\tARBITRAGE\0202\022\t\n\005HEDGE\0203*\221\003\n\022Or"
+    "derPriceTypeType\022\r\n\tANY_PRICE\0201\022\017\n\013LIMIT"
+    "_PRICE\0202\022\016\n\nBEST_PRICE\0203\022\016\n\nLAST_PRICE\0204"
+    "\022\035\n\031LAST_PRICE_PLUS_ONE_TICKS\0205\022\035\n\031LAST_"
+    "PRICE_PLUS_TWO_TICKS\0206\022\037\n\033LAST_PRICE_PLU"
+    "S_THREE_TICKS\0207\022\016\n\nASK_PRICE1\0208\022\035\n\031ASK_P"
+    "RICE1_PLUS_ONE_TICKS\0209\022\035\n\031ASK_PRICE1_PLU"
+    "S_TWO_TICKS\020A\022\037\n\033ASK_PRICE1_PLUS_THREE_T"
+    "ICKS\020B\022\016\n\nBID_PRICE1\020C\022\035\n\031BID_PRICE1_PLU"
+    "S_ONE_TICKS\020D\022\035\n\031BID_PRICE1_PLUS_TWO_TIC"
+    "KS\020E\022\037\n\033BID_PRICE1_PLUS_THREE_TICKS\020F*\'\n"
+    "\022TradeDirectionType\022\007\n\003BUY\0200\022\010\n\004SELL\0201*["
+    "\n\021TimeConditionType\022\n\n\006TC_IOC\0201\022\n\n\006TC_GF"
+    "S\0202\022\n\n\006TC_GFD\0203\022\n\n\006TC_GTD\0204\022\n\n\006TC_GTC\0205\022"
+    "\n\n\006TC_GFA\0206*6\n\023VolumeConditionType\022\t\n\005VC"
+    "_AV\0201\022\t\n\005VC_MV\0202\022\t\n\005VC_CV\0203*\261\004\n\027Continge"
+    "ntConditionType\022\017\n\013IMMEDIATELY\0201\022\t\n\005TOUC"
+    "H\0202\022\020\n\014TOUCH_PROFIT\0203\022\020\n\014PARKED_ORDER\0204\022"
+    "&\n\"LAST_PRICE_GREATER_THAN_STOP_PRICE\0205\022"
+    "\'\n#LAST_PRICE_GREATER_EQUAL_STOP_PRICE\0206"
+    "\022%\n!LAST_PRICE_LESSER_THAN_STOP_PRICE\0207\022"
+    "&\n\"LAST_PRICE_LESSER_EQUAL_STOP_PRICE\0208\022"
+    "%\n!ASK_PRICE_GREATER_THAN_STOP_PRICE\0209\022&"
+    "\n\"ASK_PRICE_GREATER_EQUAL_STOP_PRICE\020A\022$"
+    "\n ASK_PRICE_LESSER_THAN_STOP_PRICE\020B\022%\n!"
+    "ASK_PRICE_LESSER_EQUAL_STOP_PRICE\020C\022%\n!B"
+    "ID_PRICE_GREATER_THAN_STOP_PRICE\020D\022&\n\"BI"
+    "D_PRICE_GREATER_EQUAL_STOP_PRICE\020E\022$\n BI"
+    "D_PRICE_LESSER_THAN_STOP_PRICE\020F\022%\n!BID_"
+    "PRICE_LESSER_EQUAL_STOP_PRICE\020G*\277\001\n\024Forc"
+    "eCloseReasonType\022\023\n\017NOT_FORCE_CLOSE\0200\022\020\n"
+    "\014LACK_DEPOSIT\0201\022\036\n\032CLIENT_OVER_POSITION_"
+    "LIMIT\0202\022\036\n\032MEMBER_OVER_POSITION_LIMIT\0203\022"
+    "\020\n\014NOT_MULTIPLE\0204\022\r\n\tVIOLATION\0205\022\r\n\tFCC_"
+    "OTHER\0206\022\020\n\014PERSON_DELIV\0207*\271\001\n\025OrderSubmi"
+    "tStatusType\022\021\n\rNOT_SUBMITTED\020/\022\024\n\020INSERT"
+    "_SUBMITTED\0200\022\024\n\020CANCEL_SUBMITTED\0201\022\024\n\020MO"
+    "DIFY_SUBMITTED\0202\022\014\n\010ACCEPTED\0203\022\023\n\017INSERT"
+    "_REJECTED\0204\022\023\n\017CANCEL_REJECTED\0205\022\023\n\017MODI"
+    "FY_REJECTED\0206*5\n\017OrderSourceType\022\017\n\013PART"
+    "ICIPANT\0200\022\021\n\rADMINISTRATOR\0201*\364\001\n\017OrderSt"
+    "atusType\022\016\n\nALL_TRADED\0200\022\030\n\024PART_TRADED_"
+    "QUEUEING\0201\022\034\n\030PART_TRADED_NOT_QUEUEING\0202"
+    "\022\025\n\021NO_TRADE_QUEUEING\0203\022\031\n\025NO_TRADE_NOT_"
+    "QUEUEING\0204\022\022\n\016ORDER_CANCELED\0205\022\025\n\021ACCEPT"
+    "ED_NO_REPLY\0206\022\022\n\016STATUS_UNKNOWN\020a\022\025\n\021ORD"
+    "ER_NOT_TOUCHED\020b\022\021\n\rORDER_TOUCHED\020c*\215\001\n\r"
+    "OrderTypeType\022\020\n\014NORMAL_ORDER\0200\022\025\n\021DERIV"
+    "E_FROM_QUOTE\0201\022\033\n\027DERIVE_FROM_COMBINATIO"
+    "N\0202\022\017\n\013COMBINATION\0203\022\025\n\021CONDITIONAL_ORDE"
+    "R\0204\022\016\n\nSWAP_ORDER\0205*;\n\017TradingRoleType\022\r"
+    "\n\tER_BROKER\0201\022\013\n\007ER_HOST\0202\022\014\n\010ER_MAKER\0203"
+    "*\227\001\n\016OffsetFlagType\022\013\n\007OF_OPEN\0200\022\014\n\010OF_C"
+    "LOSE\0201\022\022\n\016OF_FORCE_CLOSE\0202\022\022\n\016OF_CLOSE_T"
+    "ODAY\0203\022\026\n\022OF_CLOSE_YESTERDAY\0204\022\020\n\014OF_FOR"
+    "CE_OFF\0205\022\030\n\024OF_LOCAL_FORCE_CLOSE\0206*~\n\rTr"
+    "adeTypeType\022\017\n\013TRDT_COMMON\0200\022\032\n\026TRDT_OPT"
+    "IONS_EXECUTION\0201\022\014\n\010TRDT_OTC\0202\022\024\n\020TRDT_E"
+    "FP_DERIVED\0203\022\034\n\030TRDT_COMBINATION_DERIVED"
+    "\0204*C\n\017PriceSourceType\022\023\n\017PSRC_LAST_PRICE"
+    "\0200\022\014\n\010PSRC_BUY\0201\022\r\n\tPSRC_SELL\0202*.\n\016Actio"
+    "nFlagType\022\r\n\tAF_Delete\0200\022\r\n\tAF_Modify\0203*"
+    "\200\001\n\014SubmitReason\022\r\n\tSR_Manual\020\000\022\017\n\013SR_Au"
+    "toOpen\020\001\022\017\n\013SR_StopGain\020\002\022\017\n\013SR_StopLoss"
+    "\020\003\022\021\n\rSR_AutoSwitch\020\004\022\r\n\tSR_Scalpe\020\005\022\014\n\010"
+    "SR_Trend\020\006*A\n\rMlOrderOffset\022\016\n\nML_OF_OPE"
+    "N\020\000\022\017\n\013ML_OF_CLOSE\020\001\022\017\n\013ML_OF_OTHER\020\002", 8517);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "trade.proto", &protobuf_RegisterTypes);
   AccountInfo::default_instance_ = new AccountInfo();
@@ -11596,6 +11598,7 @@ const int InputOrderAction::kLimitPriceFieldNumber;
 const int InputOrderAction::kVolumeChangeFieldNumber;
 const int InputOrderAction::kUserIDFieldNumber;
 const int InputOrderAction::kInstrumentIDFieldNumber;
+const int InputOrderAction::kDirectionFieldNumber;
 #endif  // !_MSC_VER
 
 InputOrderAction::InputOrderAction()
@@ -11628,6 +11631,7 @@ void InputOrderAction::SharedCtor() {
   volumechange_ = 0;
   userid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   instrumentid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  direction_ = 48;
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
 }
 
@@ -11735,6 +11739,7 @@ void InputOrderAction::Clear() {
         instrumentid_->clear();
       }
     }
+    direction_ = 48;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   mutable_unknown_fields()->Clear();
@@ -11978,6 +11983,27 @@ bool InputOrderAction::MergePartialFromCodedStream(
         } else {
           goto handle_uninterpreted;
         }
+        if (input->ExpectTag(120)) goto parse_Direction;
+        break;
+      }
+
+      // required .trade.TradeDirectionType Direction = 15;
+      case 15: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_VARINT) {
+         parse_Direction:
+          int value;
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   int, ::google::protobuf::internal::WireFormatLite::TYPE_ENUM>(
+                 input, &value)));
+          if (::trade::TradeDirectionType_IsValid(value)) {
+            set_direction(static_cast< ::trade::TradeDirectionType >(value));
+          } else {
+            mutable_unknown_fields()->AddVarint(15, value);
+          }
+        } else {
+          goto handle_uninterpreted;
+        }
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -12103,6 +12129,12 @@ void InputOrderAction::SerializeWithCachedSizes(
       14, this->instrumentid(), output);
   }
 
+  // required .trade.TradeDirectionType Direction = 15;
+  if (has_direction()) {
+    ::google::protobuf::internal::WireFormatLite::WriteEnum(
+      15, this->direction(), output);
+  }
+
   if (!unknown_fields().empty()) {
     ::google::protobuf::internal::WireFormat::SerializeUnknownFields(
         unknown_fields(), output);
@@ -12222,6 +12254,12 @@ void InputOrderAction::SerializeWithCachedSizes(
         14, this->instrumentid(), target);
   }
 
+  // required .trade.TradeDirectionType Direction = 15;
+  if (has_direction()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
+      15, this->direction(), target);
+  }
+
   if (!unknown_fields().empty()) {
     target = ::google::protobuf::internal::WireFormat::SerializeUnknownFieldsToArray(
         unknown_fields(), target);
@@ -12330,6 +12368,12 @@ int InputOrderAction::ByteSize() const {
           this->instrumentid());
     }
 
+    // required .trade.TradeDirectionType Direction = 15;
+    if (has_direction()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormatLite::EnumSize(this->direction());
+    }
+
   }
   if (!unknown_fields().empty()) {
     total_size +=
@@ -12401,6 +12445,9 @@ void InputOrderAction::MergeFrom(const InputOrderAction& from) {
     if (from.has_instrumentid()) {
       set_instrumentid(from.instrumentid());
     }
+    if (from.has_direction()) {
+      set_direction(from.direction());
+    }
   }
   mutable_unknown_fields()->MergeFrom(from.unknown_fields());
 }
@@ -12418,7 +12465,7 @@ void InputOrderAction::CopyFrom(const InputOrderAction& from) {
 }
 
 bool InputOrderAction::IsInitialized() const {
-  if ((_has_bits_[0] & 0x00003fff) != 0x00003fff) return false;
+  if ((_has_bits_[0] & 0x00007fff) != 0x00007fff) return false;
 
   return true;
 }
@@ -12439,6 +12486,7 @@ void InputOrderAction::Swap(InputOrderAction* other) {
     std::swap(volumechange_, other->volumechange_);
     std::swap(userid_, other->userid_);
     std::swap(instrumentid_, other->instrumentid_);
+    std::swap(direction_, other->direction_);
     std::swap(_has_bits_[0], other->_has_bits_[0]);
     _unknown_fields_.Swap(&other->_unknown_fields_);
     std::swap(_cached_size_, other->_cached_size_);

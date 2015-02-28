@@ -6,12 +6,17 @@
 #include "entity/quote.pb.h"
 
 #ifndef USE_FEMAS_API
+#ifdef USE_ZEUSING_API
+#include "InputOrder_Zeus.h"
+#include "RtnOrderWrapper_Zeus.h"
+#else
 #include "InputOrder.h"
 #include "RtnOrderWrapper.h"
+#endif
 #else
 #include "InputOrder_FM.h"
 #include "RtnOrderWrapper_FM.h"
-#endif // !USE_FEMAS_API
+#endif
 
 class CPortfolioOrderPlacer;
 
@@ -43,6 +48,7 @@ public:
 	const string& ExchId(){ return m_exchId; }
 	const string& OrderSysId(){ return m_ordSysId; }
 	const string& UserId(){ return m_userId; }
+	trade::TradeDirectionType Direction(){ return m_inputOrder.Direction(); }
 
 	int SubmitTimes() { return m_submitTimes; }
 	int AddSubmitTimes() { return ++m_submitTimes; }

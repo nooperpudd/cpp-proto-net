@@ -3,7 +3,7 @@
 #include "ThostTraderApi/ThostFtdcMdApi.h"
 #include "entity/quote.pb.h"
 
-#include <set>
+#include <boost/unordered_set.hpp>
 
 class CQuoteFetcher;
 
@@ -30,7 +30,7 @@ private:
 
 	string m_symbol;
 
-	set<CQuoteFetcher*> m_fetcherSet;
+	boost::unordered_set<CQuoteFetcher*> m_fetcherSet;
 	vector<CQuoteFetcher*> m_reclaimedFetcher;
 	boost::mutex m_fetcherSetMutex;
 

@@ -365,6 +365,9 @@
     <ClInclude Include="UdpQuoteListener.h">
       <Filter>Header Files\quote</Filter>
     </ClInclude>
+    <ClInclude Include="QuoteTimestamp.h">
+      <Filter>Header Files\quote</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

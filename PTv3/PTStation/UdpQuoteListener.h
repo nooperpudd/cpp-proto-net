@@ -53,7 +53,7 @@ private:
 
 	udp::socket socket_;
 	udp::endpoint remote_endpoint_;
-	boost::array<char, 1024> recv_buffer_;
+	boost::array<char, 4096> recv_buffer_;
 };
 
 typedef boost::shared_ptr<CUdpQuoteListener> UdpQuoteListenerPtr;

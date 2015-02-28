@@ -3,7 +3,6 @@
 #include "globalmembers.h"
 #include "OHLCRecordSet.h"
 #include "DiffRecordSet.h"
-#include "Portfolio.h"
 
 #include <ta-lib/ta_libc.h>
 
@@ -35,14 +34,14 @@ void CBollDataSet::Calculate( COHLCRecordSet* ohlcRecordSet )
 	CalculateRaw((ohlcRecordSet->CloseSeries).get(), lastIdx);
 }
 
-void CBollDataSet::Calculate(CDiffRecordSet* diffRecordSet, CPortfolio* pPortfolio)
+void CBollDataSet::Calculate( CDiffRecordSet* diffRecordSet )
 {
 	int lastIdx = diffRecordSet->GetEndIndex();
 	if(lastIdx < 0) return;
-
-	logger.Info(boost::str(boost::format("[%s] Calculating BOLL with DiffRecordSet: lastIdx - %d, last price - %f")
-		% pPortfolio->ID() % lastIdx % (diffRecordSet->DiffSeries)[lastIdx]));
-
+#ifdef LOG_FOR_TECH_CALC
+	logger.Info(boost::str(boost::format("Calculating BOLL with DiffRecordSet: lastIdx - %d, last price - %f")
+		% lastIdx % (diffRecordSet->DiffSeries)[lastIdx]));
+#endif
 	//CalculateTA((diffRecordSet->DiffSeries).get(), lastIdx);
 	CalculateRaw((diffRecordSet->DiffSeries).get(), lastIdx);
 }
@@ -66,9 +65,10 @@ void CBollDataSet::CalculateRaw( double* pxArray, int lastIdx )
 		{
 			m_arrTop[outBeg] = outSma + outStdDev;
 			m_arrBottom[outBeg] = outSma - outStdDev;
-
+#ifdef LOG_FOR_TECH_CALC
 			logger.Info(boost::str(boost::format("Calculated BOLL values: mid - %.2f, top - %.2f, bottom - %.2f")
 				% m_arrMid[outBeg] % m_arrTop[outBeg] % m_arrBottom[outBeg] ));
+#endif
 		}
 		else
 		{
@@ -122,9 +122,10 @@ void CBollDataSet::CalculateTA( double* pxArray, int lastIdx )
 			m_arrTop[outBeg] = outTop;
 			m_arrBottom[outBeg] = outBottom;
 			m_arrMid[outBeg] = outMid;
-
+#ifdef LOG_FOR_TECH_CALC
 			logger.Info(boost::str(boost::format("Calculated BOLL values: mid - %.2f, top - %.2f, bottom - %.2f")
 				% m_arrMid[outBeg] % m_arrTop[outBeg] % m_arrBottom[outBeg] ));
+#endif
 		}
 	}
 	else
