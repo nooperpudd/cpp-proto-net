@@ -371,6 +371,15 @@
     <ClInclude Include="QuoteTimestamp.h">
       <Filter>Header Files\quote</Filter>
     </ClInclude>
+    <ClInclude Include="ArbitrageMultiStrategy.h">
+      <Filter>Header Files\strategy</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiOpenStrategy.h">
+      <Filter>Header Files\tech</Filter>
+    </ClInclude>
+    <ClInclude Include="StrategyExecutor.h">
+      <Filter>Header Files\tech</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -642,6 +651,15 @@
     </ClCompile>
     <ClCompile Include="ParseZeusingMarketData.cpp">
       <Filter>Source Files\utils</Filter>
+    </ClCompile>
+    <ClCompile Include="MultiOpenStrategy.cpp">
+      <Filter>Source Files\tech</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyExecutor.cpp">
+      <Filter>Source Files\tech</Filter>
+    </ClCompile>
+    <ClCompile Include="ArbitrageMultiStrategy.cpp">
+      <Filter>Source Files\strategy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

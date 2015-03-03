@@ -189,8 +189,9 @@ namespace strategy// Concrete FSM implementation
 	typedef msm::back::state_machine<ExecutorFront_> ExecutorFsm;
 }
 
-CStrategyExecutor::CStrategyExecutor()
+CStrategyExecutor::CStrategyExecutor(int quantity)
 	: m_currentState(EXECUTOR_IDLE)
+	, m_quantity(quantity)
 {
 	m_fsm = boost::shared_ptr<void>(new strategy::ExecutorFsm(this));
 

@@ -34,7 +34,7 @@ void CBollDataSet::Calculate( COHLCRecordSet* ohlcRecordSet )
 	CalculateRaw((ohlcRecordSet->CloseSeries).get(), lastIdx);
 }
 
-void CBollDataSet::Calculate( CDiffRecordSet* diffRecordSet )
+void CBollDataSet::Calculate(CDiffRecordSet* diffRecordSet, CPortfolio* pPortfolio)
 {
 	int lastIdx = diffRecordSet->GetEndIndex();
 	if(lastIdx < 0) return;

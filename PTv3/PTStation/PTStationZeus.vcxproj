@@ -99,6 +99,7 @@ copy /y ZeusingAPI\*.dll $(OutDir)</Command>
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArbitrageMultiStrategy.h" />
     <ClInclude Include="ArbitrageStrategy.h" />
     <ClInclude Include="ArbitrageTrigger.h" />
     <ClInclude Include="ASCTrendStrategy.h" />
@@ -128,6 +129,7 @@ copy /y ZeusingAPI\*.dll $(OutDir)</Command>
     <ClInclude Include="LinerRegressionStrategy.h" />
     <ClInclude Include="ManualOrderPlacer.h" />
     <ClInclude Include="ManualStrategy.h" />
+    <ClInclude Include="MultiOpenStrategy.h" />
     <ClInclude Include="ParseZeusingMarketData.h" />
     <ClInclude Include="PortfolioArbitrageOrderPlacer.h" />
     <ClInclude Include="QuoteAgentBase.h" />
@@ -136,6 +138,7 @@ copy /y ZeusingAPI\*.dll $(OutDir)</Command>
     <ClInclude Include="QuoteUdpAgent.h" />
     <ClInclude Include="RangeTrendStrategy.h" />
     <ClInclude Include="RtnOrderWrapper_Zeus.h" />
+    <ClInclude Include="StrategyExecutor.h" />
     <ClInclude Include="StrategyOrderCommand.h" />
     <ClInclude Include="TradeAgent_Zeus.h" />
     <ClInclude Include="UdpQuoteListener.h" />
@@ -204,6 +207,7 @@ copy /y ZeusingAPI\*.dll $(OutDir)</Command>
     <ClInclude Include="Trigger.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ArbitrageMultiStrategy.cpp" />
     <ClCompile Include="ArbitrageStrategy.cpp" />
     <ClCompile Include="ArbitrageTrigger.cpp" />
     <ClCompile Include="ASCTrendStrategy.cpp" />
@@ -246,12 +250,14 @@ copy /y ZeusingAPI\*.dll $(OutDir)</Command>
     <ClCompile Include="LinerRegressionStrategy.cpp" />
     <ClCompile Include="ManualOrderPlacer.cpp" />
     <ClCompile Include="ManualStrategy.cpp" />
+    <ClCompile Include="MultiOpenStrategy.cpp" />
     <ClCompile Include="ParseZeusingMarketData.cpp" />
     <ClCompile Include="PortfolioArbitrageOrderPlacer.cpp" />
     <ClCompile Include="QuoteAgentFacade.cpp" />
     <ClCompile Include="QuoteUdpAgent.cpp" />
     <ClCompile Include="RangeTrendStrategy.cpp" />
     <ClCompile Include="RtnOrderWrapper_Zeus.cpp" />
+    <ClCompile Include="StrategyExecutor.cpp" />
     <ClCompile Include="StrategyOrderCommand.cpp" />
     <ClCompile Include="TradeAgent_Zeus.cpp" />
     <ClCompile Include="UdpQuoteListener.cpp" />

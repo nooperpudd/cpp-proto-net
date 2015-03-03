@@ -11,17 +11,25 @@ public:
 	CMultiOpenStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar, CPortfolio* pPortfolio);
 	~CMultiOpenStrategy();
 
-	void Apply(const entity::StrategyItem& strategyItem, bool withTriggers);
+	void Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
+	
 	virtual void Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
-	virtual void CalculateContext(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp){}
+	virtual StrategyContext* CalculateContext(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp) = 0;
 
-	void TestWorkingExecutors(entity::Quote* pQuote);
-	void TestForOpen(entity::Quote* pQuote){}
-	void TestForClose(entity::Quote* pQuote){}
+	void TestWorkingExecutors(entity::Quote* pQuote, StrategyContext* pContext);
+	void TestForOpen(entity::Quote* pQuote, StrategyContext* pContext);
+	void TestForClose(entity::Quote* pQuote, StrategyContext* pContext);
 
 protected:
 
-	virtual void OnApply(const entity::StrategyItem& strategyItem, bool withTriggers){}
+	virtual StrategyExecutorPtr CreateExecutor(int quantity) = 0;
+	virtual void OnApply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers){}
+	virtual bool Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
+
+	void InitializeExecutors();
+
+	int m_perOpenQuantity;
+	int m_maxQuantity;
 
 	vector<StrategyExecutorPtr> m_strategyExecutors;
 	
@@ -37,8 +45,8 @@ protected:
 	boost::mutex m_mutOpened;
 
 	// the current executor that is waiting for opening position
-	CStrategyExecutor* m_activeExecutors;
-
+	CStrategyExecutor* m_activeExecutor;
+	boost::mutex m_mutActive;
 
 	boost::mutex m_mut;
 
