@@ -201,3 +201,8 @@ CStrategyExecutor::CStrategyExecutor(int quantity)
 CStrategyExecutor::~CStrategyExecutor()
 {
 }
+
+void CStrategyExecutor::Start()
+{
+	boost::static_pointer_cast<strategy::ExecutorFsm>(m_fsm)->start();
+}

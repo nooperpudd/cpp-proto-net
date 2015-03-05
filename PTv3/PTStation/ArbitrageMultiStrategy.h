@@ -31,8 +31,8 @@ public:
 	~CArbitrageStrategyExecutor(){}
 
 	void OnWorking(entity::Quote* pQuote, StrategyContext* pContext);
-	void OnTestForOpen(entity::Quote* pQuote, StrategyContext* pContext);
-	void OnTestForClose(entity::Quote* pQuote, StrategyContext* pContext);
+	bool TestForOpen(entity::Quote* pQuote, StrategyContext* pContext);
+	bool TestForClose(entity::Quote* pQuote, StrategyContext* pContext);
 
 private:
 

@@ -160,13 +160,13 @@ void CArbitrageStrategyExecutor::OnWorking(entity::Quote* pQuote, StrategyContex
 
 }
 
-void CArbitrageStrategyExecutor::OnTestForOpen(entity::Quote* pQuote, StrategyContext* pContext)
+bool CArbitrageStrategyExecutor::TestForOpen(entity::Quote* pQuote, StrategyContext* pContext)
 {
-
+	return true;
 }
 
-void CArbitrageStrategyExecutor::OnTestForClose(entity::Quote* pQuote, StrategyContext* pContext)
+bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, StrategyContext* pContext)
 {
-
+	return true;
 }
 

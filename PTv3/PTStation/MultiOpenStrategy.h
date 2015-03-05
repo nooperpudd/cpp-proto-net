@@ -16,9 +16,9 @@ public:
 	virtual void Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 	virtual StrategyContext* CalculateContext(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp) = 0;
 
-	void TestWorkingExecutors(entity::Quote* pQuote, StrategyContext* pContext);
-	void TestForOpen(entity::Quote* pQuote, StrategyContext* pContext);
-	void TestForClose(entity::Quote* pQuote, StrategyContext* pContext);
+	void TestWorkingExecutors(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
+	void TestForOpen(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
+	void TestForClose(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
 
 protected:
 

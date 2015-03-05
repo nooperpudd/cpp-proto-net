@@ -26,11 +26,11 @@ void CMultiOpenStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boo
 	StrategyContext* pContext = CalculateContext(pQuote, pPortfolio, timestamp);
 
 	// 1. Feed quote to strategy executors that is opening/closing position
-	TestWorkingExecutors(pQuote, pContext);
+	TestWorkingExecutors(pQuote, pContext, timestamp);
 	// 2. Feed quote to active strategy executor to check for opening position
-	TestForOpen(pQuote, pContext);
+	TestForOpen(pQuote, pContext, timestamp);
 	// 3. Feed quote to strategy executors that are opened and check for closing position
-	TestForClose(pQuote, pContext);
+	TestForClose(pQuote, pContext, timestamp);
 }
 
 void CMultiOpenStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers)
@@ -48,7 +48,7 @@ void CMultiOpenStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfo
 		InitializeExecutors();
 }
 
-void CMultiOpenStrategy::TestWorkingExecutors(entity::Quote* pQuote, StrategyContext* pContext)
+void CMultiOpenStrategy::TestWorkingExecutors(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
 {
 	boost::mutex::scoped_lock l(m_mutWorking);
 	for (vector<CStrategyExecutor*>::iterator iter = m_workingExecutors.begin(); iter != m_workingExecutors.end(); ++iter)
@@ -57,21 +57,29 @@ void CMultiOpenStrategy::TestWorkingExecutors(entity::Quote* pQuote, StrategyCon
 	}
 }
 
-void CMultiOpenStrategy::TestForOpen(entity::Quote* pQuote, StrategyContext* pContext)
+void CMultiOpenStrategy::TestForOpen(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
 {
 	boost::mutex::scoped_lock l(m_mutActive);
 	if (m_activeExecutor != NULL)
 	{
-		m_activeExecutor->OnTestForOpen(pQuote, pContext);
+		bool open = m_activeExecutor->TestForOpen(pQuote, pContext);
+		if (open)
+		{
+
+		}
 	}
 }
 
-void CMultiOpenStrategy::TestForClose(entity::Quote* pQuote, StrategyContext* pContext)
+void CMultiOpenStrategy::TestForClose(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
 {
 	boost::mutex::scoped_lock l(m_mutOpened);
 	for (vector<CStrategyExecutor*>::iterator iter = m_OpenedExecutors.begin(); iter != m_OpenedExecutors.end(); ++iter)
 	{
-		(*iter)->OnTestForClose(pQuote, pContext);
+		bool close = (*iter)->TestForClose(pQuote, pContext);
+		if (close)
+		{
+
+		}
 	}
 }
 
@@ -89,6 +97,14 @@ void CMultiOpenStrategy::InitializeExecutors()
 		StrategyExecutorPtr executorPtr = CreateExecutor(execQty);
 		m_strategyExecutors.push_back(executorPtr);
 		remainingQty -= m_perOpenQuantity;
+	}
+
+	if (m_strategyExecutors.size() > 0)
+	{
+		boost::mutex::scoped_lock l(m_mutActive);
+		CStrategyExecutor* pExecutor = m_strategyExecutors[0].get();
+		pExecutor->Start();
+		m_activeExecutor = pExecutor;
 	}
 }
 
