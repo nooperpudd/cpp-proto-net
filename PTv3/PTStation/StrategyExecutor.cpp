@@ -133,13 +133,12 @@ namespace strategy// Concrete FSM implementation
 		typedef mpl::vector<EmptyPosition, AllOk> initial_state;
 
 		// action
-		/*
 		template <class Event>
-		void on_send(Event const&)
+		void on_open(Event const&)
 		{
-			m_pPlacer->Send();
+			//m_pPlacer->Send();
 		}
-
+		/*
 		void on_cancel_success(evtCancelSuccess const& evt)
 		{
 			m_pPlacer->OnOrderCanceled(evt.m_pOrd);
@@ -166,7 +165,7 @@ namespace strategy// Concrete FSM implementation
 		struct transition_table : mpl::vector <
 			//    Start					Event					Next			Action                     Guard
 			//  +-------------------+-------------------+-------------------+---------------------------+--------------------------+
-			_row < EmptyPosition	, evtOpening		, PendingOpen		>,
+			a_row < EmptyPosition, evtOpening, PendingOpen, &p::on_open			>,
 			_row < PendingOpen		, evtOrderFilled	, HoldPosition		>,
 			_row < HoldPosition		, evtClosing		, PendingClose		>,
 			_row < PendingClose		, evtOrderFilled	, Idle			    >,
@@ -189,9 +188,10 @@ namespace strategy// Concrete FSM implementation
 	typedef msm::back::state_machine<ExecutorFront_> ExecutorFsm;
 }
 
-CStrategyExecutor::CStrategyExecutor(int quantity)
+CStrategyExecutor::CStrategyExecutor(int execId, int quantity)
 	: m_currentState(EXECUTOR_IDLE)
 	, m_quantity(quantity)
+	, m_execId(execId)
 {
 	m_fsm = boost::shared_ptr<void>(new strategy::ExecutorFsm(this));
 

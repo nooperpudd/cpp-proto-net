@@ -370,6 +370,7 @@ CPortfolioOrderPlacer::CPortfolioOrderPlacer(void)
 	, m_isFirstLeg(false)
 	, m_sendNextOnFilled(true)
 	, m_posiDirection(entity::NET)
+	, m_execId(0)
 {
 	m_fsm = boost::shared_ptr<void>(new OrderPlacerFsm(this));
 }

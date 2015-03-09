@@ -27,8 +27,10 @@ public:
 class CArbitrageStrategyExecutor : public CStrategyExecutor
 {
 public:
-	CArbitrageStrategyExecutor(int quantity):CStrategyExecutor(quantity){}
+	CArbitrageStrategyExecutor(int execId, int quantity) :CStrategyExecutor(execId, quantity){}
 	~CArbitrageStrategyExecutor(){}
+
+	void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc);
 
 	void OnWorking(entity::Quote* pQuote, StrategyContext* pContext);
 	bool TestForOpen(entity::Quote* pQuote, StrategyContext* pContext);
@@ -44,11 +46,10 @@ public:
 	CArbitrageMultiStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar, CPortfolio* pPortfolio);
 	~CArbitrageMultiStrategy();
 
-	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc);
 	virtual StrategyContext* CalculateContext(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 
 protected:
-	StrategyExecutorPtr CreateExecutor(int quantity);
+	StrategyExecutorPtr CreateExecutor(int execId, int quantity);
 	virtual void OnApply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
 	virtual bool Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 private:

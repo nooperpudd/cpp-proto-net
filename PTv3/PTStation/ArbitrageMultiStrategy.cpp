@@ -2,6 +2,7 @@
 #include "ArbitrageMultiStrategy.h"
 #include "Portfolio.h"
 #include "PriceBarDataProxy.h"
+#include "PortfolioArbitrageOrderPlacer.h"
 
 CArbitrageMultiStrategy::CArbitrageMultiStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar, CPortfolio* pPortfolio)
 	: CMultiOpenStrategy(strategyItem, pAvatar, pPortfolio)
@@ -144,15 +145,9 @@ double CArbitrageMultiStrategy::CalcBoundaryByTargetGain(double mid, double targ
 	return actualMid;
 }
 
-
-void CArbitrageMultiStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc)
+StrategyExecutorPtr CArbitrageMultiStrategy::CreateExecutor(int execId, int quantity)
 {
-
-}
-
-StrategyExecutorPtr CArbitrageMultiStrategy::CreateExecutor(int quantity)
-{
-	return StrategyExecutorPtr(new CArbitrageStrategyExecutor(quantity));
+	return StrategyExecutorPtr(new CArbitrageStrategyExecutor(execId, quantity));
 }
 
 void CArbitrageStrategyExecutor::OnWorking(entity::Quote* pQuote, StrategyContext* pContext)
@@ -168,5 +163,12 @@ bool CArbitrageStrategyExecutor::TestForOpen(entity::Quote* pQuote, StrategyCont
 bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, StrategyContext* pContext)
 {
 	return true;
+}
+
+void CArbitrageStrategyExecutor::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc)
+{
+	m_orderPlacer = OrderPlacerPtr(new CPortfolioArbitrageOrderPlacer(m_execId));
+	if (m_orderPlacer.get() != NULL)
+		m_orderPlacer->Initialize(pPortf, pOrderProc);
 }
 

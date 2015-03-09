@@ -6,10 +6,11 @@
 
 #include <boost/date_time.hpp>
 
-CPortfolioArbitrageOrderPlacer::CPortfolioArbitrageOrderPlacer(void)
+CPortfolioArbitrageOrderPlacer::CPortfolioArbitrageOrderPlacer(int execId)
 	: m_openedPosition(false)
 	, m_openingPosition(false)
 {
+	SetExecId(execId);
 }
 
 

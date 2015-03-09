@@ -5,7 +5,7 @@
 class CPortfolioArbitrageOrderPlacer : public CPortfolioOrderPlacer
 {
 public:
-	CPortfolioArbitrageOrderPlacer(void);
+	CPortfolioArbitrageOrderPlacer(int execId);
 	~CPortfolioArbitrageOrderPlacer(void);
 
 	void OpenPosition(entity::PosiDirectionType posiDirection, double* pLmtPxArr, int iPxSize, const boost::chrono::steady_clock::time_point& trigQuoteTimestamp, trade::SubmitReason reason);

@@ -91,6 +91,9 @@ public:
 	entity::PosiDirectionType PosiDirection(){ return m_posiDirection; }
 	void OutputStatus(const string& statusMsg);
 	void SetMlOrderStatus(const string& statusMsg);
+
+	int ExecId(){ return m_execId; }
+	void SetExecId(int execId){ m_execId = execId; }
 protected:
 
 	void Initialize(const string& mlOrdId);
@@ -145,6 +148,7 @@ protected:
 
 	CPortfolio* m_pPortf;
 	COrderProcessor* m_pOrderProcessor;
+	int m_execId;
 
 	boost::shared_ptr<trade::MultiLegOrder> m_multiLegOrderTemplate;
 	vector< LegOrderPlacerPtr > m_legPlacers;

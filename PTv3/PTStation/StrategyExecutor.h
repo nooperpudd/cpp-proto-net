@@ -20,11 +20,14 @@ public:
 class CStrategyExecutor
 {
 public:
-	CStrategyExecutor(int quantity);
+	CStrategyExecutor(int execId, int quantity);
 	virtual ~CStrategyExecutor();
 
+	int ExecId(){ return m_execId; }
 	void Start();
 	void Transit(){}
+
+	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc) = 0;
 
 	virtual void OnWorking(entity::Quote* pQuote, StrategyContext* pContext){}
 	virtual bool TestForOpen(entity::Quote* pQuote, StrategyContext* pContext) = 0;
@@ -36,6 +39,8 @@ public:
 protected:
 
 	void OpenPosition(entity::PosiDirectionType direction, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp){}
+
+	int m_execId;
 
 	int m_quantity;
 	boost::shared_ptr<void> m_fsm;
