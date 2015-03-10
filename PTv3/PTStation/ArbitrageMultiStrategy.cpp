@@ -165,10 +165,13 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, StrategyCon
 	return true;
 }
 
-void CArbitrageStrategyExecutor::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc)
+void CArbitrageStrategyExecutor::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc, PortfolioTradedEvent porfTradedEventHandler)
 {
 	m_orderPlacer = OrderPlacerPtr(new CPortfolioArbitrageOrderPlacer(m_execId));
 	if (m_orderPlacer.get() != NULL)
+	{
 		m_orderPlacer->Initialize(pPortf, pOrderProc);
+		m_orderPlacer->SetPortfolioTradedEventHandler(porfTradedEventHandler);
+	}
 }
 

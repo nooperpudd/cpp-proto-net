@@ -175,16 +175,22 @@ bool CPortfolioArbitrageOrderPlacer::IsOpened()
 
 void CPortfolioArbitrageOrderPlacer::OnPortfolioDone(PortfolioFinishState portfState)
 {
+	entity::PosiOffsetFlag offsetFlag = entity::OPEN;
 	if (portfState == PortfolioFilled)
 	{
 		if (m_openingPosition)	// opening position done
 		{
 			m_openedPosition = true;
+			offsetFlag = entity::OPEN;
 		}
 		else // closing position done
 		{
 			m_openedPosition = false;
+			offsetFlag = entity::CLOSE;
 		}
+
+		if (!m_portfTradedEventHandler.empty())
+			m_portfTradedEventHandler(m_execId, offsetFlag);
 	}
 	else if (portfState == PortfolioError)
 	{

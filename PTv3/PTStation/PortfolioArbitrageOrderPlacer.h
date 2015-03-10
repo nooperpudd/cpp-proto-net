@@ -13,7 +13,8 @@ public:
 	bool IsOpened();
 
 	void Run(entity::PosiDirectionType posiDirection, int quantity, trade::OffsetFlagType offset, double* pLmtPxArr, int iPxSize, const boost::chrono::steady_clock::time_point& trigQuoteTimestamp, const char* openOrderId = NULL);
-	
+
+
 protected:
 	virtual void BuildTemplateOrder();
 	virtual CLegOrderPlacer* CreateLegOrderPlacer(int openTimeout, int maxRetryTimes);
@@ -25,5 +26,6 @@ private:
 	bool m_openingPosition;
 	bool m_openedPosition;
 	string m_lastOpenOrderId;
+
 };
 

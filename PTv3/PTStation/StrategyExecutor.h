@@ -27,7 +27,7 @@ public:
 	void Start();
 	void Transit(){}
 
-	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc) = 0;
+	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc, PortfolioTradedEvent porfTradedEventHandler) = 0;
 
 	virtual void OnWorking(entity::Quote* pQuote, StrategyContext* pContext){}
 	virtual bool TestForOpen(entity::Quote* pQuote, StrategyContext* pContext) = 0;

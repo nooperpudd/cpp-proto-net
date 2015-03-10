@@ -32,6 +32,7 @@ protected:
 
 	void InitializeExecutors();
 	bool GetReadyExecutor(CStrategyExecutor** pOutExector);
+	void OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag);
 
 	int m_perOpenQuantity;
 	int m_maxQuantity;
@@ -39,20 +40,16 @@ protected:
 	vector<StrategyExecutorPtr> m_strategyExecutors;
 	
 	queue<CStrategyExecutor*> m_executorsPool;
-	boost::mutex m_mutPool;
-
+	
 	// store the executors that are opening or closing position
 	boost::unordered_map<int, CStrategyExecutor*> m_workingExecutors;
-	boost::mutex m_mutWorking;
-
+	
 	// store the executors that are testing for closing poistion
 	boost::unordered_map<int, CStrategyExecutor*> m_OpenedExecutors;
-	boost::mutex m_mutOpened;
-
+	
 	// the current executor that is waiting for opening position
 	CStrategyExecutor* m_activeExecutor;
-	boost::mutex m_mutActive;
-
+	
 	boost::mutex m_mut;
 
 };

@@ -30,7 +30,7 @@ public:
 	CArbitrageStrategyExecutor(int execId, int quantity) :CStrategyExecutor(execId, quantity){}
 	~CArbitrageStrategyExecutor(){}
 
-	void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc);
+	void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc, PortfolioTradedEvent porfTradedEventHandler);
 
 	void OnWorking(entity::Quote* pQuote, StrategyContext* pContext);
 	bool TestForOpen(entity::Quote* pQuote, StrategyContext* pContext);

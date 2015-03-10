@@ -26,6 +26,8 @@ using namespace std;
 
 enum PortfolioFinishState { PortfolioError, PortfolioCanceled, PortfolioFilled };
 
+typedef boost::function<void(int, entity::PosiOffsetFlag)> PortfolioTradedEvent;
+
 class CPortfolioOrderPlacer
 {
 public:
@@ -94,6 +96,11 @@ public:
 
 	int ExecId(){ return m_execId; }
 	void SetExecId(int execId){ m_execId = execId; }
+	void SetPortfolioTradedEventHandler(PortfolioTradedEvent& portfTradedHandler)
+	{
+		m_portfTradedEventHandler = portfTradedHandler;
+	}
+
 protected:
 
 	void Initialize(const string& mlOrdId);
@@ -137,6 +144,11 @@ protected:
 	void GotoSentState();
 #endif 
 	
+	void RaisePortfolioFilledEvent(entity::PosiOffsetFlag offsetFlag)
+	{
+		if (!m_portfTradedEventHandler.empty())
+			m_portfTradedEventHandler(m_execId, offsetFlag);
+	}
 
 	struct NextQuote
 	{
@@ -149,6 +161,7 @@ protected:
 	CPortfolio* m_pPortf;
 	COrderProcessor* m_pOrderProcessor;
 	int m_execId;
+	PortfolioTradedEvent m_portfTradedEventHandler;
 
 	boost::shared_ptr<trade::MultiLegOrder> m_multiLegOrderTemplate;
 	vector< LegOrderPlacerPtr > m_legPlacers;
