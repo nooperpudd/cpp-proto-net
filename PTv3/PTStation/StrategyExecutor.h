@@ -11,10 +11,20 @@ enum ExecutorState
 	PENDING_CLOSE
 };
 
+enum ExecutorEvent
+{
+	EXEC_OPEN,
+	EXEC_CLOSE,
+	EXEC_FILLED
+};
+
 class StrategyContext 
 {
 public:
+	StrategyContext() : CurrentIndex(-1){}
 	virtual ~StrategyContext(){}
+
+	int CurrentIndex;
 };
 
 class CStrategyExecutor
@@ -25,11 +35,12 @@ public:
 
 	int ExecId(){ return m_execId; }
 	void Start();
-	void Transit(){}
+	void FireEvent(ExecutorEvent execEvent);
 
 	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc, PortfolioTradedEvent porfTradedEventHandler) = 0;
 
 	virtual void OnWorking(entity::Quote* pQuote, StrategyContext* pContext){}
+	virtual void OnFinished(){}
 	virtual bool TestForOpen(entity::Quote* pQuote, StrategyContext* pContext) = 0;
 	virtual bool TestForClose(entity::Quote* pQuote, StrategyContext* pContext) = 0;
 

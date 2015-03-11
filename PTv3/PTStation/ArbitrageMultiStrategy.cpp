@@ -67,9 +67,9 @@ void CArbitrageMultiStrategy::GetMinPriceChange(CPortfolio* pPortfolio)
 	}
 }
 
-bool CArbitrageMultiStrategy::Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp)
+bool CArbitrageMultiStrategy::Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext& context, boost::chrono::steady_clock::time_point& timestamp)
 {
-	bool prerequisiteOK = CMultiOpenStrategy::Prerequisite(pQuote, pPortfolio, timestamp);
+	bool prerequisiteOK = CMultiOpenStrategy::Prerequisite(pQuote, pPortfolio, context, timestamp);
 	if (prerequisiteOK)
 	{
 		string symbol = pQuote->symbol();
@@ -77,8 +77,8 @@ bool CArbitrageMultiStrategy::Prerequisite(entity::Quote* pQuote, CPortfolio* pP
 		if (ohlc == NULL)
 			return false;
 
-		int currentBarIdx = m_diffRecordSet->Calculate(ohlc);
-		if (currentBarIdx < m_bollPeriod)
+		context.CurrentIndex = m_diffRecordSet->Calculate(ohlc);
+		if (context.CurrentIndex < m_bollPeriod)
 			return false;
 
 		if (!pPortfolio->LegsTimestampAligned())
@@ -88,7 +88,7 @@ bool CArbitrageMultiStrategy::Prerequisite(entity::Quote* pQuote, CPortfolio* pP
 	return prerequisiteOK;
 }
 
-StrategyContext* CArbitrageMultiStrategy::CalculateContext(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp)
+void CArbitrageMultiStrategy::CalculateContext(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp)
 {
 	ARBI_DIFF_CALC structLastDiff = { LAST_DIFF, 0, 0, 0 };
 	ARBI_DIFF_CALC structLongDiff = { LONG_DIFF, 0, 0, 0 };
@@ -122,8 +122,6 @@ StrategyContext* CArbitrageMultiStrategy::CalculateContext(entity::Quote* pQuote
 		m_context.BollTop = m_bollDataSet->GetRef(IND_TOP, 1);
 		m_context.BollBottom = m_bollDataSet->GetRef(IND_BOTTOM, 1);
 	}
-
-	return &m_context;
 }
 
 double CArbitrageMultiStrategy::GetLowerValue(double val, double offset)
@@ -157,6 +155,47 @@ void CArbitrageStrategyExecutor::OnWorking(entity::Quote* pQuote, StrategyContex
 
 bool CArbitrageStrategyExecutor::TestForOpen(entity::Quote* pQuote, StrategyContext* pContext)
 {
+	/*if (directionFast > entity::NET)
+		{
+			if (m_notOpenInStopLossDirection && directionFast == m_lastStopLossDirection)
+			{
+				LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) does NOT open position same as last stop loss direction (%s)")
+					% pPortfolio->InvestorId() % pPortfolio->ID() % GetPosiDirectionText(m_lastStopLossDirection)));
+				return;
+			}
+
+			if (!pOrderPlacer->IsWorking())
+			{
+				m_closePositionPurpose = CLOSE_POSITION_UNKNOWN;
+				LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) FAST DEAL Opening position at bar %d")
+					% pPortfolio->InvestorId() % pPortfolio->ID() % currentBarIdx));
+				pPortfolio->PrintLegsQuote();
+				OpenPosition(direction, pOrderPlacer, (direction == entity::LONG ? structLongDiffFast : structShortDiffFast),
+					pQuote, timestamp);
+				return;
+			}
+		}
+		else if (direction > entity::NET)
+		{
+			if (m_notOpenInStopLossDirection && direction == m_lastStopLossDirection)
+			{
+				LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) does NOT open position same as last stop loss direction (%s)")
+					% pPortfolio->InvestorId() % pPortfolio->ID() % GetPosiDirectionText(m_lastStopLossDirection)));
+				return;
+			}
+
+			if (!pOrderPlacer->IsWorking())
+			{
+				m_closePositionPurpose = CLOSE_POSITION_UNKNOWN;
+				LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) Opening position at bar %d")
+					% pPortfolio->InvestorId() % pPortfolio->ID() % currentBarIdx));
+				pPortfolio->PrintLegsQuote();
+				OpenPosition(direction, pOrderPlacer, (direction == entity::LONG ? structLongDiff : structShortDiff),
+					pQuote, timestamp);
+				return;
+			}
+		}*/
+	
 	return true;
 }
 

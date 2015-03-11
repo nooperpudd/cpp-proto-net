@@ -181,7 +181,7 @@ namespace strategy// Concrete FSM implementation
 				"no transition from state %d on event %s")
 				% state % unExpectedEvtName));
 			//fsm.process_event(evtErrorFound("遇到无法处理的事件"));
-			logger.Error(boost::str(boost::format("Encounter unexpected event %s" % unExpectedEvtName)));
+			logger.Error(boost::str(boost::format("Encounter unexpected event %s") % unExpectedEvtName));
 		}
 	};
 	// Pick a back-end
@@ -205,4 +205,22 @@ CStrategyExecutor::~CStrategyExecutor()
 void CStrategyExecutor::Start()
 {
 	boost::static_pointer_cast<strategy::ExecutorFsm>(m_fsm)->start();
+}
+
+void CStrategyExecutor::FireEvent(ExecutorEvent execEvent)
+{
+	switch (execEvent)
+	{
+	case EXEC_OPEN:
+		boost::static_pointer_cast<strategy::ExecutorFsm>(m_fsm)->process_event(strategy::evtOpening());
+		break;
+	case EXEC_CLOSE:
+		boost::static_pointer_cast<strategy::ExecutorFsm>(m_fsm)->process_event(strategy::evtClosing());
+		break;
+	case EXEC_FILLED:
+		boost::static_pointer_cast<strategy::ExecutorFsm>(m_fsm)->process_event(strategy::evtOrderFilled());
+		break;
+	default:
+		break;
+	}
 }

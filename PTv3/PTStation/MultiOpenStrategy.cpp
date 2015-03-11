@@ -21,17 +21,22 @@ void CMultiOpenStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boo
 
 	CTechAnalyStrategy::Test(pQuote, pPortfolio, timestamp);
 
-	if (!Prerequisite(pQuote, pPortfolio, timestamp))
+	StrategyContext& context = GetContext();
+
+	if (!Prerequisite(pQuote, pPortfolio, context, timestamp))
 		return;
 
-	StrategyContext* pContext = CalculateContext(pQuote, pPortfolio, timestamp);
+	CalculateContext(pQuote, pPortfolio, timestamp);
 
 	// 1. Feed quote to strategy executors that is opening/closing position
-	TestWorkingExecutors(pQuote, pContext, timestamp);
+	TestWorkingExecutors(pQuote, &context, timestamp);
 	// 2. Feed quote to active strategy executor to check for opening position
-	TestForOpen(pQuote, pContext, timestamp);
+	if (!OutOfTradingWindow(context.CurrentIndex))
+	{
+		TestForOpen(pQuote, &context, timestamp);
+	}
 	// 3. Feed quote to strategy executors that are opened and check for closing position
-	TestForClose(pQuote, pContext, timestamp);
+	TestForClose(pQuote, &context, timestamp);
 }
 
 void CMultiOpenStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers)
@@ -103,7 +108,33 @@ void CMultiOpenStrategy::TestForClose(entity::Quote* pQuote, StrategyContext* pC
 	}
 }
 
-bool CMultiOpenStrategy::Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp)
+void CMultiOpenStrategy::OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag)
+{
+	boost::mutex::scoped_lock l(m_mut);
+	boost::unordered_map<int, CStrategyExecutor*>::iterator iterFound = m_workingExecutors.find(execId);
+	if (iterFound != m_workingExecutors.end())
+	{
+		CStrategyExecutor* pExecutor = iterFound->second;
+
+		m_workingExecutors.erase(iterFound);
+
+		if (offsetFlag == entity::OPEN)
+		{
+			ExecutorState execState = pExecutor->State();
+			assert(execState == PENDING_OPEN);
+			m_OpenedExecutors.insert(std::make_pair(execId, pExecutor));
+		}
+		else if (offsetFlag == entity::CLOSE)
+		{
+			ExecutorState execState = pExecutor->State();
+			assert(execState == PENDING_CLOSE);
+			m_executorsPool.push(pExecutor);
+		}
+		pExecutor->FireEvent(EXEC_FILLED);
+	}
+}
+
+bool CMultiOpenStrategy::Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext& context, boost::chrono::steady_clock::time_point& timestamp)
 {
 	return IsMarketOpen(pQuote);
 }
@@ -151,23 +182,6 @@ bool CMultiOpenStrategy::GetReadyExecutor(CStrategyExecutor** pOutExector)
 	return hasElem;
 }
 
-void CMultiOpenStrategy::OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag)
-{
-	boost::mutex::scoped_lock l(m_mut);
-	boost::unordered_map<int, CStrategyExecutor*>::iterator iterFound = m_workingExecutors.find(execId);
-	if (iterFound != m_workingExecutors.end())
-	{
-		if (offsetFlag == entity::OPEN)
-		{
-			m_OpenedExecutors.insert(std::make_pair(execId, iterFound->second));
-		}
-		else if (offsetFlag == entity::CLOSE)
-		{
-			m_executorsPool.push(iterFound->second);
-		}
-		m_workingExecutors.erase(iterFound);
-	}
-}
 
 int CMultiOpenStrategy::OnPortfolioAddPosition(CPortfolio* pPortfolio, const trade::MultiLegOrder& openOrder, int actualTradedVol)
 {
