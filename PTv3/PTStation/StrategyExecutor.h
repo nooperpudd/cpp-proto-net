@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Portfolio.h"
 #include "PortfolioOrderPlacer.h"
 
 enum ExecutorState
@@ -41,15 +42,15 @@ public:
 
 	virtual void OnWorking(entity::Quote* pQuote, StrategyContext* pContext){}
 	virtual void OnFinished(){}
-	virtual bool TestForOpen(entity::Quote* pQuote, StrategyContext* pContext) = 0;
-	virtual bool TestForClose(entity::Quote* pQuote, StrategyContext* pContext) = 0;
+	virtual bool TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp) = 0;
+	virtual bool TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp) = 0;
 
 	ExecutorState State(){ return m_currentState.load(boost::memory_order_consume); }
 	void SetState(ExecutorState state){ m_currentState.store(state, boost::memory_order_release); }
 
 protected:
 
-	void OpenPosition(entity::PosiDirectionType direction, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp){}
+	virtual void OpenPosition(entity::PosiDirectionType direction, ARBI_DIFF_CALC diffPrices, StrategyContext* pContext, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp) = 0;
 
 	int m_execId;
 

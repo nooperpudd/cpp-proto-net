@@ -30,13 +30,17 @@ void CMultiOpenStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boo
 
 	// 1. Feed quote to strategy executors that is opening/closing position
 	TestWorkingExecutors(pQuote, &context, timestamp);
+
+	BeforeTestForTrade(pQuote, pPortfolio, context);
+
 	// 2. Feed quote to active strategy executor to check for opening position
-	if (!OutOfTradingWindow(context.CurrentIndex))
+	if (IsRunning() && !OutOfTradingWindow(context.CurrentIndex))
 	{
-		TestForOpen(pQuote, &context, timestamp);
+		TestForOpen(pQuote, pPortfolio, &context, timestamp);
 	}
+
 	// 3. Feed quote to strategy executors that are opened and check for closing position
-	TestForClose(pQuote, &context, timestamp);
+	TestForClose(pQuote, pPortfolio, &context, timestamp);
 }
 
 void CMultiOpenStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers)
@@ -62,11 +66,11 @@ void CMultiOpenStrategy::TestWorkingExecutors(entity::Quote* pQuote, StrategyCon
 	}
 }
 
-void CMultiOpenStrategy::TestForOpen(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
+void CMultiOpenStrategy::TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
 {
 	if (m_activeExecutor != NULL)
 	{
-		bool open = m_activeExecutor->TestForOpen(pQuote, pContext);
+		bool open = m_activeExecutor->TestForOpen(pQuote, pPortfolio, pContext, timestamp);
 		if (open)
 		{
 			// move active executor to working pool
@@ -89,12 +93,12 @@ void CMultiOpenStrategy::TestForOpen(entity::Quote* pQuote, StrategyContext* pCo
 	}
 }
 
-void CMultiOpenStrategy::TestForClose(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
+void CMultiOpenStrategy::TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
 {
 	for (boost::unordered_map<int, CStrategyExecutor*>::iterator iter = m_OpenedExecutors.begin(); iter != m_OpenedExecutors.end();)
 	{
 		CStrategyExecutor* closingExecutor = iter->second;
-		bool close = closingExecutor->TestForClose(pQuote, pContext);
+		bool close = closingExecutor->TestForClose(pQuote, pPortfolio, pContext, timestamp);
 		if (close)
 		{
 			// move active executor to working pool
