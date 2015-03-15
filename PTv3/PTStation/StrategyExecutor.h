@@ -37,6 +37,7 @@ public:
 	int ExecId(){ return m_execId; }
 	void Start();
 	void FireEvent(ExecutorEvent execEvent);
+	entity::PosiDirectionType PosiDirection();
 
 	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc, PortfolioTradedEvent porfTradedEventHandler) = 0;
 
@@ -51,6 +52,7 @@ public:
 protected:
 
 	virtual void OpenPosition(entity::PosiDirectionType direction, ARBI_DIFF_CALC diffPrices, StrategyContext* pContext, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp) = 0;
+	virtual bool ClosePosition(ARBI_DIFF_CALC diffPrices, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, const string& comment, trade::SubmitReason reason) = 0;
 
 	int m_execId;
 

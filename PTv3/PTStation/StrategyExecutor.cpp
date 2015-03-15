@@ -224,3 +224,11 @@ void CStrategyExecutor::FireEvent(ExecutorEvent execEvent)
 		break;
 	}
 }
+
+entity::PosiDirectionType CStrategyExecutor::PosiDirection()
+{
+	if (m_orderPlacer.get() != NULL)
+		return m_orderPlacer->PosiDirection();
+
+	return entity::NET;
+}
