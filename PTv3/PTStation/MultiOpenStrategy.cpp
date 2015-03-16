@@ -62,7 +62,7 @@ void CMultiOpenStrategy::TestWorkingExecutors(entity::Quote* pQuote, StrategyCon
 {
 	for (boost::unordered_map<int, CStrategyExecutor*>::iterator iter = m_workingExecutors.begin(); iter != m_workingExecutors.end(); ++iter)
 	{
-		(iter->second)->OnWorking(pQuote, pContext);
+		(iter->second)->OnWorking(pQuote, pContext, timestamp);
 	}
 }
 
@@ -112,7 +112,7 @@ void CMultiOpenStrategy::TestForClose(entity::Quote* pQuote, CPortfolio* pPortfo
 	}
 }
 
-void CMultiOpenStrategy::OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag)
+void CMultiOpenStrategy::OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
 {
 	boost::mutex::scoped_lock l(m_mut);
 	boost::unordered_map<int, CStrategyExecutor*>::iterator iterFound = m_workingExecutors.find(execId);
@@ -134,7 +134,7 @@ void CMultiOpenStrategy::OnPortfolioTraded(int execId, entity::PosiOffsetFlag of
 			assert(execState == PENDING_CLOSE);
 			m_executorsPool.push(pExecutor);
 		}
-		pExecutor->FireEvent(EXEC_FILLED);
+		pExecutor->OnFilled(volumeTraded);
 	}
 }
 
@@ -168,7 +168,7 @@ void CMultiOpenStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pO
 		iter != m_strategyExecutors.end(); ++iter)
 	{
 		(*iter)->InitOrderPlacer(pPortf, pOrderProc, 
-			boost::bind(&CMultiOpenStrategy::OnPortfolioTraded, this, _1, _2));
+			boost::bind(&CMultiOpenStrategy::OnPortfolioTraded, this, _1, _2, _3));
 	}
 }
 

@@ -34,7 +34,7 @@ protected:
 
 	void InitializeExecutors();
 	bool GetReadyExecutor(CStrategyExecutor** pOutExector);
-	void OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag);
+	void OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag, int volumeTraded);
 
 	int m_perOpenQuantity;
 	int m_maxQuantity;

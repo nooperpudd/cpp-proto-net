@@ -2,6 +2,14 @@
 
 #include "Strategy.h"
 
+enum CLOSE_POSITION_PURPOSE
+{
+	CLOSE_POSITION_UNKNOWN,
+	CLOSE_POSITION_FORCE,
+	CLOSE_POSITION_STOP_GAIN,
+	CLOSE_POSITION_STOP_LOSS
+};
+
 class CPriceBarDataProxy;
 class CAvatarClient;
 class COHLCRecordSet;

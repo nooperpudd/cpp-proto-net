@@ -232,3 +232,8 @@ entity::PosiDirectionType CStrategyExecutor::PosiDirection()
 
 	return entity::NET;
 }
+
+void CStrategyExecutor::OnFilled(int volumeTraded)
+{
+	FireEvent(EXEC_FILLED);
+}

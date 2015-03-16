@@ -704,7 +704,7 @@ void CPortfolioOrderPlacer::OnCompleted()
 	
 	m_pPortf->UpdatePosition();
 
-	RaisePortfolioFilledEvent(offset == trade::ML_OF_CLOSE ? entity::CLOSE : entity::OPEN);
+	RaisePortfolioFilledEvent(volumeTraded, offset == trade::ML_OF_CLOSE ? entity::CLOSE : entity::OPEN);
 	AfterPortfolioDone(PortfolioFilled);
 }
 

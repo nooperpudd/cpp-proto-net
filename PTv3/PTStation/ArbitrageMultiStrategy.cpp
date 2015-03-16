@@ -203,9 +203,12 @@ entity::PosiDirectionType CArbitrageMultiStrategy::GetFastTradeDirection(Arbitra
 	return direction;
 }
 
-void CArbitrageStrategyExecutor::OnWorking(entity::Quote* pQuote, StrategyContext* pContext)
+void CArbitrageStrategyExecutor::OnWorking(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
 {
-
+	CPortfolio* pPortfolio = m_orderPlacer->Portfolio();
+	LOG_DEBUG(logger, boost::str(boost::format("[%s - %d] Arbitrage Strategy - Check and likely retry submit order") 
+		% (pPortfolio != NULL ? pPortfolio->InvestorId() : "") % m_execId));
+	m_orderPlacer->OnQuoteReceived(timestamp, pQuote);
 }
 
 bool CArbitrageStrategyExecutor::TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
@@ -223,7 +226,7 @@ bool CArbitrageStrategyExecutor::TestForOpen(entity::Quote* pQuote, CPortfolio* 
 			return false;
 		}
 		
-		//m_closePositionPurpose = CLOSE_POSITION_UNKNOWN;
+		m_closePositionPurpose = CLOSE_POSITION_UNKNOWN;
 		LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) FAST DEAL Opening position at bar %d")
 			% pPortfolio->InvestorId() % pPortfolio->ID() % pContext->CurrentIndex));
 		pPortfolio->PrintLegsQuote();
@@ -246,7 +249,7 @@ bool CArbitrageStrategyExecutor::TestForOpen(entity::Quote* pQuote, CPortfolio* 
 			return false;
 		}
 
-		//m_closePositionPurpose = CLOSE_POSITION_UNKNOWN;
+		m_closePositionPurpose = CLOSE_POSITION_UNKNOWN;
 		LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) Opening position at bar %d")
 			% pPortfolio->InvestorId() % pPortfolio->ID() % pContext->CurrentIndex));
 		pPortfolio->PrintLegsQuote();
@@ -273,7 +276,7 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 		if (side == entity::LONG)
 		{
 			// Fast Stop Gain
-			//m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
+			m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
 			string logTxt = boost::str(boost::format("Fast StopGain: Fast Short diff(%.2f) above bollTop(%.2f) -> Stop Gain") 
 				% arbitrageContext->ShortDiffFast % arbitrageContext->BollTop);
 			LOG_DEBUG(logger, logTxt);
@@ -285,7 +288,7 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 		else if (side == entity::SHORT)
 		{
 			// Fast Stop Gain
-			//m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
+			m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
 			string logTxt = boost::str(boost::format("Fast StopGain: Fast Long diff(%.2f) below bollBottom(%.2f) -> Stop Gain") 
 				% arbitrageContext->LongDiffFast % arbitrageContext->BollBottom);
 			LOG_DEBUG(logger, logTxt);
@@ -302,7 +305,7 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 			if (arbitrageContext->BollTop <= m_costDiff)
 			{
 				// Stop Loss
-				//m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
+				m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
 				string logTxt = boost::str(boost::format("bollTop(%.2f) <= costDiff(%.2f) -> Stop Loss") 
 					% arbitrageContext->BollTop % m_costDiff);
 				LOG_DEBUG(logger, logTxt);
@@ -314,7 +317,7 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 			else if (side != arbitrageContext->Direction)
 			{
 				// Stop Gain
-				//m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
+				m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
 				string logTxt = boost::str(boost::format("Short diff(%.2f) above bollTop(%.2f) -> Stop Gain") 
 					% arbitrageContext->ShortDiff % arbitrageContext->BollTop);
 				LOG_DEBUG(logger, logTxt);
@@ -329,7 +332,7 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 			if (arbitrageContext->BollBottom >= m_costDiff)
 			{
 				// Stop Loss
-				//m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
+				m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
 				string logTxt = boost::str(boost::format("bollBottom(%.2f) >= costDiff(%.2f) -> Stop Loss") 
 					% arbitrageContext->BollBottom % m_costDiff);
 				LOG_DEBUG(logger, logTxt);
@@ -341,7 +344,7 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 			else if (side != arbitrageContext->Direction)
 			{
 				// Stop Gain
-				//m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
+				m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
 				string logTxt = boost::str(boost::format("Long diff(%.2f) below bollBottom(%.2f) -> Stop Gain") 
 					% arbitrageContext->LongDiff % arbitrageContext->BollBottom);
 				LOG_DEBUG(logger, logTxt);
@@ -429,7 +432,7 @@ bool CArbitrageStrategyExecutor::ClosePosition(ARBI_DIFF_CALC diffPrices, entity
 			% GetPosiDirectionText(direction) % lmtPrice[0] % lmtPrice[1] % pQuote->update_time()));
 
 		CPortfolioArbitrageOrderPlacer* pOrderPlacer = dynamic_cast<CPortfolioArbitrageOrderPlacer*>(m_orderPlacer.get());
-		//pOrderPlacer->ClosePosition(m_volumeToClose, direction, lmtPrice, 2, timestamp, reason);
+		pOrderPlacer->ClosePosition(m_volumeToClose, direction, lmtPrice, 2, timestamp, reason);
 
 		//ResetForceClose();
 		pOrderPlacer->OutputStatus(boost::str(boost::format("%s - %s Æ½²Ö @ %.2f - %.2f")
@@ -439,4 +442,13 @@ bool CArbitrageStrategyExecutor::ClosePosition(ARBI_DIFF_CALC diffPrices, entity
 	}
 
 	return false;
+}
+
+void CArbitrageStrategyExecutor::OnFilled(int volumeTraded)
+{
+	ExecutorState state = State();
+	if (state == PENDING_OPEN)
+		m_volumeToClose = volumeTraded;
+
+	CStrategyExecutor::OnFilled(volumeTraded);
 }

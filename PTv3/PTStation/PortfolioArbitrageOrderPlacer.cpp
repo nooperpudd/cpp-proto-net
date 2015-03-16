@@ -188,9 +188,6 @@ void CPortfolioArbitrageOrderPlacer::OnPortfolioDone(PortfolioFinishState portfS
 			m_openedPosition = false;
 			offsetFlag = entity::CLOSE;
 		}
-
-		if (!m_portfTradedEventHandler.empty())
-			m_portfTradedEventHandler(m_execId, offsetFlag);
 	}
 	else if (portfState == PortfolioError)
 	{

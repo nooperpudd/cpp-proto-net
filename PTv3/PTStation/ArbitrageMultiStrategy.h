@@ -92,13 +92,14 @@ class CArbitrageStrategyExecutor : public CStrategyExecutor
 {
 public:
 	CArbitrageStrategyExecutor(int execId, int quantity, CArbitrageMultiStrategy* parentStrategy) 
-		: CStrategyExecutor(execId, quantity), m_pParentStrategy(parentStrategy), m_costDiff(0)
+		: CStrategyExecutor(execId, quantity), m_pParentStrategy(parentStrategy), m_costDiff(0), m_volumeToClose(0)
 	{}
 	~CArbitrageStrategyExecutor(){}
 
 	void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc, PortfolioTradedEvent porfTradedEventHandler);
 
-	void OnWorking(entity::Quote* pQuote, StrategyContext* pContext);
+	void OnWorking(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
+	void OnFilled(int volumeTraded);
 	bool TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
 	bool TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
 
@@ -109,5 +110,10 @@ protected:
 private:
 
 	CArbitrageMultiStrategy* m_pParentStrategy;
+
 	double m_costDiff;
+	int m_volumeToClose;
+
+	CLOSE_POSITION_PURPOSE m_closePositionPurpose;
+	entity::PosiDirectionType m_lastStopLossDirection;
 };
