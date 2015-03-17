@@ -449,6 +449,19 @@ void CArbitrageStrategyExecutor::OnFilled(int volumeTraded)
 	ExecutorState state = State();
 	if (state == PENDING_OPEN)
 		m_volumeToClose = volumeTraded;
+	else if (state == PENDING_CLOSE)
+	{
+		if (m_closePositionPurpose == CLOSE_POSITION_STOP_LOSS)
+		{
+			m_lastStopLossDirection = PosiDirection();
+			CPortfolio* pPortfolio = m_orderPlacer->Portfolio();
+			if (pPortfolio != NULL)
+			{
+				LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) SAVING last stop loss direction (%s)")
+					% pPortfolio->InvestorId() % pPortfolio->ID() % GetPosiDirectionText(m_lastStopLossDirection)));
+			}
+		}
+	}
 
 	CStrategyExecutor::OnFilled(volumeTraded);
 }

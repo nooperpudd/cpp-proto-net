@@ -189,12 +189,112 @@ bool CMultiOpenStrategy::GetReadyExecutor(CStrategyExecutor** pOutExector)
 
 int CMultiOpenStrategy::OnPortfolioAddPosition(CPortfolio* pPortfolio, const trade::MultiLegOrder& openOrder, int actualTradedVol)
 {
-	return 0;
+	int qty = actualTradedVol;
+	double cost = CalcMlOrderCost(openOrder);
+
+	entity::PosiDirectionType posiDirection = GetMlOrderDirection(openOrder);
+	if (posiDirection == entity::LONG)
+	{
+		int origQty = m_longPosition;
+		double newAvgCost = (m_longAvgCost * origQty + cost * qty) / (origQty + qty);
+		m_longAvgCost = newAvgCost;
+		m_longPosition += qty;
+	}
+	else if (posiDirection == entity::SHORT)
+	{
+		int origQty = m_shortPosition;
+		double newAvgCost = (m_shortAvgCost * origQty + cost * qty) / (origQty + qty);
+		m_shortAvgCost = newAvgCost;
+		m_shortPosition += qty;
+	}
+
+	return IncrementOpenTimes(pPortfolio, qty);
 }
 
 int CMultiOpenStrategy::OnPortfolioRemovePosition(CPortfolio* pPortfolio, const trade::MultiLegOrder& closeOrder, int actualTradedVol)
 {
-	return 0;
+	int qty = actualTradedVol;
+	double cost = CalcMlOrderCost(closeOrder);
+	LOG_DEBUG(logger, boost::str(boost::format("[%s] MultiOpen Strategy - Portfolio(%s) Removed position and Reset CostDiff")
+		% pPortfolio->InvestorId() % pPortfolio->ID()));
+	
+	entity::PosiDirectionType posiDirection = GetMlOrderDirection(closeOrder);
+	if (posiDirection == entity::LONG)
+	{
+		double orderProfit = (cost - m_longAvgCost) * qty;
+		AddProfit(pPortfolio, orderProfit);
+
+		int origQty = m_longPosition;
+		int remaing = origQty - qty;
+		if (remaing > 0)
+		{
+			double newAvgCost = (m_longAvgCost * origQty - cost * qty) / remaing;
+			m_longAvgCost = newAvgCost;
+		}
+		else
+		{
+			m_longAvgCost = 0;
+		}
+		m_longPosition = remaing;
+	}
+	else if (posiDirection == entity::SHORT)
+	{
+		double orderProfit = (m_shortAvgCost - cost) * qty;
+		AddProfit(pPortfolio, orderProfit);
+
+		int origQty = m_shortPosition;
+		int remaing = origQty - qty;
+		if (remaing > 0)
+		{
+			double newAvgCost = (m_shortAvgCost * origQty - cost * qty) / remaing;
+			m_shortAvgCost = newAvgCost;
+		}
+		else
+		{
+			m_shortAvgCost = 0;
+		}
+		m_shortPosition = remaing;
+	}
+
+	return IncrementCloseTimes(pPortfolio, qty);
+}
+
+double CMultiOpenStrategy::CalcMlOrderCost(const trade::MultiLegOrder& openOrder)
+{
+	double cost = 0;
+	int legCount = openOrder.legs_size();
+	if (legCount > 1)
+	{
+		const trade::Order& firstLeg = openOrder.legs(0);
+		double firstLegPx = firstLeg.limitprice();
+
+		const trade::Order& secondLeg = openOrder.legs(1);
+		double secondLegPx = secondLeg.limitprice();
+
+		cost = firstLegPx - secondLegPx;
+	}
+
+	return cost;
+}
+
+entity::PosiDirectionType CMultiOpenStrategy::GetMlOrderDirection(const trade::MultiLegOrder& mlOrder)
+{
+	if (mlOrder.offset() == trade::ML_OF_OPEN)
+	{
+		if (mlOrder.legs(0).direction() == trade::BUY)
+			return entity::LONG;
+		else
+			return entity::SHORT;
+	}
+	else if (mlOrder.offset() == trade::ML_OF_CLOSE)
+	{
+		if (mlOrder.legs(0).direction() == trade::SELL)
+			return entity::LONG;
+		else
+			return entity::SHORT;
+	}
+	else
+		return entity::NET;
 }
 
 

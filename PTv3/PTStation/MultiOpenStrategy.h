@@ -36,8 +36,16 @@ protected:
 	bool GetReadyExecutor(CStrategyExecutor** pOutExector);
 	void OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag, int volumeTraded);
 
+	static double CalcMlOrderCost(const trade::MultiLegOrder& openOrder);
+	static entity::PosiDirectionType GetMlOrderDirection(const trade::MultiLegOrder& mlOrder);
+
 	int m_perOpenQuantity;
 	int m_maxQuantity;
+
+	int m_longPosition;
+	double m_longAvgCost;
+	int m_shortPosition;
+	double m_shortAvgCost;
 
 	vector<StrategyExecutorPtr> m_strategyExecutors;
 	
