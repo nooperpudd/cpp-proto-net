@@ -16,6 +16,8 @@ CArbitrageMultiStrategy::CArbitrageMultiStrategy(const entity::StrategyItem& str
 	, m_useTargetGain(true)
 	, m_allowPending(true)
 	, m_stopLossType(entity::STOP_LOSS_Disabled)
+	, m_stopLossThreshold(5)
+	, m_stopLossComparison(entity::GREATER_EQUAL_THAN)
 {
 }
 
@@ -34,6 +36,8 @@ void CArbitrageMultiStrategy::OnApply(const entity::StrategyItem& strategyItem, 
 	m_useTargetGain = strategyItem.ar_usetargetgain();
 	m_targetGainTimes = strategyItem.ar_targetgain();
 	m_stopLossType = strategyItem.ar_stoplosstype();
+	m_stopLossThreshold = strategyItem.ar_stoplossthreshold();
+	m_stopLossComparison = strategyItem.ar_stoplosscondition();
 	m_targetGain = m_targetGainTimes * m_minStep;
 	assert(m_targetGain > 0);
 
@@ -302,46 +306,31 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 	{
 		if (side == entity::LONG)
 		{
-			if (arbitrageContext->BollTop <= m_costDiff)
-			{
-				// Stop Loss
-				m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
-				string logTxt = boost::str(boost::format("bollTop(%.2f) <= costDiff(%.2f) -> Stop Loss") 
-					% arbitrageContext->BollTop % m_costDiff);
-				LOG_DEBUG(logger, logTxt);
-				pPortfolio->PrintLegsQuote();
-				string comment = boost::str(boost::format("上轨(%.2f)低于等于成本(%.2f) -> 止损平仓") 
-					% arbitrageContext->BollTop % m_costDiff);
-				return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopLoss);
-			}
-			else if (side != arbitrageContext->Direction)
+			string comment;
+			if (side != arbitrageContext->Direction)
 			{
 				// Stop Gain
 				m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
-				string logTxt = boost::str(boost::format("Short diff(%.2f) above bollTop(%.2f) -> Stop Gain") 
+				string logTxt = boost::str(boost::format("Short diff(%.2f) above bollTop(%.2f) -> Stop Gain")
 					% arbitrageContext->ShortDiff % arbitrageContext->BollTop);
 				LOG_DEBUG(logger, logTxt);
 				pPortfolio->PrintLegsQuote();
-				string comment = boost::str(boost::format("空价差(%.2f)大于上轨(%.2f) -> 止盈平仓") 
+				string comment = boost::str(boost::format("空价差(%.2f)大于上轨(%.2f) -> 止盈平仓")
 					% arbitrageContext->ShortDiff % arbitrageContext->BollTop);
 				return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopGain);
+			}
+			else if (StopLossLong(arbitrageContext, &comment))
+			{
+				pPortfolio->PrintLegsQuote();
+				// Stop Loss
+				m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
+				return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopLoss);
 			}
 		}
 		else if (side == entity::SHORT)
 		{
-			if (arbitrageContext->BollBottom >= m_costDiff)
-			{
-				// Stop Loss
-				m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
-				string logTxt = boost::str(boost::format("bollBottom(%.2f) >= costDiff(%.2f) -> Stop Loss") 
-					% arbitrageContext->BollBottom % m_costDiff);
-				LOG_DEBUG(logger, logTxt);
-				pPortfolio->PrintLegsQuote();
-				string comment = boost::str(boost::format("下轨(%.2f)大于等于成本(%.2f) -> 止损平仓") 
-					% arbitrageContext->BollBottom % m_costDiff);
-				return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopLoss);
-			}
-			else if (side != arbitrageContext->Direction)
+			string comment;
+			if (side != arbitrageContext->Direction)
 			{
 				// Stop Gain
 				m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
@@ -352,6 +341,13 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 				string comment = boost::str(boost::format("多价差(%.2f)小于下轨(%.2f) -> 止盈平仓") 
 					% arbitrageContext->LongDiff % arbitrageContext->BollBottom);
 				return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopGain);
+			}
+			else if (StopLossShort(arbitrageContext, &comment))
+			{
+				pPortfolio->PrintLegsQuote();
+				// Stop Loss
+				m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
+				return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopLoss);
 			}
 		}
 	}
@@ -402,11 +398,11 @@ void CArbitrageStrategyExecutor::OpenPosition(entity::PosiDirectionType directio
 			openComment = boost::str(boost::format("空价差 %.2f 高于上轨 %.2f 做空 (%s)") 
 				% diffPrices.Diff % arbiContext->BollTop % pQuote->update_time());
 		}
-		// TODO feed comment
 		pOrderPlacer->SetMlOrderStatus(openComment);
+
+		FireEvent(EXEC_OPEN);
 		pOrderPlacer->OpenPosition(direction, lmtPrice, 2, timestamp, trade::SR_AutoOpen);
 		m_costDiff = diffPrices.Diff;
-		// todo resetforceopen
 	}
 
 }
@@ -430,7 +426,8 @@ bool CArbitrageStrategyExecutor::ClosePosition(ARBI_DIFF_CALC diffPrices, entity
 
 		LOG_DEBUG(logger, boost::str(boost::format("Arbitrage Trend - %s Close position @ %.2f - %.2f (%s)")
 			% GetPosiDirectionText(direction) % lmtPrice[0] % lmtPrice[1] % pQuote->update_time()));
-
+		
+		FireEvent(EXEC_CLOSE);
 		CPortfolioArbitrageOrderPlacer* pOrderPlacer = dynamic_cast<CPortfolioArbitrageOrderPlacer*>(m_orderPlacer.get());
 		pOrderPlacer->ClosePosition(m_volumeToClose, direction, lmtPrice, 2, timestamp, reason);
 
@@ -464,4 +461,99 @@ void CArbitrageStrategyExecutor::OnFilled(int volumeTraded)
 	}
 
 	CStrategyExecutor::OnFilled(volumeTraded);
+}
+
+bool CArbitrageStrategyExecutor::StopLossLong(ArbitrageStrategyContext* arbitrageContext, string* outComment)
+{
+	bool ret = false;
+	if (m_pParentStrategy->StopLossType() == entity::STOP_LOSS_Auto)
+	{
+		ret = arbitrageContext->BollTop <= m_costDiff;
+		if (ret)
+		{
+			string logTxt = boost::str(boost::format("bollTop(%.2f) <= costDiff(%.2f) -> Stop Loss")
+				% arbitrageContext->BollTop % m_costDiff);
+			LOG_DEBUG(logger, logTxt);
+			
+			*outComment = boost::str(boost::format("上轨(%.2f)低于等于成本(%.2f) -> 止损平仓")
+				% arbitrageContext->BollTop % m_costDiff);
+		}
+	}
+	else if (m_pParentStrategy->StopLossType() == entity::STOP_LOSS_Fixed)
+	{
+		double lost = m_costDiff - arbitrageContext->ShortDiffFast;
+		if (m_pParentStrategy->StopLossComparison() == entity::GREATER_THAN)
+		{
+			ret = lost - m_pParentStrategy->StopLossThreshold() > 0.1;
+		}
+		else if (m_pParentStrategy->StopLossComparison() == entity::GREATER_EQUAL_THAN)
+		{
+			ret = DoubleGreaterEqual(lost, m_pParentStrategy->StopLossThreshold());
+		}
+		if (ret)
+		{
+			string logTxt = boost::str(boost::format("Current Lost(%.2f) %s Threshold(%.2f) -> Stop Loss")
+				% lost % (m_pParentStrategy->StopLossComparison() == entity::GREATER_THAN ? ">" : ">=") 
+				% m_pParentStrategy->StopLossThreshold());
+			LOG_DEBUG(logger, logTxt);
+
+			*outComment = boost::str(boost::format("对价亏损(%.2f)%s设定值(%.2f) -> 止损平仓")
+				% lost % (m_pParentStrategy->StopLossComparison() == entity::GREATER_THAN ? "大于" : "大于等于")
+				% m_pParentStrategy->StopLossThreshold());
+		}
+	}
+	else // entity::STOP_LOSS_Disabled
+	{
+		return false;
+	}
+
+	return ret;
+}
+
+bool CArbitrageStrategyExecutor::StopLossShort(ArbitrageStrategyContext* arbitrageContext, string* outComment)
+{
+	bool ret = false;
+	if (m_pParentStrategy->StopLossType() == entity::STOP_LOSS_Auto)
+	{
+		ret = arbitrageContext->BollBottom >= m_costDiff;
+		if (ret)
+		{
+			// Stop Loss
+			m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
+			string logTxt = boost::str(boost::format("bollBottom(%.2f) >= costDiff(%.2f) -> Stop Loss")
+				% arbitrageContext->BollBottom % m_costDiff);
+			LOG_DEBUG(logger, logTxt);
+			string comment = boost::str(boost::format("下轨(%.2f)大于等于成本(%.2f) -> 止损平仓")
+				% arbitrageContext->BollBottom % m_costDiff);
+		}
+	}
+	else if (m_pParentStrategy->StopLossType() == entity::STOP_LOSS_Fixed)
+	{
+		double lost = arbitrageContext->LongDiffFast - m_costDiff;
+		if (m_pParentStrategy->StopLossComparison() == entity::GREATER_THAN)
+		{
+			ret = lost - m_pParentStrategy->StopLossThreshold() > 0.1;
+		}
+		else if (m_pParentStrategy->StopLossComparison() == entity::GREATER_EQUAL_THAN)
+		{
+			ret = DoubleGreaterEqual(lost, m_pParentStrategy->StopLossThreshold());
+		}
+		if (ret)
+		{
+			string logTxt = boost::str(boost::format("Current Lost(%.2f) %s Threshold(%.2f) -> Stop Loss")
+				% lost % (m_pParentStrategy->StopLossComparison() == entity::GREATER_THAN ? ">" : ">=")
+				% m_pParentStrategy->StopLossThreshold());
+			LOG_DEBUG(logger, logTxt);
+
+			*outComment = boost::str(boost::format("对价亏损(%.2f)%s设定值(%.2f) -> 止损平仓")
+				% lost % (m_pParentStrategy->StopLossComparison() == entity::GREATER_THAN ? "大于" : "大于等于")
+				% m_pParentStrategy->StopLossThreshold());
+		}
+	}
+	else // entity::STOP_LOSS_Disabled
+	{
+		return false;
+	}
+
+	return ret;
 }

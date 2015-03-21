@@ -50,6 +50,9 @@ public:
 	~CArbitrageMultiStrategy();
 
 	bool NotOpenInStopLossDirection(){ return m_notOpenInStopLossDirection; }
+	entity::ArbitrageStopLossType StopLossType(){ return m_stopLossType; }
+	entity::CompareCondition StopLossComparison(){ return m_stopLossComparison; }
+	double StopLossThreshold(){ return m_stopLossThreshold; }
 
 	virtual void CalculateContext(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 
@@ -60,6 +63,7 @@ protected:
 
 	virtual void OnApply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
 	virtual bool Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext& context, boost::chrono::steady_clock::time_point& timestamp);
+
 
 private:
 
@@ -76,6 +80,8 @@ private:
 	double m_targetGain;
 	double m_minStep;
 	bool m_useTargetGain;
+	double m_stopLossThreshold;
+	entity::CompareCondition m_stopLossComparison;
 	entity::ArbitrageStopLossType m_stopLossType;
 	bool m_allowPending;
 
@@ -108,6 +114,9 @@ protected:
 	bool ClosePosition(ARBI_DIFF_CALC diffPrices, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, const string& comment, trade::SubmitReason reason);
 
 private:
+	bool StopLossLong(ArbitrageStrategyContext* arbitrageContext, string* outComment);
+	bool StopLossShort(ArbitrageStrategyContext* arbitrageContext, string* outComment);
+
 
 	CArbitrageMultiStrategy* m_pParentStrategy;
 

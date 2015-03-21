@@ -68,6 +68,20 @@ void CMultiOpenStrategy::TestWorkingExecutors(entity::Quote* pQuote, StrategyCon
 
 void CMultiOpenStrategy::TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
 {
+	if (m_activeExecutor == NULL)
+	{
+		bool succ = GetReadyExecutor(&m_activeExecutor);
+		if (succ)
+		{
+			int execId = m_activeExecutor != NULL ? m_activeExecutor->ExecId() : -1;
+			LOG_DEBUG(logger, boost::str(boost::format("Successfully Get next ready executor(%d)") % execId));
+		}
+		else
+		{
+			logger.Warning("There is NO ready executor so far");
+		}
+	}
+
 	if (m_activeExecutor != NULL)
 	{
 		bool open = m_activeExecutor->TestForOpen(pQuote, pPortfolio, pContext, timestamp);
@@ -87,7 +101,7 @@ void CMultiOpenStrategy::TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfol
 			}
 			else
 			{
-				LOG_DEBUG(logger, "There is NO ready executor so far");
+				logger.Warning("There is NO ready executor so far");
 			}
 		}
 	}
