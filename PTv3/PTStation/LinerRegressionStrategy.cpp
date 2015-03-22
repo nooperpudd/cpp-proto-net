@@ -11,8 +11,8 @@
 
 #define DEFAULT_MAX_GAIN (-10000.0)
 
-CLinerRegressionStrategy::CLinerRegressionStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar)
-	: CTechAnalyStrategy(strategyItem, pAvatar)
+CLinerRegressionStrategy::CLinerRegressionStrategy(CAvatarClient* pAvatar)
+	: CTechAnalyStrategy(pAvatar)
 	, m_period(0)
 	, m_number(0)
 	, m_openThreshold(90.0)
@@ -23,7 +23,6 @@ CLinerRegressionStrategy::CLinerRegressionStrategy(const entity::StrategyItem& s
 	, m_cost(0.0)
 	, m_maxGain(DEFAULT_MAX_GAIN)
 {
-	Apply(strategyItem, false);
 }
 
 
@@ -296,4 +295,9 @@ double CLinerRegressionStrategy::CalcGain( double currentPx )
 		return m_cost - currentPx;
 	else
 		return 0.0;
+}
+
+CPortfolioOrderPlacer* CLinerRegressionStrategy::CreateOrderPlacer()
+{
+	return new CPortfolioTrendOrderPlacer;
 }

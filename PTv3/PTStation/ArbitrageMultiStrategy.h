@@ -46,7 +46,7 @@ public:
 class CArbitrageMultiStrategy : public CMultiOpenStrategy
 {
 public:
-	CArbitrageMultiStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar, CPortfolio* pPortfolio);
+	CArbitrageMultiStrategy(CAvatarClient* pAvatar, CPortfolio* pPortfolio);
 	~CArbitrageMultiStrategy();
 
 	bool NotOpenInStopLossDirection(){ return m_notOpenInStopLossDirection; }

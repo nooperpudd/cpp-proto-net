@@ -140,6 +140,7 @@ copy /y ThostTraderApi\*.dll $(OutDir)</Command>
     <ClInclude Include="QuoteUdpAgent.h" />
     <ClInclude Include="RangeTrendStrategy.h" />
     <ClInclude Include="StrategyExecutor.h" />
+    <ClInclude Include="StrategyFactory.h" />
     <ClInclude Include="StrategyOrderCommand.h" />
     <ClInclude Include="UdpQuoteListener.h" />
     <ClInclude Include="WATRStopDataSet.h" />
@@ -258,6 +259,7 @@ copy /y ThostTraderApi\*.dll $(OutDir)</Command>
     <ClCompile Include="QuoteUdpAgent.cpp" />
     <ClCompile Include="RangeTrendStrategy.cpp" />
     <ClCompile Include="StrategyExecutor.cpp" />
+    <ClCompile Include="StrategyFactory.cpp" />
     <ClCompile Include="StrategyOrderCommand.cpp" />
     <ClCompile Include="UdpQuoteListener.cpp" />
     <ClCompile Include="WATRStopDataSet.cpp" />

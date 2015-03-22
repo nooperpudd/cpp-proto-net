@@ -17,9 +17,10 @@ enum MACDSlopeDirection
 class CHistSlopeStrategy : public CTechAnalyStrategy
 {
 public:
-	CHistSlopeStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar);
+	CHistSlopeStrategy(CAvatarClient* pAvatar);
 	~CHistSlopeStrategy(void);
 
+	virtual void Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
 	virtual void Apply(const entity::StrategyItem& strategyItem, bool withTriggers);
 	virtual void Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 	virtual void GetStrategyUpdate(entity::PortfolioUpdateItem* pPortfUpdateItem);
@@ -27,6 +28,7 @@ public:
 	virtual int OnPortfolioAddPosition(CPortfolio* pPortfolio, const trade::MultiLegOrder& openOrder, int actualTradedVol);
 
 protected:
+	CPortfolioOrderPlacer* CreateOrderPlacer();
 	virtual void CreateTriggers(const entity::StrategyItem& strategyItem);
 	void OpenPosition(entity::SlopeDirection slopeDirection, CPortfolioTrendOrderPlacer* pOrderPlacer, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp);
 	void ClosePosition(CPortfolioTrendOrderPlacer* pOrderPlacer, entity::Quote* pQuote, const char* noteText);

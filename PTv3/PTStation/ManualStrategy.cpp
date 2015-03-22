@@ -6,8 +6,8 @@
 #include "DoubleCompare.h"
 #include "TechAnalyStrategy.h"
 
-CManualStrategy::CManualStrategy(const entity::StrategyItem& strategyItem)
-	: CStrategy(strategyItem)
+CManualStrategy::CManualStrategy()
+	: CStrategy()
 	, m_stopGainCondition(entity::GREATER_EQUAL_THAN)
 	, m_stopLossCondition(entity::GREATER_THAN)
 	, m_stopGainThreshold(10)
@@ -24,7 +24,6 @@ CManualStrategy::CManualStrategy(const entity::StrategyItem& strategyItem)
 	, m_lastlast(0)
 	, m_positionDirection(entity::NET)
 {
-	Apply(strategyItem, false);
 }
 
 CManualStrategy::~CManualStrategy()
@@ -315,4 +314,9 @@ double CManualStrategy::GetStopLossTestValue()
 	}
 
 	return -m_profit;
+}
+
+CPortfolioOrderPlacer* CManualStrategy::CreateOrderPlacer()
+{
+	return new CManualOrderPlacer();
 }

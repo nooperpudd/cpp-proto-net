@@ -47,7 +47,7 @@ _FS_OBJS = stdafx \
 		FileOperations LogManager orderhelper ParseZeusingMarketData SettingChangeTrace \
 		SymbolInfo SymbolInfoRepositry SymbolTimeUtil TradingTimeSpan \
 		\
-		Leg Portfolio PortfolioManager Strategy TradeStation Trigger
+		Leg Portfolio PortfolioManager Strategy StrategyFactory TradeStation Trigger
 
 _FS_CTP_OBJS = InputOrder RtnOrderWrapper TradeAgent 
 

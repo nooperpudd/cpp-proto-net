@@ -5,7 +5,7 @@
 #include "SymbolTimeUtil.h"
 #include "TechStrategyDefs.h"
 
-CStrategy::CStrategy(const entity::StrategyItem& strategyItem)
+CStrategy::CStrategy()
 	: m_running(false)
 	, m_forceOpening(false)
 	, m_forceClosing(false)
@@ -14,7 +14,6 @@ CStrategy::CStrategy(const entity::StrategyItem& strategyItem)
 	, m_marketOpen(false)
 	, m_endTradingBar(9999999)
 {
-	m_type = strategyItem.type();
 }
 
 CStrategy::~CStrategy(void)
@@ -23,6 +22,8 @@ CStrategy::~CStrategy(void)
 
 void CStrategy::Apply( const entity::StrategyItem& strategyItem, bool withTriggers )
 {
+	m_type = strategyItem.type();
+
 #ifdef LOG_FOR_TRADE
 	if(withTriggers)
 	{
@@ -35,6 +36,11 @@ void CStrategy::Apply( const entity::StrategyItem& strategyItem, bool withTrigge
 	m_openTimeout = strategyItem.opentimeout();
 	if(withTriggers)
 		ApplyTrigger(strategyItem);
+}
+
+void CStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers)
+{
+	Apply(strategyItem, withTriggers);
 }
 
 void CStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp )
@@ -195,6 +201,8 @@ void CStrategy::Stop()
 
 void CStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc)
 {
+	m_orderPlacer = OrderPlacerPtr(CreateOrderPlacer());
+
 	if (m_orderPlacer.get() != NULL)
 		m_orderPlacer->Initialize(pPortf, pOrderProc);
 

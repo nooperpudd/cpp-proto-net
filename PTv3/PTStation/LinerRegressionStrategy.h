@@ -9,7 +9,7 @@ class CPortfolioTrendOrderPlacer;
 class CLinerRegressionStrategy : public CTechAnalyStrategy
 {
 public:
-	CLinerRegressionStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar);
+	CLinerRegressionStrategy(CAvatarClient* pAvatar);
 	~CLinerRegressionStrategy(void);
 
 	virtual void Apply(const entity::StrategyItem& strategyItem, bool withTriggers);
@@ -20,7 +20,7 @@ public:
 
 protected:
 	void OnBeforeAddingHistSrcConfig(CHistSourceCfg* pHistSrcCfg);
-
+	CPortfolioOrderPlacer* CreateOrderPlacer();
 private:
 	static entity::PosiDirectionType GetDirection(double angle);
 	void OpenPosition(entity::PosiDirectionType direction, CPortfolioTrendOrderPlacer* pOrderPlacer, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp);

@@ -28,8 +28,8 @@ entity::PosiDirectionType GetMlOrderDirection(const trade::MultiLegOrder& mlOrde
 		return entity::NET;
 }
 
-CArbitrageStrategy::CArbitrageStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar, CPortfolio* pPortfolio)
-	: CTechAnalyStrategy(strategyItem, pAvatar)
+CArbitrageStrategy::CArbitrageStrategy(CAvatarClient* pAvatar, CPortfolio* pPortfolio)
+	: CTechAnalyStrategy(pAvatar)
 	, m_timeFrame(60)
 	, m_bollPeriod(26)
 	, m_stdDevMultiplier(2)
@@ -57,10 +57,6 @@ CArbitrageStrategy::CArbitrageStrategy(const entity::StrategyItem& strategyItem,
 	, m_volumeToClose(0)
 {
 	InitForTargetGain(pPortfolio);
-
-	Apply(strategyItem, false);
-
-	CreateTriggers(strategyItem);
 }
 
 
@@ -117,6 +113,13 @@ void CArbitrageStrategy::Apply( const entity::StrategyItem& strategyItem, bool w
 			CalculateEndBar(1, m_timeFrame, histDataSize);
 		}
 	}
+}
+
+void CArbitrageStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers)
+{
+	Apply(strategyItem, false);
+
+	CreateTriggers(strategyItem);
 }
 
 void CArbitrageStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp )
@@ -635,6 +638,11 @@ void CArbitrageStrategy::InitForTargetGain(CPortfolio* pPortfolio)
 		m_minStep = pPortfolio->GetLeg(1)->MinPriceChange();
 		m_targetGain = TIMES_OF_PRICE_TICK * m_minStep;
 	}
+}
+
+CPortfolioOrderPlacer* CArbitrageStrategy::CreateOrderPlacer()
+{
+	return new CPortfolioOrderPlacer;
 }
 
 

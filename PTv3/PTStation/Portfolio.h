@@ -53,7 +53,7 @@ public:
 	const string& InvestorId();
 	CPortfolioOrderPlacer* OrderPlacer() { return m_strategy->OrderPlacer(); }
 
-	entity::StrategyType StrategyType(){ return m_strategyType; }
+	entity::StrategyType StrategyType(){ return m_strategy->Type(); }
 	trade::HedgeFlagType HedgeFlag(){ return m_hedgeFlag; }
 	void SetHedgeFlag(trade::HedgeFlagType hedgeType);
 	CStrategy* Strategy(){ return m_strategy.get(); }
@@ -99,7 +99,6 @@ public:
 private:
 	void AddLeg(const entity::LegItem& legItem);
 	void PrepareTriggerUpdate();
-	StrategyPtr CreateStrategy(const entity::StrategyItem& strategyItem);
 	void InitOpenCancelLimit( const entity::PortfolioItem &srcPortfolioItem );
 	void InitEndTimePoints( const entity::PortfolioItem& srcPortfolioItem);
 	void CheckForStop(const string& quoteUpdateTime);
@@ -123,7 +122,6 @@ private:
 	entity::PortfolioItem m_portfolioItem;
 	entity::PortfolioUpdateItem m_portfolioUpdate;
 	StrategyPtr m_strategy;
-	entity::StrategyType m_strategyType;
 	vector<LegPtr> m_legs;
 
 	// for quote subscription
@@ -159,7 +157,6 @@ private:
 	boost::mutex m_mutPushingMsg;
 
 	CAvatarClient* m_avatar;
-
 };
 
 typedef boost::shared_ptr<CPortfolio> PortfolioPtr;

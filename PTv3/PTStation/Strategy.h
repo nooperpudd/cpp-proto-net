@@ -16,13 +16,15 @@ class COrderProcessor;
 class CStrategy
 {
 public:
-	CStrategy(const entity::StrategyItem& strategyItem);
+	CStrategy();
 	virtual ~CStrategy(void);
 
+	entity::StrategyType Type(){ return m_type; }
 	int RetryTimes(){ return m_retryTimes; }
 	int OpenTimeout(){ return m_openTimeout; }
 	vector<TriggerPtr>& Triggers() { return m_triggers; }
 
+	virtual void Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
 	virtual void Apply(const entity::StrategyItem& strategyItem, bool withTriggers);
 	void ApplyTrigger(const entity::StrategyItem& strategyItem);
 	virtual void Cleanup(){}
@@ -52,10 +54,11 @@ public:
 	bool IsMarketOpen(entity::Quote* pQuote);
 
 	CPortfolioOrderPlacer* OrderPlacer() { return m_orderPlacer.get(); }
-	void SetOrderPlacer(OrderPlacerPtr& orderPlacer){ m_orderPlacer = orderPlacer; }
 	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc);
 
 protected:
+
+	virtual CPortfolioOrderPlacer* CreateOrderPlacer() = 0;
 
 	void AddProfit(CPortfolio* pPortfolio, double profit);
 	void SetAvgCost(CPortfolio* pPortfolio, double avgCost);

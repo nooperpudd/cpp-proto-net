@@ -9,9 +9,10 @@ class CPortfolioArbitrageOrderPlacer;
 class CArbitrageStrategy : public CTechAnalyStrategy
 {
 public:
-	CArbitrageStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar, CPortfolio* pPortfolio);
+	CArbitrageStrategy(CAvatarClient* pAvatar, CPortfolio* pPortfolio);
 	~CArbitrageStrategy(void);
 
+	virtual void Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
 	virtual void Apply(const entity::StrategyItem& strategyItem, bool withTriggers);
 	virtual void Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 	virtual void GetStrategyUpdate(entity::PortfolioUpdateItem* pPortfUpdateItem);
@@ -23,7 +24,7 @@ protected:
 	virtual void CreateTriggers(const entity::StrategyItem& strategyItem);
 	void OnBeforeAddingHistSrcConfig(CHistSourceCfg* pHistSrcCfg);
 	static double CalcMlOrderCost( const trade::MultiLegOrder& openOrder );
-	
+	CPortfolioOrderPlacer* CreateOrderPlacer();
 
 private:
 	static const string& GetAnotherLegSymbol(const string& symb, const vector<LegPtr>& legs);

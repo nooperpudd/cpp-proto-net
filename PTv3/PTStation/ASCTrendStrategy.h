@@ -11,9 +11,10 @@ class COHLCRecordSet;
 class CASCTrendStrategy : public CTechAnalyStrategy
 {
 public:
-	CASCTrendStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar);
+	CASCTrendStrategy(CAvatarClient* pAvatar);
 	~CASCTrendStrategy(void);
 
+	virtual void Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
 	virtual void Apply(const entity::StrategyItem& strategyItem, bool withTriggers);
 	virtual void Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 	virtual void GetStrategyUpdate(entity::PortfolioUpdateItem* pPortfUpdateItem);
@@ -21,6 +22,7 @@ public:
 	virtual int OnPortfolioAddPosition(CPortfolio* pPortfolio, const trade::MultiLegOrder& openOrder);
 
 protected:
+	CPortfolioOrderPlacer* CreateOrderPlacer();
 	virtual void CreateTriggers(const entity::StrategyItem& strategyItem);
 	void OpenPosition(entity::PosiDirectionType direction, CPortfolioTrendOrderPlacer* pOrderPlacer, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, bool forceOpening, const char* noteText);
 	void ClosePosition(CPortfolio* pPortfolio, CPortfolioTrendOrderPlacer* pOrderPlacer, entity::Quote* pQuote, const char* noteText);

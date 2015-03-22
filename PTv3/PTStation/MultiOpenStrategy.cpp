@@ -4,11 +4,10 @@
 #include "globalmembers.h"
 
 
-CMultiOpenStrategy::CMultiOpenStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar, CPortfolio* pPortfolio)
-	: CTechAnalyStrategy(strategyItem, pAvatar)
+CMultiOpenStrategy::CMultiOpenStrategy(CAvatarClient* pAvatar, CPortfolio* pPortfolio)
+	: CTechAnalyStrategy(pAvatar)
 	, m_activeExecutor(NULL)
 {
-	Apply(strategyItem, pPortfolio, false);
 }
 
 CMultiOpenStrategy::~CMultiOpenStrategy()
@@ -309,6 +308,13 @@ entity::PosiDirectionType CMultiOpenStrategy::GetMlOrderDirection(const trade::M
 	}
 	else
 		return entity::NET;
+}
+
+CPortfolioOrderPlacer* CMultiOpenStrategy::CreateOrderPlacer()
+{
+	// MultiOpenStrategy won't create a single order placer. Instead, it override InitOrderPlacer directly
+	assert(false);
+	return NULL;
 }
 
 

@@ -380,6 +380,9 @@
     <ClInclude Include="StrategyExecutor.h">
       <Filter>Header Files\tech</Filter>
     </ClInclude>
+    <ClInclude Include="StrategyFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -660,6 +663,9 @@
     </ClCompile>
     <ClCompile Include="ArbitrageMultiStrategy.cpp">
       <Filter>Source Files\strategy</Filter>
+    </ClCompile>
+    <ClCompile Include="StrategyFactory.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

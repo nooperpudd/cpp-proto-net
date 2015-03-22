@@ -11,8 +11,8 @@
 #include "TechStrategyDefs.h"
 #include "OHLCRecordSet.h"
 
-CWMATrendStrategy::CWMATrendStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar)
-	: CTechAnalyStrategy(strategyItem, pAvatar)
+CWMATrendStrategy::CWMATrendStrategy(CAvatarClient* pAvatar)
+	: CTechAnalyStrategy(pAvatar)
 	, m_wmaParam(0)
 	, m_maN(0)
 	, m_period(0)
@@ -24,9 +24,6 @@ CWMATrendStrategy::CWMATrendStrategy(const entity::StrategyItem& strategyItem, C
 	m_arrLine[0] = 0.0;
 	m_arrLine[1] = 0.0;
 
-	Apply(strategyItem, false);
-
-	CreateTriggers(strategyItem);
 }
 
 
@@ -65,6 +62,14 @@ void CWMATrendStrategy::Apply( const entity::StrategyItem& strategyItem, bool wi
 			}
 		}
 	}
+}
+
+void CWMATrendStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers)
+{
+
+	Apply(strategyItem, false);
+
+	CreateTriggers(strategyItem);
 }
 
 void CWMATrendStrategy::CreateTriggers( const entity::StrategyItem& strategyItem )
@@ -297,4 +302,9 @@ int CWMATrendStrategy::OnPortfolioAddPosition(CPortfolio* pPortfolio, const trad
 	IncrementCloseTimes(pPortfolio, qty);
 
 	return totalOpenTimes;
+}
+
+CPortfolioOrderPlacer* CWMATrendStrategy::CreateOrderPlacer()
+{
+	return new CPortfolioTrendOrderPlacer;
 }

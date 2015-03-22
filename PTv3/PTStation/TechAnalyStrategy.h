@@ -34,7 +34,7 @@ typedef boost::shared_ptr<CHistSourceCfg> HistSrcCfgPtr;
 class CTechAnalyStrategy : public CStrategy
 {
 public:
-	CTechAnalyStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar);
+	CTechAnalyStrategy(CAvatarClient* pAvatar);
 	virtual ~CTechAnalyStrategy(void);
 
 	virtual void Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);

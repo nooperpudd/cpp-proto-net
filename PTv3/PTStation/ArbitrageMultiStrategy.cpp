@@ -6,8 +6,8 @@
 #include "DoubleCompare.h"
 #include "globalmembers.h"
 
-CArbitrageMultiStrategy::CArbitrageMultiStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar, CPortfolio* pPortfolio)
-	: CMultiOpenStrategy(strategyItem, pAvatar, pPortfolio)
+CArbitrageMultiStrategy::CArbitrageMultiStrategy(CAvatarClient* pAvatar, CPortfolio* pPortfolio)
+	: CMultiOpenStrategy(pAvatar, pPortfolio)
 	, m_timeFrame(60)
 	, m_bollPeriod(26)
 	, m_stdDevMultiplier(2)

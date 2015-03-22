@@ -7,7 +7,7 @@ class CManualOrderPlacer;
 class CManualStrategy : public CStrategy
 {
 public:
-	CManualStrategy(const entity::StrategyItem& strategyItem);
+	CManualStrategy();
 	~CManualStrategy();
 
 	virtual void Apply(const entity::StrategyItem& strategyItem, bool withTriggers);
@@ -21,6 +21,8 @@ public:
 protected:
 	void OpenPosition(entity::PosiDirectionType direction, CManualOrderPlacer* pOrderPlacer, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, bool forceOpening);
 	void ClosePosition(CManualOrderPlacer* pOrderPlacer, entity::Quote* pQuote, const char* noteText);
+
+	CPortfolioOrderPlacer* CreateOrderPlacer();
 
 private:
 	void CalcUpdates(entity::Quote* pQuote);

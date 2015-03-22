@@ -138,6 +138,7 @@ copy /y FemasAPI\*.dll $(OutDir)</Command>
     <ClInclude Include="RangeTrendStrategy.h" />
     <ClInclude Include="RtnOrderWrapper_FM.h" />
     <ClInclude Include="StrategyExecutor.h" />
+    <ClInclude Include="StrategyFactory.h" />
     <ClInclude Include="StrategyOrderCommand.h" />
     <ClInclude Include="TradeAgent_FM.h" />
     <ClInclude Include="UdpQuoteListener.h" />
@@ -256,6 +257,7 @@ copy /y FemasAPI\*.dll $(OutDir)</Command>
     <ClCompile Include="RangeTrendStrategy.cpp" />
     <ClCompile Include="RtnOrderWrapper_FM.cpp" />
     <ClCompile Include="StrategyExecutor.cpp" />
+    <ClCompile Include="StrategyFactory.cpp" />
     <ClCompile Include="StrategyOrderCommand.cpp" />
     <ClCompile Include="TradeAgent_FM.cpp" />
     <ClCompile Include="UdpQuoteListener.cpp" />

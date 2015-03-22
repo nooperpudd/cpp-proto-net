@@ -9,7 +9,7 @@
 class CMultiOpenStrategy : public CTechAnalyStrategy
 {
 public:
-	CMultiOpenStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar, CPortfolio* pPortfolio);
+	CMultiOpenStrategy(CAvatarClient* pAvatar, CPortfolio* pPortfolio);
 	~CMultiOpenStrategy();
 
 	void Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
@@ -25,6 +25,8 @@ public:
 	void TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
 
 protected:
+
+	CPortfolioOrderPlacer* CreateOrderPlacer();
 
 	virtual StrategyContext& GetContext() = 0;
 	virtual StrategyExecutorPtr CreateExecutor(int execId, int quantity) = 0;

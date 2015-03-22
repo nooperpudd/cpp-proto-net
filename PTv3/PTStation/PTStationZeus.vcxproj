@@ -139,6 +139,7 @@ copy /y ZeusingAPI\*.dll $(OutDir)</Command>
     <ClInclude Include="RangeTrendStrategy.h" />
     <ClInclude Include="RtnOrderWrapper_Zeus.h" />
     <ClInclude Include="StrategyExecutor.h" />
+    <ClInclude Include="StrategyFactory.h" />
     <ClInclude Include="StrategyOrderCommand.h" />
     <ClInclude Include="TradeAgent_Zeus.h" />
     <ClInclude Include="UdpQuoteListener.h" />
@@ -258,6 +259,7 @@ copy /y ZeusingAPI\*.dll $(OutDir)</Command>
     <ClCompile Include="RangeTrendStrategy.cpp" />
     <ClCompile Include="RtnOrderWrapper_Zeus.cpp" />
     <ClCompile Include="StrategyExecutor.cpp" />
+    <ClCompile Include="StrategyFactory.cpp" />
     <ClCompile Include="StrategyOrderCommand.cpp" />
     <ClCompile Include="TradeAgent_Zeus.cpp" />
     <ClCompile Include="UdpQuoteListener.cpp" />

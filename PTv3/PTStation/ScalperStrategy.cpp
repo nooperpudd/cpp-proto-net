@@ -5,19 +5,18 @@
 #include "globalmembers.h"
 #include "DoubleCompare.h"
 #include "SettingChangeTrace.h"
+#include "PortfolioScalperOrderPlacer.h"
 
 #include <math.h>
 
-CScalperStrategy::CScalperStrategy(const entity::StrategyItem& strategyItem)
-	: CStrategy(strategyItem)
+CScalperStrategy::CScalperStrategy()
+	: CStrategy()
 	, m_diff(0)
 	, m_prevAsk(0), m_prevBid(0)
 	, m_ask(0), m_askSize(0)
 	, m_bid(0), m_bidSize(0)
 	, m_pendingStop(false)
 {
-	Apply(strategyItem, false);
-	CreateTriggers(strategyItem);
 }
 
 
@@ -51,6 +50,12 @@ void CScalperStrategy::Apply( const entity::StrategyItem& strategyItem, bool wit
 	m_caseGE4Tick = strategyItem.sc_casege4tick();
 	m_caseNoChange = strategyItem.sc_casenochange();
 	m_stopLossStrategy = strategyItem.sc_stoplossstrategy();
+}
+
+void CScalperStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers)
+{
+	Apply(strategyItem, false);
+	CreateTriggers(strategyItem);
 }
 
 void CScalperStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp )
@@ -181,4 +186,9 @@ entity::PosiDirectionType CScalperStrategy::CalcTradeDirection(int askSize, int 
 	}
 
 	return entity::NET;
+}
+
+CPortfolioOrderPlacer* CScalperStrategy::CreateOrderPlacer()
+{
+	return new CPortfolioScalperOrderPlacer;
 }

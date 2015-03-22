@@ -9,8 +9,8 @@
 #include "OHLCRecordSet.h"
 #include "DoubleCompare.h"
 
-CASCTrendStrategy::CASCTrendStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar)
-	: CTechAnalyStrategy(strategyItem, pAvatar)
+CASCTrendStrategy::CASCTrendStrategy(CAvatarClient* pAvatar)
+	: CTechAnalyStrategy(pAvatar)
 	, m_period(0)
 	, m_riskParam(0)
 	, m_avgPeriodParam(0)
@@ -33,8 +33,6 @@ CASCTrendStrategy::CASCTrendStrategy(const entity::StrategyItem& strategyItem, C
 	, m_forceCloseOffset(5)
 {
 
-	Apply(strategyItem, false);
-	CreateTriggers(strategyItem);
 }
 
 
@@ -75,6 +73,13 @@ void CASCTrendStrategy::Apply( const entity::StrategyItem& strategyItem, bool wi
 			}
 		}
 	}
+}
+
+void CASCTrendStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers)
+{
+
+	Apply(strategyItem, false);
+	CreateTriggers(strategyItem);
 }
 
 void CASCTrendStrategy::OnBeforeAddingHistSrcConfig( CHistSourceCfg* pHistSrcCfg )
@@ -495,5 +500,10 @@ bool CASCTrendStrategy::IfNotBreakoutPreceding( CPortfolio* pPortfolio, entity::
 	}
 
 	return notBreakout;
+}
+
+CPortfolioOrderPlacer* CASCTrendStrategy::CreateOrderPlacer()
+{
+	return new CPortfolioTrendOrderPlacer;
 }
 

@@ -11,8 +11,8 @@
 
 
 
-CRangeTrendStrategy::CRangeTrendStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar)
-	: CTechAnalyStrategy(strategyItem, pAvatar)
+CRangeTrendStrategy::CRangeTrendStrategy(CAvatarClient* pAvatar)
+	: CTechAnalyStrategy(pAvatar)
 	, m_timeFrame(300)
 	, m_marketOpen(false)
 	, m_forceCloseOffset(1)
@@ -34,8 +34,7 @@ CRangeTrendStrategy::CRangeTrendStrategy(const entity::StrategyItem& strategyIte
 	, m_recentStopLossPx(0)
 	, m_trending(false)
 {
-	Apply(strategyItem, false);
-	CreateTriggers(strategyItem);
+
 }
 
 
@@ -81,6 +80,12 @@ void CRangeTrendStrategy::Apply( const entity::StrategyItem& strategyItem, bool 
 			}
 		}
 	}
+}
+
+void CRangeTrendStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers)
+{
+	Apply(strategyItem, false);
+	CreateTriggers(strategyItem);
 }
 
 void CRangeTrendStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp )
@@ -441,4 +446,9 @@ bool CRangeTrendStrategy::TestForClose( CPortfolio* pPortfolio, entity::Quote* p
 		}
 	}
 	return ret;
+}
+
+CPortfolioOrderPlacer* CRangeTrendStrategy::CreateOrderPlacer()
+{
+	return new CPortfolioTrendOrderPlacer;
 }

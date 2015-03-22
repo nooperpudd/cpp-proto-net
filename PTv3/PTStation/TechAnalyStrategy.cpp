@@ -17,8 +17,8 @@ const char* GetPosiDirectionText(entity::PosiDirectionType direction, bool chs)
 	}
 }
 
-CTechAnalyStrategy::CTechAnalyStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar)
-	: CStrategy(strategyItem)
+CTechAnalyStrategy::CTechAnalyStrategy(CAvatarClient* pAvatar)
+	: CStrategy()
 	, m_avatar(pAvatar)
 {
 }

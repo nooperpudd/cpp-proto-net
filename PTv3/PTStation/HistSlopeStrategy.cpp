@@ -26,8 +26,8 @@ entity::SlopeDirection CheckDirection(double point1, double point2)
 		return entity::NO_DIRECTION;
 }
 
-CHistSlopeStrategy::CHistSlopeStrategy(const entity::StrategyItem& strategyItem, CAvatarClient* pAvatar)
-	: CTechAnalyStrategy(strategyItem, pAvatar)
+CHistSlopeStrategy::CHistSlopeStrategy(CAvatarClient* pAvatar)
+	: CTechAnalyStrategy(pAvatar)
 	, m_macdShort(0)
 	, m_macdLong(0)
 	, m_macdM(0)
@@ -54,9 +54,6 @@ CHistSlopeStrategy::CHistSlopeStrategy(const entity::StrategyItem& strategyItem,
 	m_slowHistArray[0] = 0;
 	m_slowHistArray[1] = 0;
 
-	Apply(strategyItem, false);
-
-	CreateTriggers(strategyItem);
 }
 
 
@@ -144,6 +141,13 @@ void CHistSlopeStrategy::Apply( const entity::StrategyItem& strategyItem, bool w
 			}
 		}
 	}
+}
+
+void CHistSlopeStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers)
+{
+	Apply(strategyItem, false);
+
+	CreateTriggers(strategyItem);
 }
 
 void CHistSlopeStrategy::CreateTriggers( const entity::StrategyItem& strategyItem )
@@ -409,4 +413,9 @@ void CHistSlopeStrategy::ClosePosition( CPortfolioTrendOrderPlacer* pOrderPlacer
 			% noteText % GetPosiDirectionText(posiDirection) % closePx));
 
 	}
+}
+
+CPortfolioOrderPlacer* CHistSlopeStrategy::CreateOrderPlacer()
+{
+	return new CPortfolioTrendOrderPlacer;
 }
