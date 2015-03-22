@@ -35,6 +35,8 @@ void CArbitrageMultiStrategy::OnApply(const entity::StrategyItem& strategyItem, 
 	m_retryTimes = strategyItem.retrytimes();
 	m_useTargetGain = strategyItem.ar_usetargetgain();
 	m_targetGainTimes = strategyItem.ar_targetgain();
+	if (m_targetGainTimes < 1)
+		m_targetGainTimes = 4;
 	m_stopLossType = strategyItem.ar_stoplosstype();
 	m_stopLossThreshold = strategyItem.ar_stoplossthreshold();
 	m_stopLossComparison = strategyItem.ar_stoplosscondition();
