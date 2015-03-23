@@ -8,6 +8,34 @@
 #define strcpy_s strcpy
 #endif
 
+
+void GetStringFromTimepoint(boost::chrono::steady_clock::time_point timePoint, string* outTimeString)
+{
+	boost::chrono::milliseconds ms = boost::chrono::duration_cast<boost::chrono::milliseconds>(timePoint.time_since_epoch());
+	// separate seconds from centiseconds
+	boost::chrono::seconds s = boost::chrono::duration_cast<boost::chrono::seconds>(ms);
+	ms -= s;
+	// separate minutes from seconds
+	boost::chrono::minutes m = boost::chrono::duration_cast<boost::chrono::minutes>(s);
+	s -= m;
+	// separate hours from minutes
+	boost::chrono::hours h = boost::chrono::duration_cast<boost::chrono::hours>(m);
+	m -= h;
+
+	stringstream ss;
+	ss << h.count() << ":" << m.count() << ":" << s.count() << "." << ms.count();
+	*outTimeString = ss.str();
+}
+
+int GetMilliSecPartOfTimepoint(boost::chrono::steady_clock::time_point timePoint)
+{
+	boost::chrono::milliseconds ms = boost::chrono::duration_cast<boost::chrono::milliseconds>(timePoint.time_since_epoch());
+	// separate seconds from centiseconds
+	boost::chrono::seconds s = boost::chrono::duration_cast<boost::chrono::seconds>(ms);
+	ms -= s;
+	return ms.count();
+}
+
 CTickDataReader::CTickDataReader()
 {
 	memset(&mktDataField, 0, sizeof(mktDataField));
@@ -44,12 +72,17 @@ READ_TICK_STATUS CTickDataReader::Read(boost::chrono::steady_clock::time_point e
 {
 	if (m_tickDataFile.good())
 	{
-		if (m_tpTimestamp == expected)
+		boost::chrono::milliseconds diff = boost::chrono::duration_cast < boost::chrono::milliseconds >
+			(m_tpTimestamp - expected);
+		int diff_ms = diff.count();
+		if (abs(diff_ms) < 500)
 		{
+			mktDataField.UpdateMillisec = GetMilliSecPartOfTimepoint(expected);
 			*pOutMarketData = &mktDataField;
+			m_tpTimestamp = boost::chrono::steady_clock::time_point();	// reset
 			return DATA_READY;
 		}
-		else if (m_tpTimestamp > expected)
+		else if (diff_ms >= 500)
 			return DATA_NOT_AVAIL_FOR_TICK;
 
 		string timestamp;
@@ -58,7 +91,7 @@ READ_TICK_STATUS CTickDataReader::Read(boost::chrono::steady_clock::time_point e
 		bool parseSucc = false;
 		while (!m_tickDataFile.eof() &&
 			(timestamp.empty() ||
-				(m_tpTimestamp < expected)))
+				(diff_ms < -500)))
 		{
 			m_tickDataFile.getline(m_buf, HIST_LINE_MAX_LENGTH);
 			
@@ -69,20 +102,29 @@ READ_TICK_STATUS CTickDataReader::Read(boost::chrono::steady_clock::time_point e
 				return END_OF_FILE;
 			}
 			m_tpTimestamp = GetTimepointFromString(timestamp, millisec);
+			diff = boost::chrono::duration_cast < boost::chrono::milliseconds >
+				(m_tpTimestamp - expected);
+			diff_ms = diff.count();
 		}
 
 		if (parseSucc)
 		{
 			strcpy_s(mktDataField.UpdateTime, timestamp.c_str());
-			mktDataField.UpdateMillisec = millisec;
-
+			
 			mktDataField.LastPrice = last;
 			mktDataField.AskPrice1 = ask;
 			mktDataField.BidPrice1 = bid;
 
-			if (m_tpTimestamp == expected)
+			string act, exp;
+			GetStringFromTimepoint(expected, &exp);
+			GetStringFromTimepoint(m_tpTimestamp, &act);
+
+			//cout << " Expect:" << exp << " Actual:" << act << endl;
+			if (abs(diff_ms) < 500)
 			{
+				mktDataField.UpdateMillisec = GetMilliSecPartOfTimepoint(expected);
 				*pOutMarketData = &mktDataField;
+				m_tpTimestamp = boost::chrono::steady_clock::time_point();	// reset
 				return DATA_READY;
 			}
 			else
@@ -101,29 +143,7 @@ bool CTickDataReader::ParseLine(char* pBuf, string* timestamp, int* millisec, do
 	if (got == 11)
 	{
 		*timestamp = boost::str(boost::format("%02d:%02d:%02d") % h % m % s);
-		if (ms >= 0 && ms < 400)
-		{
-			*millisec = 0;
-		}
-		else if (ms <= 800)
-		{
-			*millisec = 500;
-		}
-		else // ms > 800
-		{
-			*millisec = 0;
-			s += 1;
-			if (s == 60)
-			{
-				s = 0;
-				m += 1;
-				if (m == 60)
-				{
-					m = 0;
-					h += 1;
-				}
-			}
-		}
+		*millisec = ms;
 		return true;
 	}
 	
