@@ -66,6 +66,29 @@ void CArbitrageMultiStrategy::OnApply(const entity::StrategyItem& strategyItem, 
 	}
 }
 
+void CArbitrageMultiStrategy::OnBeforeAddingHistSrcConfig(CHistSourceCfg* pHistSrcCfg)
+{
+	if (pHistSrcCfg != NULL)
+	{
+		if (pHistSrcCfg->Precision == m_timeFrame)
+			pHistSrcCfg->HistData = true;
+	}
+}
+
+void CArbitrageMultiStrategy::GetStrategyUpdate(entity::PortfolioUpdateItem* pPortfUpdateItem)
+{
+	CStrategy::GetStrategyUpdate(pPortfUpdateItem);
+
+	pPortfUpdateItem->set_ar_diff(m_context.LastDiff);
+	pPortfUpdateItem->set_ar_longdiff(m_context.LongDiff);
+	pPortfUpdateItem->set_ar_longsize(m_context.LongDiffSize);
+	pPortfUpdateItem->set_ar_shortdiff(m_context.ShortDiff);
+	pPortfUpdateItem->set_ar_shortsize(m_context.ShortDiffSize);
+
+	pPortfUpdateItem->set_ar_bolltop(m_context.BollTop);
+	pPortfUpdateItem->set_ar_bollbottom(m_context.BollBottom);
+}
+
 void CArbitrageMultiStrategy::GetMinPriceChange(CPortfolio* pPortfolio)
 {
 	assert(pPortfolio != NULL);

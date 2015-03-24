@@ -60,7 +60,8 @@ protected:
 	StrategyExecutorPtr CreateExecutor(int execId, int quantity);
 	StrategyContext& GetContext(){ return m_context; }
 	void BeforeTestForTrade(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext& context);
-
+	void OnBeforeAddingHistSrcConfig(CHistSourceCfg* pHistSrcCfg);
+	void GetStrategyUpdate(entity::PortfolioUpdateItem* pPortfUpdateItem);
 	virtual void OnApply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
 	virtual bool Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext& context, boost::chrono::steady_clock::time_point& timestamp);
 
