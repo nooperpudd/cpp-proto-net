@@ -306,7 +306,8 @@ void CTradeAgent::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CT
 #endif
 		m_maxOrderRef = atoi(pRspUserLogin->MaxOrderRef);
 
-		string ds(pRspUserLogin->TradingDay);
+		//string ds(pRspUserLogin->TradingDay);
+		string ds("20150324");
 		m_tradingDay = boost::gregorian::from_undelimited_string(ds);
 
 		ostringstream ss;

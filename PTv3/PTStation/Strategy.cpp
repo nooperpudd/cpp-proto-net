@@ -185,6 +185,8 @@ void CStrategy::Start()
 {
 	if (m_orderPlacer.get() != NULL)
 		m_orderPlacer->Prepare();
+	
+	OnStart();
 
 	m_running.store(true, boost::memory_order_release);
 	ResetForceOpen();

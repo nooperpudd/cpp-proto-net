@@ -237,3 +237,9 @@ void CStrategyExecutor::OnFilled(int volumeTraded)
 {
 	FireEvent(EXEC_FILLED);
 }
+
+void CStrategyExecutor::Prepare()
+{
+	if (m_orderPlacer.get() != NULL)
+		m_orderPlacer->Prepare();
+}

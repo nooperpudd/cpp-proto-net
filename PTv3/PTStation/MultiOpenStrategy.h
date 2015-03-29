@@ -27,6 +27,7 @@ public:
 protected:
 
 	CPortfolioOrderPlacer* CreateOrderPlacer();
+	void OnStart();
 
 	virtual StrategyContext& GetContext() = 0;
 	virtual StrategyExecutorPtr CreateExecutor(int execId, int quantity) = 0;

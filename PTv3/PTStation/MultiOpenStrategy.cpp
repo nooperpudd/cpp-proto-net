@@ -73,11 +73,11 @@ void CMultiOpenStrategy::TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfol
 		if (succ)
 		{
 			int execId = m_activeExecutor != NULL ? m_activeExecutor->ExecId() : -1;
-			LOG_DEBUG(logger, boost::str(boost::format("Successfully Get next ready executor(%d)") % execId));
+			LOG_DEBUG(logger, boost::str(boost::format("Portfolio(%s) Successfully Get next ready executor(%d)") % pPortfolio->ID() % execId));
 		}
 		else
 		{
-			logger.Warning("There is NO ready executor so far");
+			LOG_DEBUG(logger, boost::str(boost::format("Portfolio(%s) already ran out of executors") % pPortfolio->ID()));
 		}
 	}
 
@@ -315,6 +315,15 @@ CPortfolioOrderPlacer* CMultiOpenStrategy::CreateOrderPlacer()
 	// MultiOpenStrategy won't create a single order placer. Instead, it override InitOrderPlacer directly
 	assert(false);
 	return NULL;
+}
+
+void CMultiOpenStrategy::OnStart()
+{
+	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
+		iter != m_strategyExecutors.end(); ++iter)
+	{
+		(*iter)->Prepare();
+	}
 }
 
 

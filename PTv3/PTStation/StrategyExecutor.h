@@ -35,6 +35,7 @@ public:
 	virtual ~CStrategyExecutor();
 
 	int ExecId(){ return m_execId; }
+	void Prepare();
 	void Start();
 	void FireEvent(ExecutorEvent execEvent);
 	entity::PosiDirectionType PosiDirection();

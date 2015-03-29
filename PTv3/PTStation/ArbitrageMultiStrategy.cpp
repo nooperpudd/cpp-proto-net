@@ -33,7 +33,8 @@ void CArbitrageMultiStrategy::OnApply(const entity::StrategyItem& strategyItem, 
 	m_stdDevMultiplier = (int)strategyItem.ar_stddevmultiplier();
 	m_openTimeout = strategyItem.opentimeout();
 	m_retryTimes = strategyItem.retrytimes();
-	m_useTargetGain = strategyItem.ar_usetargetgain();
+	//m_useTargetGain = strategyItem.ar_usetargetgain();
+	m_useTargetGain = true;
 	m_targetGainTimes = strategyItem.ar_targetgain();
 	if (m_targetGainTimes < 1)
 		m_targetGainTimes = 4;
@@ -202,6 +203,9 @@ void CArbitrageMultiStrategy::BeforeTestForTrade(entity::Quote* pQuote, CPortfol
 				% pPortfolio->InvestorId() % pPortfolio->ID() % arbitrageContext.LongDiffFast % arbitrageContext.BollBottom % arbitrageContext.ShortDiffFast % arbitrageContext.BollTop % GetPosiDirectionText(directionFast)));
 		}
 	}
+
+	arbitrageContext.Direction = direction;
+	arbitrageContext.DirectionFast = directionFast;
 }
 
 entity::PosiDirectionType CArbitrageMultiStrategy::GetTradeDirection(ArbitrageStrategyContext& context)
