@@ -181,7 +181,7 @@ protected:
 	boost::mutex m_mutCleaning;
 
 	boost::shared_ptr<void> m_fsm;
-	boost::mutex m_mutOuterAccessFsm;
+	boost::timed_mutex m_mutOuterAccessFsm;
 
 	string m_pushingMlOrdId;
 	boost::mutex m_mutPushMlOrd;

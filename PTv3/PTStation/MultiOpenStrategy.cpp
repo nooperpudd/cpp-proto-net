@@ -7,6 +7,12 @@
 CMultiOpenStrategy::CMultiOpenStrategy(CAvatarClient* pAvatar, CPortfolio* pPortfolio)
 	: CTechAnalyStrategy(pAvatar)
 	, m_activeExecutor(NULL)
+	, m_perOpenQuantity(1)
+	, m_maxQuantity(3)
+	, m_longPosition(0)
+	, m_longAvgCost(0)
+	, m_shortPosition(0)
+	, m_shortAvgCost(0)
 {
 }
 
@@ -119,6 +125,7 @@ void CMultiOpenStrategy::TestForClose(entity::Quote* pQuote, CPortfolio* pPortfo
 			LOG_DEBUG(logger, boost::str(boost::format("Moving executor(%d) to working pool due to Pending Close") % execId));
 			m_workingExecutors.insert(std::make_pair(execId, closingExecutor));
 			iter = m_OpenedExecutors.erase(iter);
+			break; // Just trigger one orderplacer to close position in one round of test close.
 		}
 		else
 			++iter;

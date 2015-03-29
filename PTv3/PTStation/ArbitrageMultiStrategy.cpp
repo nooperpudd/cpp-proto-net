@@ -252,7 +252,7 @@ bool CArbitrageStrategyExecutor::TestForOpen(entity::Quote* pQuote, CPortfolio* 
 		entity::PosiDirectionType direction = arbitrageContext->DirectionFast;
 
 		if (m_pParentStrategy->NotOpenInStopLossDirection()
-			&& arbitrageContext->DirectionFast == arbitrageContext->LastStopLossDirection)
+			&& direction == arbitrageContext->LastStopLossDirection)
 		{
 			LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) does NOT open position same as last stop loss direction (%s)")
 				% pPortfolio->InvestorId() % pPortfolio->ID() % GetPosiDirectionText(arbitrageContext->LastStopLossDirection)));
@@ -275,7 +275,7 @@ bool CArbitrageStrategyExecutor::TestForOpen(entity::Quote* pQuote, CPortfolio* 
 		entity::PosiDirectionType direction = arbitrageContext->Direction;
 
 		if (m_pParentStrategy->NotOpenInStopLossDirection()
-			&& arbitrageContext->DirectionFast == arbitrageContext->LastStopLossDirection)
+			&& direction == arbitrageContext->LastStopLossDirection)
 		{
 			LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) does NOT open position same as last stop loss direction (%s)")
 				% pPortfolio->InvestorId() % pPortfolio->ID() % GetPosiDirectionText(arbitrageContext->LastStopLossDirection)));

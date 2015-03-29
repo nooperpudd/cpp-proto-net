@@ -769,27 +769,34 @@ void CPortfolioOrderPlacer::OnLegCanceled(const RtnOrderWrapperPtr& pRtnOrder )
 
 void CPortfolioOrderPlacer::OnQuoteReceived( boost::chrono::steady_clock::time_point& quoteTimestamp, entity::Quote* pQuote )
 {
-	boost::lock_guard<boost::mutex> l(m_mutOuterAccessFsm);
-	
-	if(m_activeOrdPlacer == NULL)
-		return;	// in case already cleaned up
-
-	if(m_activeOrdPlacer->Symbol() != pQuote->symbol())
-		return; // in case other symbol's quote coming
-
-	// if order placer is closing order and retry times available
-	if (m_activeOrdPlacer->IsLegPlacerEligibleRetry())
+	boost::unique_lock<boost::timed_mutex> lock(m_mutOuterAccessFsm, boost::chrono::milliseconds(300));
+	if (lock)
 	{
-		bool needCancel = m_activeOrdPlacer->ModifyPrice(pQuote);
-		if(needCancel)
-		{
-#ifdef LOG_FOR_TRADE
-			LOG_DEBUG(logger, boost::str(boost::format("Notify Pending Order of Placer(No.%d) to Cancel") % m_activeOrdPlacer->SequenceNo()));
-#endif
-			boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(evtNextQuoteIn());
 
+		if (m_activeOrdPlacer == NULL)
+			return;	// in case already cleaned up
+
+		if (m_activeOrdPlacer->Symbol() != pQuote->symbol())
+			return; // in case other symbol's quote coming
+
+		// if order placer is closing order and retry times available
+		if (m_activeOrdPlacer->IsLegPlacerEligibleRetry())
+		{
+			bool needCancel = m_activeOrdPlacer->ModifyPrice(pQuote);
+			if (needCancel)
+			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, boost::str(boost::format("Notify Pending Order of Placer(No.%d) to Cancel") % m_activeOrdPlacer->SequenceNo()));
+#endif
+				boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(evtNextQuoteIn());
+
+			}
+			m_triggingTimestamp = quoteTimestamp;
 		}
-		m_triggingTimestamp = quoteTimestamp;
+	}
+	else
+	{
+		logger.Warning(boost::str(boost::format("OrderPlacer(No.%d) status changing while quote coming, ignore this quote!!!") % m_activeOrdPlacer->SequenceNo()));
 	}
 }
 
@@ -824,7 +831,7 @@ void CPortfolioOrderPlacer::OnError(const string& errMsg)
 
 void CPortfolioOrderPlacer::OnPendingTimeUp()
 {
-	boost::lock_guard<boost::mutex> l(m_mutOuterAccessFsm);
+	boost::lock_guard<boost::timed_mutex> l(m_mutOuterAccessFsm);
 	boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(evtPendingTimeUp());
 }
 
@@ -858,7 +865,7 @@ void CPortfolioOrderPlacer::OutputStatus( const string& statusMsg )
 
 void CPortfolioOrderPlacer::OnOrderReturned( RtnOrderWrapperPtr& rtnOrder )
 {
-	boost::lock_guard<boost::mutex> l(m_mutOuterAccessFsm);
+	boost::lock_guard<boost::timed_mutex> l(m_mutOuterAccessFsm);
 
 	trade::OrderSubmitStatusType submitStatus = rtnOrder->OrderSubmitStatus();
 	trade::OrderStatusType status = rtnOrder->OrderStatus();
@@ -957,13 +964,13 @@ void CPortfolioOrderPlacer::AfterPortfolioDone(PortfolioFinishState portfState)
 
 void CPortfolioOrderPlacer::OnOrderPlaceFailed( const string& errMsg )
 {
-	boost::lock_guard<boost::mutex> l(m_mutOuterAccessFsm);
+	boost::lock_guard<boost::timed_mutex> l(m_mutOuterAccessFsm);
 	boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(evtSubmitFailure(errMsg));
 }
 
 void CPortfolioOrderPlacer::OnOrderCancelFailed( int errorId, const string& errMsg )
 {
-	boost::lock_guard<boost::mutex> l(m_mutOuterAccessFsm);
+	boost::lock_guard<boost::timed_mutex> l(m_mutOuterAccessFsm);
 	boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(evtCancelFailure(errorId, errMsg));
 }
 
