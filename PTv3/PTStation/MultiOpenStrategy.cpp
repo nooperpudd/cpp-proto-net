@@ -14,10 +14,13 @@ CMultiOpenStrategy::CMultiOpenStrategy(CAvatarClient* pAvatar, CPortfolio* pPort
 	, m_shortPosition(0)
 	, m_shortAvgCost(0)
 {
+	m_portfTradedEvtPump.Init(boost::bind(&CMultiOpenStrategy::HandlePortfolioTraded, this, _1));
+	m_portfTradedEvtPump.Start();
 }
 
 CMultiOpenStrategy::~CMultiOpenStrategy()
 {
+	m_portfTradedEvtPump.Stop();
 }
 
 void CMultiOpenStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp)
@@ -132,8 +135,12 @@ void CMultiOpenStrategy::TestForClose(entity::Quote* pQuote, CPortfolio* pPortfo
 	}
 }
 
-void CMultiOpenStrategy::OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
+void CMultiOpenStrategy::HandlePortfolioTraded(PortfolioTradedMsgPtr msgPtr)
 {
+	int execId = msgPtr->ExecId();
+	entity::PosiOffsetFlag offsetFlag = msgPtr->OffsetFlag();
+	int volumeTraded = msgPtr->VolumeTraded();
+
 	boost::mutex::scoped_lock l(m_mut);
 	boost::unordered_map<int, CStrategyExecutor*>::iterator iterFound = m_workingExecutors.find(execId);
 	if (iterFound != m_workingExecutors.end())
@@ -156,6 +163,12 @@ void CMultiOpenStrategy::OnPortfolioTraded(int execId, entity::PosiOffsetFlag of
 		}
 		pExecutor->OnFilled(volumeTraded);
 	}
+}
+
+void CMultiOpenStrategy::OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
+{
+	PortfolioTradedMsgPtr msg(new PortfolioTradedMsg(execId, offsetFlag, volumeTraded));
+	m_portfTradedEvtPump.Enqueue(msg);
 }
 
 bool CMultiOpenStrategy::Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext& context, boost::chrono::steady_clock::time_point& timestamp)
@@ -330,6 +343,15 @@ void CMultiOpenStrategy::OnStart()
 		iter != m_strategyExecutors.end(); ++iter)
 	{
 		(*iter)->Prepare();
+	}
+}
+
+void CMultiOpenStrategy::OnStop()
+{
+	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
+		iter != m_strategyExecutors.end(); ++iter)
+	{
+		(*iter)->Cleanup();
 	}
 }
 

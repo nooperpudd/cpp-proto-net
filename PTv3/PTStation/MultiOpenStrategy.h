@@ -2,9 +2,29 @@
 
 #include "TechAnalyStrategy.h"
 #include "StrategyExecutor.h"
+#include "BufferRunner.h"
 
 #include <queue>
 #include <boost/unordered_map.hpp>
+
+class PortfolioTradedMsg
+{
+public:
+	PortfolioTradedMsg(int execId, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
+		: m_execId(execId), m_offsetFlag(offsetFlag), m_volumeTraded(volumeTraded)
+	{}
+
+	int ExecId(){ return m_execId; }
+	entity::PosiOffsetFlag OffsetFlag(){ return m_offsetFlag; }
+	int VolumeTraded(){ return m_volumeTraded; }
+
+private:
+	int m_execId;
+	entity::PosiOffsetFlag m_offsetFlag;
+	int m_volumeTraded;
+};
+
+typedef boost::shared_ptr<PortfolioTradedMsg> PortfolioTradedMsgPtr;
 
 class CMultiOpenStrategy : public CTechAnalyStrategy
 {
@@ -28,6 +48,7 @@ protected:
 
 	CPortfolioOrderPlacer* CreateOrderPlacer();
 	void OnStart();
+	void OnStop();
 
 	virtual StrategyContext& GetContext() = 0;
 	virtual StrategyExecutorPtr CreateExecutor(int execId, int quantity) = 0;
@@ -38,6 +59,7 @@ protected:
 	void InitializeExecutors();
 	bool GetReadyExecutor(CStrategyExecutor** pOutExector);
 	void OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag, int volumeTraded);
+	void HandlePortfolioTraded(PortfolioTradedMsgPtr msgPtr);
 
 	static double CalcMlOrderCost(const trade::MultiLegOrder& openOrder);
 	static entity::PosiDirectionType GetMlOrderDirection(const trade::MultiLegOrder& mlOrder);
@@ -65,5 +87,6 @@ protected:
 	
 	boost::mutex m_mut;
 
+	CBufferRunner<PortfolioTradedMsgPtr> m_portfTradedEvtPump;
 };
 

@@ -42,7 +42,7 @@ void PrintInputOrder(CInputOrder* order)
 {
 	if(order != NULL)
 	{
-		LOG_INFO(logger, boost::str(boost::format("[%s] - %s %d %s @ %.2f")
+		LOG_INFO(logger, boost::str(boost::format("///--->>> [%s] - %s %d %s @ %.2f")
 			% ((order->OffsetFlag()[0] == trade::OF_OPEN) ? "OPEN" : "CLOSE")
 			% TRADE_DIRECTION[order->Direction() - trade::BUY] % order->VolumeTotalOriginal()
 			% order->Symbol() % order->LimitPrice()));
@@ -200,6 +200,7 @@ int COrderProcessor::LockForSubmit( string& outOrdRef )
 	{
 		retOrderRef = GenerateOrderRef(outOrdRef);
 		m_bIsSubmitting = true;
+		LOG_INFO(logger, "///--->>> Before submit and LOCK");
 	}
 	else
 		logger.Warning("LOCK for submit order TIME OUT!");
@@ -216,7 +217,8 @@ bool COrderProcessor::SubmitAndUnlock(CInputOrder* pInputOrder)
 	bool succ = m_pTradeAgent->SubmitOrder(pInputOrder->InnerOrder());
 	
 	m_bIsSubmitting = false;
-	m_condSubmit.notify_one();
+	m_condSubmit.notify_all();
+	LOG_INFO(logger, "///--->>> After submit and unlock");
 	return succ;
 }
 

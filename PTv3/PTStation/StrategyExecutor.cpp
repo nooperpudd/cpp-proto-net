@@ -243,3 +243,9 @@ void CStrategyExecutor::Prepare()
 	if (m_orderPlacer.get() != NULL)
 		m_orderPlacer->Prepare();
 }
+
+void CStrategyExecutor::Cleanup()
+{
+	if (m_orderPlacer.get() != NULL)
+		m_orderPlacer->Cleanup();
+}

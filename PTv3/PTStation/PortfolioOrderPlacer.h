@@ -1,6 +1,7 @@
 #pragma once
 
 #include "LegOrderPlacer.h"
+#include "BufferRunner.h"
 #include "entity/trade.pb.h"
 #include "entity/quote.pb.h"
 
@@ -151,6 +152,8 @@ protected:
 			m_portfTradedEventHandler(m_execId, offsetFlag, volumeTraded);
 	}
 
+	void HandleRtnOrder(RtnOrderWrapperPtr& rtnOrder);
+
 	struct NextQuote
 	{
 		double last;
@@ -186,6 +189,8 @@ protected:
 	string m_pushingMlOrdId;
 	boost::mutex m_mutPushMlOrd;
 	boost::condition_variable m_condMlOrdPushed;
+
+	CBufferRunner<RtnOrderWrapperPtr> m_rtnOrderPump;
 };
 
 typedef boost::shared_ptr<CPortfolioOrderPlacer> OrderPlacerPtr;

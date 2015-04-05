@@ -116,7 +116,7 @@ void CStrategy::ApplyTrigger( const entity::StrategyItem& strategyItem )
 {
 	for (int i = 0; i < strategyItem.triggers_size(); ++i)
 	{
-		m_triggers[i]->Apply(strategyItem.triggers(i));
+		//m_triggers[i]->Apply(strategyItem.triggers(i));
 	}
 }
 
@@ -199,6 +199,8 @@ void CStrategy::Stop()
 
 	if (m_orderPlacer.get() != NULL)
 		m_orderPlacer->Cleanup();
+
+	OnStop();
 }
 
 void CStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc)

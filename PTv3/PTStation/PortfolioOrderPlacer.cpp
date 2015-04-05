@@ -373,11 +373,15 @@ CPortfolioOrderPlacer::CPortfolioOrderPlacer(void)
 	, m_execId(0)
 {
 	m_fsm = boost::shared_ptr<void>(new OrderPlacerFsm(this));
+
+	m_rtnOrderPump.Init(boost::bind(&CPortfolioOrderPlacer::HandleRtnOrder, this, _1));
+	m_rtnOrderPump.Start();
 }
 
 CPortfolioOrderPlacer::~CPortfolioOrderPlacer(void)
 {
 	m_thCleanup.join();
+	m_rtnOrderPump.Stop();
 }
 
 void CPortfolioOrderPlacer::SetNewOrderId(const string& mlOrdId, const char* openOrdId)
@@ -863,7 +867,13 @@ void CPortfolioOrderPlacer::OutputStatus( const string& statusMsg )
 	m_multiLegOrderTemplate->set_statusmsg("");
 }
 
-void CPortfolioOrderPlacer::OnOrderReturned( RtnOrderWrapperPtr& rtnOrder )
+void CPortfolioOrderPlacer::OnOrderReturned(RtnOrderWrapperPtr& rtnOrder)
+{
+	RtnOrderWrapperPtr pRtnOrder = rtnOrder;
+	m_rtnOrderPump.Enqueue(pRtnOrder);
+}
+
+void CPortfolioOrderPlacer::HandleRtnOrder(RtnOrderWrapperPtr& rtnOrder)
 {
 	boost::lock_guard<boost::timed_mutex> l(m_mutOuterAccessFsm);
 
@@ -1143,6 +1153,7 @@ bool CPortfolioOrderPlacer::IsOnPending()
 
 	return false;
 }
+
 
 
 

@@ -36,6 +36,7 @@ public:
 
 	int ExecId(){ return m_execId; }
 	void Prepare();
+	void Cleanup();
 	void Start();
 	void FireEvent(ExecutorEvent execEvent);
 	entity::PosiDirectionType PosiDirection();

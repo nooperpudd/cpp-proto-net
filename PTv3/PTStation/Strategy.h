@@ -60,6 +60,7 @@ protected:
 
 	virtual CPortfolioOrderPlacer* CreateOrderPlacer() = 0;
 	virtual void OnStart(){}
+	virtual void OnStop(){}
 
 	void AddProfit(CPortfolio* pPortfolio, double profit);
 	void SetAvgCost(CPortfolio* pPortfolio, double avgCost);
