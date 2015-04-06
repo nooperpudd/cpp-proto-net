@@ -4,6 +4,7 @@
 #include "SettingChangeTrace.h"
 #include "SymbolTimeUtil.h"
 #include "TechStrategyDefs.h"
+#include "globalmembers.h"
 
 CStrategy::CStrategy()
 	: m_running(false)
@@ -183,14 +184,23 @@ void CStrategy::CalculateEndBar( int offset, int timeFrame, int histDataSize )
 
 void CStrategy::Start()
 {
+	bool succ = true;
 	if (m_orderPlacer.get() != NULL)
-		m_orderPlacer->Prepare();
-	
-	OnStart();
+		succ = m_orderPlacer->Prepare();
 
-	m_running.store(true, boost::memory_order_release);
-	ResetForceOpen();
-	ResetForceClose();
+	if (succ)
+	{
+		if (OnStart())
+		{
+			m_running.store(true, boost::memory_order_release);
+			ResetForceOpen();
+			ResetForceClose();
+		}
+	}
+	else
+	{
+		logger.Warning("Strategy did NOT get prepared successfully");
+	}
 }
 
 void CStrategy::Stop()

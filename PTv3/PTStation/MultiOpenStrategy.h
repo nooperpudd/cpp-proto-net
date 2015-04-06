@@ -47,7 +47,7 @@ public:
 protected:
 
 	CPortfolioOrderPlacer* CreateOrderPlacer();
-	void OnStart();
+	bool OnStart();
 	void OnStop();
 
 	virtual StrategyContext& GetContext() = 0;

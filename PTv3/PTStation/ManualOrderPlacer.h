@@ -9,7 +9,7 @@ public:
 	CManualOrderPlacer();
 	virtual ~CManualOrderPlacer();
 
-	virtual void Prepare();
+	virtual bool Prepare();
 
 	virtual void Cleanup(){}
 

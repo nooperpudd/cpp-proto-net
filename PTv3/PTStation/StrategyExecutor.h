@@ -35,7 +35,7 @@ public:
 	virtual ~CStrategyExecutor();
 
 	int ExecId(){ return m_execId; }
-	void Prepare();
+	bool Prepare();
 	void Cleanup();
 	void Start();
 	void FireEvent(ExecutorEvent execEvent);
@@ -45,7 +45,7 @@ public:
 
 	virtual void OnWorking(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp){}
 	virtual void OnFilled(int volumeTraded);
-	virtual void OnFinished(){}
+	virtual void OnFinished();
 	virtual bool TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp) = 0;
 	virtual bool TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp) = 0;
 
@@ -64,6 +64,7 @@ protected:
 	boost::atomic<ExecutorState> m_currentState;
 
 	OrderPlacerPtr m_orderPlacer;
+	bool m_deferringCleanup;
 };
 
 typedef boost::shared_ptr<CStrategyExecutor> StrategyExecutorPtr;

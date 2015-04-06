@@ -11,10 +11,12 @@ CManualOrderPlacer::~CManualOrderPlacer()
 {
 }
 
-void CManualOrderPlacer::Prepare()
+bool CManualOrderPlacer::Prepare()
 {
 	if (IsReadyForPrepare())
-		CPortfolioOrderPlacer::Prepare();
+		return CPortfolioOrderPlacer::Prepare();
+
+	return false;
 }
 
 CLegOrderPlacer* CManualOrderPlacer::CreateLegOrderPlacer(int openTimeout, int maxRetryTimes)

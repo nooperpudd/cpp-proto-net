@@ -108,6 +108,7 @@ namespace strategy// Concrete FSM implementation
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 				fsm.Executor->SetState(EXECUTOR_IDLE);
+				fsm.Executor->OnFinished();
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
@@ -165,7 +166,7 @@ namespace strategy// Concrete FSM implementation
 		struct transition_table : mpl::vector <
 			//    Start					Event					Next			Action                     Guard
 			//  +-------------------+-------------------+-------------------+---------------------------+--------------------------+
-			a_row < EmptyPosition, evtOpening, PendingOpen, &p::on_open			>,
+			_row < EmptyPosition	, evtOpening		, PendingOpen		>,
 			_row < PendingOpen		, evtOrderFilled	, HoldPosition		>,
 			_row < HoldPosition		, evtClosing		, PendingClose		>,
 			_row < PendingClose		, evtOrderFilled	, Idle			    >,
@@ -192,6 +193,7 @@ CStrategyExecutor::CStrategyExecutor(int execId, int quantity)
 	: m_currentState(EXECUTOR_IDLE)
 	, m_quantity(quantity)
 	, m_execId(execId)
+	, m_deferringCleanup(false)
 {
 	m_fsm = boost::shared_ptr<void>(new strategy::ExecutorFsm(this));
 
@@ -209,6 +211,7 @@ void CStrategyExecutor::Start()
 
 void CStrategyExecutor::FireEvent(ExecutorEvent execEvent)
 {
+	assert(m_fsm.get() != NULL);
 	switch (execEvent)
 	{
 	case EXEC_OPEN:
@@ -238,14 +241,37 @@ void CStrategyExecutor::OnFilled(int volumeTraded)
 	FireEvent(EXEC_FILLED);
 }
 
-void CStrategyExecutor::Prepare()
+bool CStrategyExecutor::Prepare()
 {
+	bool succ = false;
 	if (m_orderPlacer.get() != NULL)
-		m_orderPlacer->Prepare();
+	{
+		succ = m_orderPlacer->Prepare();
+		if (!succ)
+			logger.Warning(boost::str(boost::format("Executor(%d) did NOT get prepared successfully") % m_execId));
+	}
+	return succ;
 }
 
 void CStrategyExecutor::Cleanup()
 {
-	if (m_orderPlacer.get() != NULL)
-		m_orderPlacer->Cleanup();
+	if (State() <= EMPTY_POSITION)
+	{
+		LOG_DEBUG(logger, boost::str(boost::format("Executor(%d) Did 'Actual' Cleanup") % m_execId));
+		if (m_orderPlacer.get() != NULL)
+			m_orderPlacer->Cleanup();
+
+		m_deferringCleanup = false;
+	}
+	else
+	{
+		LOG_DEBUG(logger, boost::str(boost::format("Executor(%d) ''Deferred'' Cleanup") % m_execId));
+		m_deferringCleanup = true;
+	}
+}
+
+void CStrategyExecutor::OnFinished()
+{
+	if (m_deferringCleanup)
+		Cleanup();
 }

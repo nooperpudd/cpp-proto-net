@@ -337,13 +337,17 @@ CPortfolioOrderPlacer* CMultiOpenStrategy::CreateOrderPlacer()
 	return NULL;
 }
 
-void CMultiOpenStrategy::OnStart()
+bool CMultiOpenStrategy::OnStart()
 {
+	bool allReady = true;
 	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
 		iter != m_strategyExecutors.end(); ++iter)
 	{
-		(*iter)->Prepare();
+		bool indReady = (*iter)->Prepare();
+		if (!indReady)
+			allReady = false;
 	}
+	return allReady;
 }
 
 void CMultiOpenStrategy::OnStop()
@@ -351,7 +355,10 @@ void CMultiOpenStrategy::OnStop()
 	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
 		iter != m_strategyExecutors.end(); ++iter)
 	{
-		(*iter)->Cleanup();
+		if((*iter)->State() <= EMPTY_POSITION)
+			(*iter)->Cleanup();
+
+		// in case strategy executor didn't get finished, defer
 	}
 }
 

@@ -42,7 +42,7 @@ public:
 	}
 
 	// Prepare multileg order template and input orders for sending
-	virtual void Prepare();
+	virtual bool Prepare();
 
 	virtual void Cleanup();
 

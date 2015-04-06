@@ -59,7 +59,7 @@ public:
 protected:
 
 	virtual CPortfolioOrderPlacer* CreateOrderPlacer() = 0;
-	virtual void OnStart(){}
+	virtual bool OnStart(){ return true; }
 	virtual void OnStop(){}
 
 	void AddProfit(CPortfolio* pPortfolio, double profit);

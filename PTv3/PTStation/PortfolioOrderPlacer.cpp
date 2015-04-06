@@ -413,19 +413,25 @@ void CPortfolioOrderPlacer::ResetTemplate()
 	}
 }
 
-void CPortfolioOrderPlacer::Prepare()
+bool CPortfolioOrderPlacer::Prepare()
 {
 	boost::unique_lock<boost::mutex> l(m_mutCleaning);
-	m_condCleanDone.wait(l, boost::bind(&CPortfolioOrderPlacer::IsReadyForPrepare, this));
+	bool readyForPrepare = m_condCleanDone.timed_wait(l, boost::posix_time::seconds(1), 
+		boost::bind(&CPortfolioOrderPlacer::IsReadyForPrepare, this));
+	if (readyForPrepare)
+	{
 
-	BuildTemplateOrder();
+		BuildTemplateOrder();
 
-	// Create input orders from template multi-leg order, then m_inputOrders will have items
-	GenLegOrderPlacers();
-	
-	SetFirstLeg();
+		// Create input orders from template multi-leg order, then m_inputOrders will have items
+		GenLegOrderPlacers();
 
-	m_isReady = true;
+		SetFirstLeg();
+
+		m_isReady = true;
+	}
+
+	return m_isReady;
 }
 
 CLegOrderPlacer* CPortfolioOrderPlacer::CreateLegOrderPlacer( int openTimeout, int maxRetryTimes )
