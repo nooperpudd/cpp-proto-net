@@ -44,13 +44,16 @@ namespace strategy// Concrete FSM implementation
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "executor entering: EmptyPosition");
+				LOG_DEBUG(logger, boost::str(boost::format("executor(%d) entering: EmptyPosition") % fsm.Executor->ExecId()));
 #endif
 				fsm.Executor->SetState(EMPTY_POSITION);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
-			void on_exit(Event const&, FSM&) { LOG_DEBUG(logger, "executor leaving: EmptyPosition"); }
+			void on_exit(Event const&, FSM& fsm) 
+			{ 
+				LOG_DEBUG(logger, boost::str(boost::format("executor(%d) leaving: EmptyPosition") % fsm.Executor->ExecId()));
+			}
 #endif
 		};
 
@@ -60,13 +63,13 @@ namespace strategy// Concrete FSM implementation
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "executor entering: HoldPosition");
+				LOG_DEBUG(logger, boost::str(boost::format("executor(%d) entering: HoldPosition") % fsm.Executor->ExecId()));
 #endif
 				fsm.Executor->SetState(HOLD_POSITION);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
-			void on_exit(Event const&, FSM&) { LOG_DEBUG(logger, "executor leaving: HoldPosition"); }
+			void on_exit(Event const&, FSM& fsm) { LOG_DEBUG(logger, boost::str(boost::format("executor(%d) leaving: HoldPosition") % fsm.Executor->ExecId())); }
 #endif
 		};
 
@@ -76,13 +79,13 @@ namespace strategy// Concrete FSM implementation
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "executor entering: PendingOpen");
+				LOG_DEBUG(logger, boost::str(boost::format("executor(%d) entering: PendingOpen") % fsm.Executor->ExecId()));
 #endif
 				fsm.Executor->SetState(PENDING_OPEN);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
-			void on_exit(Event const&, FSM&) { LOG_DEBUG(logger, "executor leaving: PendingOpen"); }
+			void on_exit(Event const&, FSM& fsm) { LOG_DEBUG(logger, boost::str(boost::format("executor(%d) leaving: PendingOpen") % fsm.Executor->ExecId())); }
 #endif
 		};
 
@@ -92,13 +95,13 @@ namespace strategy// Concrete FSM implementation
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "executor entering: PendingClose");
+				LOG_DEBUG(logger, boost::str(boost::format("executor(%d) entering: PendingClose") % fsm.Executor->ExecId()));
 #endif
 				fsm.Executor->SetState(PENDING_CLOSE);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
-			void on_exit(Event const&, FSM&) { LOG_DEBUG(logger, "executor leaving: PendingClose"); }
+			void on_exit(Event const&, FSM& fsm) { LOG_DEBUG(logger, boost::str(boost::format("executor(%d) leaving: PendingClose") % fsm.Executor->ExecId())); }
 #endif
 		};
 
@@ -107,12 +110,18 @@ namespace strategy// Concrete FSM implementation
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, boost::str(boost::format("executor(%d) entering: Idle") % fsm.Executor->ExecId()));
+#endif
 				fsm.Executor->SetState(EXECUTOR_IDLE);
 				fsm.Executor->OnFinished();
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
-			void on_exit(Event const&, FSM&) {}
+			void on_exit(Event const&, FSM& fsm) 
+			{
+				LOG_DEBUG(logger, boost::str(boost::format("executor(%d) leaving: Idle") % fsm.Executor->ExecId()));
+			}
 #endif
 		};
 

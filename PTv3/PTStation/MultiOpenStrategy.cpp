@@ -159,6 +159,7 @@ void CMultiOpenStrategy::HandlePortfolioTraded(PortfolioTradedMsgPtr msgPtr)
 		{
 			ExecutorState execState = pExecutor->State();
 			assert(execState == PENDING_CLOSE);
+			LOG_DEBUG(logger, boost::str(boost::format("Return Executor(%d) to executorPool") % pExecutor->ExecId()));
 			m_executorsPool.push(pExecutor);
 		}
 		pExecutor->OnFilled(volumeTraded);
@@ -339,6 +340,8 @@ CPortfolioOrderPlacer* CMultiOpenStrategy::CreateOrderPlacer()
 
 bool CMultiOpenStrategy::OnStart()
 {
+	boost::mutex::scoped_lock l(m_mut);
+
 	bool allReady = true;
 	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
 		iter != m_strategyExecutors.end(); ++iter)
@@ -352,14 +355,21 @@ bool CMultiOpenStrategy::OnStart()
 
 void CMultiOpenStrategy::OnStop()
 {
+	LOG_DEBUG(logger, "CMultiOpenStrategy enter OnStop ...");
+	boost::mutex::scoped_lock l(m_mut);
+
+	if (m_activeExecutor != NULL)
+	{
+		m_executorsPool.push(m_activeExecutor);
+		m_activeExecutor = NULL;
+	}
+
 	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
 		iter != m_strategyExecutors.end(); ++iter)
 	{
-		if((*iter)->State() <= EMPTY_POSITION)
-			(*iter)->Cleanup();
-
-		// in case strategy executor didn't get finished, defer
+		(*iter)->Cleanup();
 	}
+	LOG_DEBUG(logger, "CMultiOpenStrategy exit OnStop ...");
 }
 
 
