@@ -714,7 +714,7 @@ void CPortfolioOrderPlacer::OnCompleted()
 	
 	m_pPortf->UpdatePosition();
 
-	RaisePortfolioFilledEvent(volumeTraded, offset == trade::ML_OF_CLOSE ? entity::CLOSE : entity::OPEN);
+	RaisePortfolioDoneEvent(PortfolioFilled, volumeTraded, GetPortfolioOffset());
 	AfterPortfolioDone(PortfolioFilled);
 }
 
@@ -821,6 +821,7 @@ void CPortfolioOrderPlacer::OnLegRejected(const RtnOrderWrapperPtr& pRtnOrder )
 void CPortfolioOrderPlacer::OnPortfolioCanceled()
 {
 	AfterLegDone();
+	RaisePortfolioDoneEvent(PortfolioCanceled, 0, GetPortfolioOffset());
 	AfterPortfolioDone(PortfolioCanceled);
 }
 
@@ -835,7 +836,7 @@ void CPortfolioOrderPlacer::OnError(const string& errMsg)
 	m_multiLegOrderTemplate->set_statusmsg(ordStatusMsg);
 
 	UpdateMultiLegOrder();
-
+	RaisePortfolioDoneEvent(PortfolioError, 0, GetPortfolioOffset());
 	AfterPortfolioDone(PortfolioError);
 }
 
@@ -1160,6 +1161,15 @@ bool CPortfolioOrderPlacer::IsOnPending()
 	return false;
 }
 
+entity::PosiOffsetFlag CPortfolioOrderPlacer::GetPortfolioOffset()
+{
+	if (m_multiLegOrderTemplate.get() != NULL)
+	{
+		trade::MlOrderOffset offset = m_multiLegOrderTemplate->offset();
+		return offset == trade::ML_OF_CLOSE ? entity::CLOSE : entity::OPEN;
+	}
+	return entity::OPEN;
+}
 
 
 

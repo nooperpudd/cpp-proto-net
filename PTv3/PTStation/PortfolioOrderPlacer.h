@@ -27,7 +27,7 @@ using namespace std;
 
 enum PortfolioFinishState { PortfolioError, PortfolioCanceled, PortfolioFilled };
 
-typedef boost::function<void(int, entity::PosiOffsetFlag, int)> PortfolioTradedEvent;
+typedef boost::function<void(int, PortfolioFinishState, entity::PosiOffsetFlag, int)> PortfolioTradedEvent;
 
 class CPortfolioOrderPlacer
 {
@@ -146,11 +146,13 @@ protected:
 	void GotoSentState();
 #endif 
 	
-	void RaisePortfolioFilledEvent(int volumeTraded, entity::PosiOffsetFlag offsetFlag)
+	void RaisePortfolioDoneEvent(PortfolioFinishState doneState, int volumeTraded, entity::PosiOffsetFlag offsetFlag)
 	{
 		if (!m_portfTradedEventHandler.empty())
-			m_portfTradedEventHandler(m_execId, offsetFlag, volumeTraded);
+			m_portfTradedEventHandler(m_execId, doneState, offsetFlag, volumeTraded);
 	}
+
+	entity::PosiOffsetFlag GetPortfolioOffset();
 
 	void HandleRtnOrder(RtnOrderWrapperPtr& rtnOrder);
 

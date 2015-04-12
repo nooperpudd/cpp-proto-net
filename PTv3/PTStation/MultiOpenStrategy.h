@@ -7,24 +7,26 @@
 #include <queue>
 #include <boost/unordered_map.hpp>
 
-class PortfolioTradedMsg
+class PortfolioDoneMsg
 {
 public:
-	PortfolioTradedMsg(int execId, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
-		: m_execId(execId), m_offsetFlag(offsetFlag), m_volumeTraded(volumeTraded)
+	PortfolioDoneMsg(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
+		: m_execId(execId), m_doneState(doneState), m_offsetFlag(offsetFlag), m_volumeTraded(volumeTraded)
 	{}
 
 	int ExecId(){ return m_execId; }
+	PortfolioFinishState DoneState() { return m_doneState; }
 	entity::PosiOffsetFlag OffsetFlag(){ return m_offsetFlag; }
 	int VolumeTraded(){ return m_volumeTraded; }
 
 private:
 	int m_execId;
 	entity::PosiOffsetFlag m_offsetFlag;
+	PortfolioFinishState m_doneState;
 	int m_volumeTraded;
 };
 
-typedef boost::shared_ptr<PortfolioTradedMsg> PortfolioTradedMsgPtr;
+typedef boost::shared_ptr<PortfolioDoneMsg> PortfolioDoneMsgPtr;
 
 class CMultiOpenStrategy : public CTechAnalyStrategy
 {
@@ -58,8 +60,8 @@ protected:
 
 	void InitializeExecutors();
 	bool GetReadyExecutor(CStrategyExecutor** pOutExector);
-	void OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag, int volumeTraded);
-	void HandlePortfolioTraded(PortfolioTradedMsgPtr msgPtr);
+	void OnPortfolioDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded);
+	void HandlePortfolioDone(PortfolioDoneMsgPtr msgPtr);
 
 	static double CalcMlOrderCost(const trade::MultiLegOrder& openOrder);
 	static entity::PosiDirectionType GetMlOrderDirection(const trade::MultiLegOrder& mlOrder);
@@ -87,6 +89,6 @@ protected:
 	
 	boost::mutex m_mut;
 
-	CBufferRunner<PortfolioTradedMsgPtr> m_portfTradedEvtPump;
+	CBufferRunner<PortfolioDoneMsgPtr> m_portfTradedEvtPump;
 };
 

@@ -14,7 +14,7 @@ CMultiOpenStrategy::CMultiOpenStrategy(CAvatarClient* pAvatar, CPortfolio* pPort
 	, m_shortPosition(0)
 	, m_shortAvgCost(0)
 {
-	m_portfTradedEvtPump.Init(boost::bind(&CMultiOpenStrategy::HandlePortfolioTraded, this, _1));
+	m_portfTradedEvtPump.Init(boost::bind(&CMultiOpenStrategy::HandlePortfolioDone, this, _1));
 	m_portfTradedEvtPump.Start();
 }
 
@@ -135,40 +135,50 @@ void CMultiOpenStrategy::TestForClose(entity::Quote* pQuote, CPortfolio* pPortfo
 	}
 }
 
-void CMultiOpenStrategy::HandlePortfolioTraded(PortfolioTradedMsgPtr msgPtr)
+void CMultiOpenStrategy::HandlePortfolioDone(PortfolioDoneMsgPtr msgPtr)
 {
 	int execId = msgPtr->ExecId();
+	PortfolioFinishState doneState = msgPtr->DoneState();
 	entity::PosiOffsetFlag offsetFlag = msgPtr->OffsetFlag();
 	int volumeTraded = msgPtr->VolumeTraded();
 
 	boost::mutex::scoped_lock l(m_mut);
+	
 	boost::unordered_map<int, CStrategyExecutor*>::iterator iterFound = m_workingExecutors.find(execId);
 	if (iterFound != m_workingExecutors.end())
 	{
 		CStrategyExecutor* pExecutor = iterFound->second;
 
-		m_workingExecutors.erase(iterFound);
+		if (doneState == PortfolioFilled)
+		{
+			m_workingExecutors.erase(iterFound);
 
-		if (offsetFlag == entity::OPEN)
-		{
-			ExecutorState execState = pExecutor->State();
-			assert(execState == PENDING_OPEN);
-			m_OpenedExecutors.insert(std::make_pair(execId, pExecutor));
+			if (offsetFlag == entity::OPEN)
+			{
+				ExecutorState execState = pExecutor->State();
+				assert(execState == PENDING_OPEN);
+				m_OpenedExecutors.insert(std::make_pair(execId, pExecutor));
+			}
+			else if (offsetFlag == entity::CLOSE)
+			{
+				ExecutorState execState = pExecutor->State();
+				assert(execState == PENDING_CLOSE);
+				LOG_DEBUG(logger, boost::str(boost::format("Return Executor(%d) to executorPool") % pExecutor->ExecId()));
+				m_executorsPool.push(pExecutor);
+			}
+			pExecutor->OnFilled(volumeTraded);
 		}
-		else if (offsetFlag == entity::CLOSE)
+		else	// PortfolioCanceled or PortfolioError
 		{
-			ExecutorState execState = pExecutor->State();
-			assert(execState == PENDING_CLOSE);
-			LOG_DEBUG(logger, boost::str(boost::format("Return Executor(%d) to executorPool") % pExecutor->ExecId()));
+			LOG_DEBUG(logger, boost::str(boost::format("Porfolio Canceled and RETURN Executor(%d) to executorPool") % pExecutor->ExecId()));
 			m_executorsPool.push(pExecutor);
 		}
-		pExecutor->OnFilled(volumeTraded);
 	}
 }
 
-void CMultiOpenStrategy::OnPortfolioTraded(int execId, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
+void CMultiOpenStrategy::OnPortfolioDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
 {
-	PortfolioTradedMsgPtr msg(new PortfolioTradedMsg(execId, offsetFlag, volumeTraded));
+	PortfolioDoneMsgPtr msg(new PortfolioDoneMsg(execId, doneState, offsetFlag, volumeTraded));
 	m_portfTradedEvtPump.Enqueue(msg);
 }
 
@@ -202,7 +212,7 @@ void CMultiOpenStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pO
 		iter != m_strategyExecutors.end(); ++iter)
 	{
 		(*iter)->InitOrderPlacer(pPortf, pOrderProc, 
-			boost::bind(&CMultiOpenStrategy::OnPortfolioTraded, this, _1, _2, _3));
+			boost::bind(&CMultiOpenStrategy::OnPortfolioDone, this, _1, _2, _3, _4));
 	}
 }
 
