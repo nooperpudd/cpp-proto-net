@@ -33,6 +33,12 @@ void CArbitrageMultiStrategy::OnApply(const entity::StrategyItem& strategyItem, 
 	m_stdDevMultiplier = (int)strategyItem.ar_stddevmultiplier();
 	m_openTimeout = strategyItem.opentimeout();
 	m_retryTimes = strategyItem.retrytimes();
+
+	if (m_openTimeout == 0)
+		m_openTimeout = 350;
+	if (m_retryTimes == 0)
+		m_retryTimes = 8;
+
 	//m_useTargetGain = strategyItem.ar_usetargetgain();
 	m_useTargetGain = true;
 	m_targetGainTimes = strategyItem.ar_targetgain();
@@ -236,11 +242,12 @@ entity::PosiDirectionType CArbitrageMultiStrategy::GetFastTradeDirection(Arbitra
 	return direction;
 }
 
-void CArbitrageStrategyExecutor::OnWorking(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
+void CArbitrageStrategyExecutor::OnWorking(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
 {
+	
 	CPortfolio* pPortfolio = m_orderPlacer->Portfolio();
-	LOG_DEBUG(logger, boost::str(boost::format("[%s - %d] Arbitrage Strategy - Check and likely retry submit order") 
-		% (pPortfolio != NULL ? pPortfolio->InvestorId() : "") % m_execId));
+	LOG_DEBUG(logger, boost::str(boost::format("[%s - %d] Arbitrage Strategy - Check and likely retry submit order %s:%.2f") 
+		% (pPortfolio != NULL ? pPortfolio->InvestorId() : "") % m_execId % pQuote->symbol() % pQuote->last()));
 	m_orderPlacer->OnQuoteReceived(timestamp, pQuote);
 }
 

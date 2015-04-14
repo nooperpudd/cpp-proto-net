@@ -31,13 +31,13 @@ void CMultiOpenStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boo
 
 	StrategyContext& context = GetContext();
 
+	// 1. Feed quote to strategy executors that is opening/closing position
+	TestWorkingExecutors(pQuote, timestamp);
+
 	if (!Prerequisite(pQuote, pPortfolio, context, timestamp))
 		return;
 
 	CalculateContext(pQuote, pPortfolio, timestamp);
-
-	// 1. Feed quote to strategy executors that is opening/closing position
-	TestWorkingExecutors(pQuote, &context, timestamp);
 
 	BeforeTestForTrade(pQuote, pPortfolio, context);
 
@@ -66,11 +66,11 @@ void CMultiOpenStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfo
 		InitializeExecutors();
 }
 
-void CMultiOpenStrategy::TestWorkingExecutors(entity::Quote* pQuote, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
+void CMultiOpenStrategy::TestWorkingExecutors(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
 {
 	for (boost::unordered_map<int, CStrategyExecutor*>::iterator iter = m_workingExecutors.begin(); iter != m_workingExecutors.end(); ++iter)
 	{
-		(iter->second)->OnWorking(pQuote, pContext, timestamp);
+		(iter->second)->OnWorking(pQuote, timestamp);
 	}
 }
 
@@ -148,11 +148,11 @@ void CMultiOpenStrategy::HandlePortfolioDone(PortfolioDoneMsgPtr msgPtr)
 	if (iterFound != m_workingExecutors.end())
 	{
 		CStrategyExecutor* pExecutor = iterFound->second;
+		LOG_DEBUG(logger, boost::str(boost::format("Remove Executor(%d) from working list") % pExecutor->ExecId()));
+		m_workingExecutors.erase(iterFound);
 
 		if (doneState == PortfolioFilled)
 		{
-			m_workingExecutors.erase(iterFound);
-
 			if (offsetFlag == entity::OPEN)
 			{
 				ExecutorState execState = pExecutor->State();
@@ -168,9 +168,22 @@ void CMultiOpenStrategy::HandlePortfolioDone(PortfolioDoneMsgPtr msgPtr)
 			}
 			pExecutor->OnFilled(volumeTraded);
 		}
-		else	// PortfolioCanceled or PortfolioError
+		else if (doneState == PortfolioCanceled)
 		{
-			LOG_DEBUG(logger, boost::str(boost::format("Porfolio Canceled and RETURN Executor(%d) to executorPool") % pExecutor->ExecId()));
+			if (offsetFlag == entity::OPEN)
+			{
+				LOG_DEBUG(logger, boost::str(boost::format("OPEN Canceled and RETURN Executor(%d) to executorPool") % pExecutor->ExecId()));
+				m_executorsPool.push(pExecutor);
+			}
+			else
+			{
+				LOG_DEBUG(logger, boost::str(boost::format("CLOSE Canceled and RETURN Executor(%d) to OpenedExecutors list") % pExecutor->ExecId()));
+				m_OpenedExecutors.insert(std::make_pair(execId, pExecutor));
+			}
+		}
+		else // got error
+		{
+			logger.Warning(boost::str(boost::format("Got ERROR and RETURN Executor(%d) to executorPool") % pExecutor->ExecId()));
 			m_executorsPool.push(pExecutor);
 		}
 	}

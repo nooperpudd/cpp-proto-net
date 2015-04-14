@@ -197,12 +197,11 @@ void CPortfolio::OnQuoteRecevied( boost::chrono::steady_clock::time_point& times
 #ifdef _DEBUG
 	cout << "Quote incoming: " << pQuote->symbol() << ", " << pQuote->last() << ", " << pQuote->update_time() << endl; 
 #endif
-	
+	*/
 #ifdef LOG_FOR_TECH_CALC
 	LOG_DEBUG(logger, boost::str(boost::format("Portfolio %s received quote %s, %.2f, %s %d")
 		% ID() % pQuote->symbol() % pQuote->last() % pQuote->update_time() % pQuote->update_millisec()));
 #endif
-		*/
 	CheckForStart(pQuote->update_time());
 
 	// Update leg's last with income quote in CStrategy::Test
