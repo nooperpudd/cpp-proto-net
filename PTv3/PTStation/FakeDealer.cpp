@@ -25,12 +25,10 @@ CFakeDealer::CFakeDealer(void)
 	memset(&m_pendingInputOrder, 0, sizeof(m_pendingInputOrder));
 
 	m_msgPump.Init(boost::bind(&CFakeDealer::DispatchMsg, this, _1));
-	m_msgPump.Start();
 }
 
 CFakeDealer::~CFakeDealer(void)
 {
-	m_msgPump.Stop();
 }
 
 int CFakeDealer::ReqOrderInsert( CThostFtdcInputOrderField *pInputOrder, int nRequestID )
@@ -74,26 +72,27 @@ int CFakeDealer::ReqOrderInsert( CThostFtdcInputOrderField *pInputOrder, int nRe
 	}
 	else
 	{
-		boost::thread thIns(boost::bind(
-			&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-			);
 		/*
+		boost::thread thIns(boost::bind(
+			&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
+			);
+		*/
 		// Fill and pending
 		if(times % 2 == 1)
 		{
 			boost::thread thIns(boost::bind(
-				&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-				//&CFakeDealer::PendingOrder, this, pInputOrder, nRequestID)
+				//&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
+				&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
 				);
 		}
 		else
 		{
 			boost::thread thIns(boost::bind(
-				//&CFakeDealer::FullFillOrder, this, pInputOrder, nRequestID)
-				&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
+				&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
+				//&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
 				);
 		}
-		*/
+		
 	}
 	
 	return 0;

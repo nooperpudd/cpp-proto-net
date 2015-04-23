@@ -1,101 +1,86 @@
 #pragma once
 
+#include <boost/shared_ptr.hpp>
+#include <boost/asio.hpp>
 #include <boost/thread.hpp>
-#include <boost/circular_buffer.hpp>
-
-#define BUFFER_DEFAULT_CAPACITY 128
+#include <boost/atomic.hpp>
 
 template < typename T >
-class CBufferRunner
+class CBufferRunner : public CThreadWorker
 {
 public:
-	CBufferRunner()
-		: m_isRunning(false), m_hasStuff(false)
+	CBufferRunner(int threadNum = 1) : CThreadWorker(threadNum)
 	{
-		SetCapacity(BUFFER_DEFAULT_CAPACITY);
-	}
-	CBufferRunner(boost::function<void(T)> callback)
-		: CBufferRunner()
-		, m_jobCallback(callback)
-	{
-	}
-	~CBufferRunner(void)
-	{
-		if(m_isRunning)
-			Stop();
-		m_thread.join();
 	}
 
-	void Init(boost::function<void(T)> callback)
+	CBufferRunner(boost::function<void(T&)> callback, int threadNum = 1)
+		: CBufferRunner(threadNum)
+	{
+		Init(callback);
+	}
+
+	~CBufferRunner(void)
+	{
+	}
+
+	void Init(boost::function<void(T&)> callback)
 	{
 		m_jobCallback = callback;
 	}
 
-	void SetCapacity(int capacity)
+	void Enqueue(T stuff)
 	{
-		m_cbQuotes.set_capacity(capacity);
+		QueueWorkItem(boost::bind(&CBufferRunner<T>::DoWork, this, stuff));
 	}
 
-	void Start()
+private:
+	void DoWork(T& stuff)
 	{
-		m_isRunning = true;
-		m_thread = boost::thread(boost::bind(&CBufferRunner::Dequeue, this));
+		if (!m_jobCallback.empty())
+			m_jobCallback(stuff);
+	}
+
+	boost::function<void(T&)> m_jobCallback;
+};
+
+
+class CThreadWorker
+{
+public:
+	CThreadWorker(int threadNum = 1)
+		: io_service(new boost::asio::io_service)
+		, work(new boost::asio::io_service::work(*io_service))
+	{
+		for (int i = 0; i < threadNum; ++i)
+			worker_threads.create_thread(boost::bind(&boost::asio::io_service::run, io_service));
+		running.store(true);
+	}
+
+	~CThreadWorker()
+	{
+		work.reset();
+
+		Stop();
 	}
 
 	void Stop()
 	{
-		boost::unique_lock<boost::mutex> lock(m_mutex);
-		m_isRunning = false;
-		m_cond.notify_all();
+		running.store(false, boost::memory_order_release);
+		io_service->stop();	// ensure io_service stopped
+		worker_threads.join_all();
 	}
 
-	void Enqueue(T stuff, bool front = false)
+	template <typename WorkHandler>
+	void QueueWorkItem(WorkHandler handler)
 	{
-		boost::unique_lock<boost::mutex> lock(m_mutex);
-		if(m_isRunning)
-		{
-			if(front)
-				m_cbQuotes.push_front(stuff);
-			else
-				m_cbQuotes.push_back(stuff);
-			m_cond.notify_all();
-		}
+		if (running.load(boost::memory_order_acquire))
+			io_service->post(handler);
 	}
 
 private:
-
-	void Dequeue()
-	{
-		while(m_isRunning)
-		{
-			boost::unique_lock<boost::mutex> lock(m_mutex);
-			while (m_cbQuotes.size() == 0 && m_isRunning)
-			{
-				m_cond.wait(lock);         
-			}
-
-			if(! m_isRunning)
-				return;
-
-			T& stuff = m_cbQuotes.front();
-
-			if(!m_jobCallback.empty())
-				m_jobCallback(stuff);
-
-			m_cbQuotes.pop_front();
-		}  
-	}
-
-
-
-	boost::condition_variable m_cond;
-	boost::mutex m_mutex;
-	bool m_isRunning;
-	bool m_hasStuff;
-
-	boost::circular_buffer< T > m_cbQuotes;
-
-	boost::function<void(T&)> m_jobCallback;
-	boost::thread m_thread;
+	boost::shared_ptr< boost::asio::io_service > io_service;
+	boost::shared_ptr< boost::asio::io_service::work > work;
+	boost::thread_group worker_threads;
+	boost::atomic<bool> running;
 };
 

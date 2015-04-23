@@ -375,13 +375,11 @@ CPortfolioOrderPlacer::CPortfolioOrderPlacer(void)
 	m_fsm = boost::shared_ptr<void>(new OrderPlacerFsm(this));
 
 	m_rtnOrderPump.Init(boost::bind(&CPortfolioOrderPlacer::HandleRtnOrder, this, _1));
-	m_rtnOrderPump.Start();
 }
 
 CPortfolioOrderPlacer::~CPortfolioOrderPlacer(void)
 {
 	m_thCleanup.join();
-	m_rtnOrderPump.Stop();
 }
 
 void CPortfolioOrderPlacer::SetNewOrderId(const string& mlOrdId, const char* openOrdId)

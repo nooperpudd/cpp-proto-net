@@ -15,12 +15,10 @@ CMultiOpenStrategy::CMultiOpenStrategy(CAvatarClient* pAvatar, CPortfolio* pPort
 	, m_shortAvgCost(0)
 {
 	m_portfTradedEvtPump.Init(boost::bind(&CMultiOpenStrategy::HandlePortfolioDone, this, _1));
-	m_portfTradedEvtPump.Start();
 }
 
 CMultiOpenStrategy::~CMultiOpenStrategy()
 {
-	m_portfTradedEvtPump.Stop();
 }
 
 void CMultiOpenStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp)
