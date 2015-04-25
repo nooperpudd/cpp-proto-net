@@ -61,6 +61,13 @@ namespace PTEntity {
 		TRAILING_STOP = 1
 	};
 
+	public enum class ArbitrageStopLossType : int
+	{
+		STOP_LOSS_Disabled = 0,
+		STOP_LOSS_Fixed = 1,
+		STOP_LOSS_Auto = 2
+	};
+
 	public enum class StopLossCloseMethods : int
 	{
 		BASED_ON_NEXT_QUOTE = 0,

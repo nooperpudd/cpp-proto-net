@@ -1344,7 +1344,7 @@ namespace PortfolioTrading.Modules.Account
             OpenTimes = item.TotalOpenTimes;
             DoneTimes = item.TotalCloseTimes;
             CancelVolume = item.CancelTimes;
-            //Position = item.CurrentPosition;
+            Position = item.CurrentPosition;
 
             Gain = item.Profit;
             //Quantity = item.Quantity;

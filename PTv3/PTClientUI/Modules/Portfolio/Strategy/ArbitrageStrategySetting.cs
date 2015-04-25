@@ -10,86 +10,138 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
 {
     public class ArbitrageStrategySetting : StrategySetting
     {
-        #region Direction
-        private PTEntity.PosiDirectionType _direction;
 
-        public PTEntity.PosiDirectionType Direction
+        #region BollPeriod
+        private int _bollPeriod;
+
+        public int BollPeriod
         {
-            get { return _direction; }
+            get { return _bollPeriod; }
             set
             {
-                if (_direction != value)
+                if (_bollPeriod != value)
                 {
-                    _direction = value;
-                    RaisePropertyChanged("Direction");
+                    _bollPeriod = value;
+                    RaisePropertyChanged("BollPeriod");
                 }
             }
         }
         #endregion
 
-        #region OpenCondition
-        private PTEntity.CompareCondition _openCond;
+        #region StdDevMultiplier
+        private int _stdDevMultiplier;
 
-        public PTEntity.CompareCondition OpenCondition
+        public int StdDevMultiplier
         {
-            get { return _openCond; }
+            get { return _stdDevMultiplier; }
             set
             {
-                if (_openCond != value)
+                if (_stdDevMultiplier != value)
                 {
-                    _openCond = value;
-                    RaisePropertyChanged("OpenCondition");
+                    _stdDevMultiplier = value;
+                    RaisePropertyChanged("StdDevMultiplier");
                 }
             }
         }
         #endregion
 
-        #region OpenThreshold
-        private double _openThreshold;
+        #region FirstLegSymbol
+        private string _firstLegSymbol;
 
-        public double OpenThreshold
+        public string FirstLegSymbol
         {
-            get { return _openThreshold; }
+            get { return _firstLegSymbol; }
             set
             {
-                if (_openThreshold != value)
+                if (_firstLegSymbol != value)
                 {
-                    _openThreshold = value;
-                    RaisePropertyChanged("OpenThreshold");
+                    _firstLegSymbol = value;
+                    RaisePropertyChanged("FirstLegSymbol");
                 }
             }
         }
         #endregion
 
-        #region StopGainCondition
-        private PTEntity.CompareCondition _stopGainCond;
+        #region SecondLegSymbol
+        private string _secondLegSymbol;
 
-        public PTEntity.CompareCondition StopGainCondition
+        public string SecondLegSymbol
         {
-            get { return _stopGainCond; }
+            get { return _secondLegSymbol; }
             set
             {
-                if (_stopGainCond != value)
+                if (_secondLegSymbol != value)
                 {
-                    _stopGainCond = value;
-                    RaisePropertyChanged("StopGainCondition");
+                    _secondLegSymbol = value;
+                    RaisePropertyChanged("SecondLegSymbol");
                 }
             }
         }
         #endregion
 
-        #region StopGainThreshold
-        private double _stopGainThreshold;
+        #region TimeFrame
+        private int _timeFrame;
 
-        public double StopGainThreshold
+        public int TimeFrame
         {
-            get { return _stopGainThreshold; }
+            get { return _timeFrame; }
             set
             {
-                if (_stopGainThreshold != value)
+                if (_timeFrame != value)
                 {
-                    _stopGainThreshold = value;
-                    RaisePropertyChanged("StopGainThreshold");
+                    _timeFrame = value;
+                    RaisePropertyChanged("TimeFrame");
+                }
+            }
+        }
+        #endregion
+
+        #region MaxPosition
+        private int _maxPosition;
+
+        public int MaxPosition
+        {
+            get { return _maxPosition; }
+            set
+            {
+                if (_maxPosition != value)
+                {
+                    _maxPosition = value;
+                    RaisePropertyChanged("MaxPosition");
+                }
+            }
+        }
+        #endregion
+
+        #region UseTargetGain
+        private bool _useTargetGain;
+
+        public bool UseTargetGain
+        {
+            get { return _useTargetGain; }
+            set
+            {
+                if (_useTargetGain != value)
+                {
+                    _useTargetGain = value;
+                    RaisePropertyChanged("UseTargetGain");
+                }
+            }
+        }
+        #endregion
+
+        #region StopLossType
+        private PTEntity.ArbitrageStopLossType stopLossType;
+
+        public PTEntity.ArbitrageStopLossType StopLossType
+        {
+            get { return stopLossType; }
+            set
+            {
+                if (stopLossType != value)
+                {
+                    stopLossType = value;
+                    RaisePropertyChanged("StopLossType");
                 }
             }
         }
@@ -128,108 +180,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             }
         }
         #endregion
-		
-		#region BollPeriod
-        private int _bollPeriod;
-
-        public int BollPeriod
-        {
-            get { return _bollPeriod; }
-            set
-            {
-                if (_bollPeriod != value)
-                {
-                    _bollPeriod = value;
-                    RaisePropertyChanged("BollPeriod");
-                }
-            }
-        }
-        #endregion
-		
-		#region StdDevMultiplier
-        private int _stdDevMultiplier;
-
-        public int StdDevMultiplier
-        {
-            get { return _stdDevMultiplier; }
-            set
-            {
-                if (_stdDevMultiplier != value)
-                {
-                    _stdDevMultiplier = value;
-                    RaisePropertyChanged("StdDevMultiplier");
-                }
-            }
-        }
-        #endregion
-		
-		#region FirstLegSymbol
-        private string _firstLegSymbol;
-
-        public string FirstLegSymbol
-        {
-            get { return _firstLegSymbol; }
-            set
-            {
-                if (_firstLegSymbol != value)
-                {
-                    _firstLegSymbol = value;
-                    RaisePropertyChanged("FirstLegSymbol");
-                }
-            }
-        }
-        #endregion
-		
-		#region SecondLegSymbol
-        private string _secondLegSymbol;
-
-        public string SecondLegSymbol
-        {
-            get { return _secondLegSymbol; }
-            set
-            {
-                if (_secondLegSymbol != value)
-                {
-                    _secondLegSymbol = value;
-                    RaisePropertyChanged("SecondLegSymbol");
-                }
-            }
-        }
-        #endregion
-		
-		#region TimeFrame
-        private int _timeFrame;
-
-        public int TimeFrame
-        {
-            get { return _timeFrame; }
-            set
-            {
-                if (_timeFrame != value)
-                {
-                    _timeFrame = value;
-                    RaisePropertyChanged("TimeFrame");
-                }
-            }
-        }
-        #endregion
-
-        #region UseTargetGain
-        private bool _useTargetGain;
-
-        public bool UseTargetGain
-        {
-            get { return _useTargetGain; }
-            set
-            {
-                if (_useTargetGain != value)
-                {
-                    _useTargetGain = value;
-                    RaisePropertyChanged("UseTargetGain");
-                }
-            }
-        }
-        #endregion
+        
 
         #region TargetGain
         private int targetGain;
@@ -248,23 +199,40 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         }
         #endregion
 
-        #region MaxPosition
-        private int _maxPosition;
+        #region RetryTimes
+        private int _retryTimes;
 
-        public int MaxPosition
+        public int RetryTimes
         {
-            get { return _maxPosition; }
+            get { return _retryTimes; }
             set
             {
-                if (_maxPosition != value)
+                if (_retryTimes != value)
                 {
-                    _maxPosition = value;
-                    RaisePropertyChanged("MaxPosition");
+                    _retryTimes = value;
+                    RaisePropertyChanged("RetryTimes");
                 }
             }
         }
         #endregion
-        
+
+        #region OpenTimeout
+        private int _openTimeout;
+
+        public int OpenTimeout
+        {
+            get { return _openTimeout; }
+            set
+            {
+                if (_openTimeout != value)
+                {
+                    _openTimeout = value;
+                    RaisePropertyChanged("OpenTimeout");
+                }
+            }
+        }
+        #endregion
+
 
         public ArbitrageStrategySetting()
         {
@@ -272,12 +240,13 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
 			StdDevMultiplier = 2;
 			TimeFrame = 60;
             MaxPosition = 1;
-		
-            Direction = PTEntity.PosiDirectionType.LONG;
-            OpenCondition = PTEntity.CompareCondition.LESS_EQUAL_THAN;
-            OpenThreshold = 0;
-            StopGainCondition = PTEntity.CompareCondition.GREATER_THAN;
-            StopGainThreshold = 0;
+            OpenTimeout = 350;
+            RetryTimes = 8;
+
+            UseTargetGain = false;
+            TargetGain = 4;
+
+            StopLossType = PTEntity.ArbitrageStopLossType.STOP_LOSS_Disabled;
             StopLossCondition = PTEntity.CompareCondition.GREATER_THAN;
             StopLossThreshold = 0;
         }
@@ -285,10 +254,13 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         public override string Persist()
         {
             XElement elem = new XElement("arbitrageStrategySetting");
-            elem.Add(new XAttribute("direction", Direction.ToString()),
+            elem.Add(
                 new XAttribute("useTargetGain", UseTargetGain),
                 new XAttribute("targetGain", TargetGain),
-                new XAttribute("maxPosition", MaxPosition));
+                new XAttribute("maxPosition", MaxPosition),
+                new XAttribute("stopLossType", StopLossType),
+                new XAttribute("retryTimes", RetryTimes),
+                new XAttribute("openTimeout", OpenTimeout));
 			
 			XElement elemHistSource = new XElement("histSource",
                 new XAttribute("firstLeg", FirstLegSymbol),
@@ -299,15 +271,6 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
                 new XAttribute("period", BollPeriod),
                 new XAttribute("stdDevMultiplier", StdDevMultiplier));
             elem.Add(elemBollBand);
-			
-            XElement elemOpen = new XElement("open",
-                new XAttribute("condition", OpenCondition),
-                new XAttribute("threshold", OpenThreshold));
-            elem.Add(elemOpen);
-            XElement elemStopGain = new XElement("stopGain",
-                new XAttribute("condition", StopGainCondition),
-                new XAttribute("threshold", StopGainThreshold));
-            elem.Add(elemStopGain);
             XElement elemStopLoss = new XElement("stopLoss",
                 new XAttribute("condition", StopLossCondition),
                 new XAttribute("threshold", StopLossThreshold));
@@ -319,10 +282,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         {
             XElement elem = XElement.Parse(xmlText);
 
-            XAttribute attr = elem.Attribute("direction");
-            if (attr != null)
-                Direction = (PTEntity.PosiDirectionType)Enum.Parse(typeof(PTEntity.PosiDirectionType), attr.Value);
-            attr = elem.Attribute("useTargetGain");
+            XAttribute attr = elem.Attribute("useTargetGain");
             if (attr != null)
                 UseTargetGain = bool.Parse(attr.Value);
             attr = elem.Attribute("targetGain");
@@ -331,6 +291,19 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             attr = elem.Attribute("maxPosition");
             if (attr != null)
                 MaxPosition = int.Parse(attr.Value);
+            attr = elem.Attribute("stopLossType");
+            if (attr != null)
+                StopLossType = (PTEntity.ArbitrageStopLossType)Enum.Parse(typeof(PTEntity.ArbitrageStopLossType), attr.Value);
+            attr = elem.Attribute("retryTimes");
+            if (attr != null)
+            {
+                RetryTimes = int.Parse(attr.Value);
+            }
+            attr = elem.Attribute("openTimeout");
+            if (attr != null)
+            {
+                OpenTimeout = int.Parse(attr.Value);
+            }
 				
 			XElement elemHistSource = elem.Element("histSource");
 			attr = elemHistSource.Attribute("firstLeg");
@@ -361,30 +334,6 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
 				StdDevMultiplier = int.Parse(attr.Value);
 			}
 
-            XElement elemOpen = elem.Element("open");
-            attr = elemOpen.Attribute("condition");
-            if (attr != null)
-            {
-                OpenCondition = (PTEntity.CompareCondition)Enum.Parse(typeof(PTEntity.CompareCondition), attr.Value);
-            }
-            attr = elemOpen.Attribute("threshold");
-            if (attr != null)
-            {
-                OpenThreshold = double.Parse(attr.Value);
-            }
-
-            XElement elemStopGain = elem.Element("stopGain");
-            attr = elemStopGain.Attribute("condition");
-            if (attr != null)
-            {
-                StopGainCondition = (PTEntity.CompareCondition)Enum.Parse(typeof(PTEntity.CompareCondition), attr.Value);
-            }
-            attr = elemStopGain.Attribute("threshold");
-            if (attr != null)
-            {
-                StopGainThreshold = double.Parse(attr.Value);
-            }
-
             XElement elemStopLoss = elem.Element("stopLoss");
             attr = elemStopLoss.Attribute("condition");
             if (attr != null)
@@ -406,32 +355,29 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         public override PTEntity.StrategyItem GetEntity()
         {
             PTEntity.ArbitrageStrategyItem strategyItem = new PTEntity.ArbitrageStrategyItem();
-            strategyItem.OpenTimeout = 200;
-            strategyItem.RetryTimes = 0;
+            strategyItem.OpenTimeout = OpenTimeout;
+            strategyItem.RetryTimes = RetryTimes;
+
             strategyItem.BollPeriod = BollPeriod;
             strategyItem.StdDevMultiplier = StdDevMultiplier;
 			strategyItem.FirstLegSymbol = FirstLegSymbol;
 			strategyItem.SecondLegSymbol = SecondLegSymbol;
 			strategyItem.TimeFrame = TimeFrame;
             strategyItem.MaxPosition = MaxPosition;
-
+            strategyItem.StoplossType = StopLossType;
             strategyItem.UseTargetGain = UseTargetGain;
             strategyItem.TargetGain = TargetGain;
-
-            PTEntity.ArbitrageTriggerItem openTrigger = new PTEntity.ArbitrageTriggerItem()
-            {
-                Condition = OpenCondition,
-                Offset = PTEntity.PosiOffsetFlag.OPEN,
-                Threshold = OpenThreshold,
-                Enabled = true
-            };
-            strategyItem.Triggers.Add(openTrigger);
+            strategyItem.StoplossCondition = StopLossCondition;
+            strategyItem.StopLossThreshold = StopLossThreshold;
+           
             return strategyItem;
         }
 
         public override void CopyFrom(StrategySetting settings)
         {
             ArbitrageStrategySetting strategySettings = (ArbitrageStrategySetting)settings;
+            this.OpenTimeout = strategySettings.OpenTimeout;
+            this.RetryTimes = strategySettings.RetryTimes;
 			this.BollPeriod = strategySettings.BollPeriod;
             this.StdDevMultiplier = strategySettings.StdDevMultiplier;
 			this.FirstLegSymbol = strategySettings.FirstLegSymbol;
@@ -440,12 +386,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             this.MaxPosition = strategySettings.MaxPosition;
             this.UseTargetGain = strategySettings.UseTargetGain;
             this.TargetGain = strategySettings.TargetGain;
-			
-            this.Direction = strategySettings.Direction;
-            this.OpenCondition = strategySettings.OpenCondition;
-            this.OpenThreshold = strategySettings.OpenThreshold;
-            this.StopGainCondition = strategySettings.StopGainCondition;
-            this.StopGainThreshold = strategySettings.StopGainThreshold;
+            this.StopLossType = strategySettings.StopLossType;
             this.StopLossCondition = strategySettings.StopLossCondition;
             this.StopLossThreshold = strategySettings.StopLossThreshold;
         }

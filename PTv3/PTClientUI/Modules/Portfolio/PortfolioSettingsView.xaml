@@ -63,78 +63,89 @@
                             </StackPanel>
                         </Border>
                         <Border DataContext="{Binding Settings}">
-                            <DockPanel>
-                                <TextBlock VerticalAlignment="Center" Margin="4">最大持仓</TextBlock>
-                                <xctk:DecimalUpDown Value="{Binding MaxPosition, Mode=TwoWay}" />
-                            </DockPanel>
+                            <StackPanel>
+                                <DockPanel Margin="12, 0, 6, 2">
+                                    <TextBlock VerticalAlignment="Center" Margin="4" Width="100">最大持仓</TextBlock>
+                                    <xctk:DecimalUpDown Value="{Binding MaxPosition, Mode=TwoWay}" />
+                                </DockPanel>
+                                <DockPanel Margin="12, 0, 6, 2">
+                                    <TextBlock VerticalAlignment="Center" Margin="4" Width="100">挂单等待(毫秒)</TextBlock>
+                                    <xctk:DecimalUpDown Value="{Binding OpenTimeout, Mode=TwoWay}" Increment="50" Minimum="0" />
+                                </DockPanel>
+                                <DockPanel Margin="12, 0, 6, 2">
+                                    <TextBlock VerticalAlignment="Center" Margin="4" Width="100">平仓追价次数</TextBlock>
+                                    <xctk:DecimalUpDown Value="{Binding RetryTimes, Mode=TwoWay}" Minimum="0" Maximum="10000"/>
+                                </DockPanel>
+                            </StackPanel>
+                            
+                            
                         </Border>
                         <Border>
                             <DockPanel>
-                                <TextBlock DockPanel.Dock="Top" Margin="6, 2" FontWeight="Bold">开仓条件</TextBlock>
+                                <TextBlock DockPanel.Dock="Top" Margin="6, 2" FontWeight="Bold">布林带轨道</TextBlock>
                                 <DockPanel Margin="12, 0, 6, 2">
-                                    <DockPanel >
-                                        <TextBlock VerticalAlignment="Center" Margin="4, 2">价差</TextBlock>
-                                        <ComboBox Margin="4, 2" Width="80" Name="combOpenCond" ItemsSource="{Binding OpenCondItemsSource}"
-                                  SelectedValuePath="Condition" SelectedValue="{Binding Settings.OpenCondition, Mode=TwoWay}"
-                                  ItemTemplate="{StaticResource combItemTemplate}">
-                                        </ComboBox>
-                                    </DockPanel>
-                                    <DockPanel Margin="4, 2">
-                                        <TextBlock DockPanel.Dock="Right" Margin="4, 2">点</TextBlock>
-                                        <igEditor:XamTextEditor Value="{Binding Settings.OpenThreshold, FallbackValue=100, Mode=TwoWay}" ValueType="{x:Type sys:Double}"/>
-                                    </DockPanel>
-                                </DockPanel>
-                            </DockPanel>
-                        </Border>
-                        <Border>
-                            <DockPanel>
-                                <DockPanel DockPanel.Dock="Top" LastChildFill="False">
-                                    <TextBlock DockPanel.Dock="Left" Margin="6, 2" FontWeight="Bold">止盈条件</TextBlock>
-                                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="2, 0, 12, 0">
-                                        <TextBlock Margin="6, 2">预计止盈于</TextBlock>
-                                        <TextBlock Margin="2" Text="{Binding EstimatedStopGainValue}" MinWidth="40" TextAlignment="Right"/>
-                                    </StackPanel>
-                                </DockPanel>
-                                
-                                <DockPanel Margin="12, 0, 6, 2">
+                                    <CheckBox IsChecked="{Binding Settings.UseTargetGain, Mode=TwoWay}" DockPanel.Dock="Top">指定上下轨间距</CheckBox>
                                     <DockPanel>
-                                        <TextBlock VerticalAlignment="Center" Margin="4, 2" >盈利</TextBlock>
-                                        <ComboBox Margin="4, 2" Width="80" ItemsSource="{Binding StopGainCondItemsSource}"
-                                  SelectedValuePath="Condition" SelectedValue="{Binding Settings.StopGainCondition, Mode=TwoWay}"
-                                  ItemTemplate="{StaticResource combItemTemplate}">
-                                        </ComboBox>
-                                    </DockPanel>
-                                    <DockPanel Margin="4, 2">
-                                        <TextBlock DockPanel.Dock="Right" Margin="4, 2">点</TextBlock>
-                                        <igEditor:XamTextEditor Value="{Binding Settings.StopGainThreshold, FallbackValue=20, Mode=TwoWay}" ValueType="{x:Type sys:Double}"/>
+                                        <DockPanel.Style>
+                                            <Style TargetType="DockPanel">
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Settings.UseTargetGain}" Value="True">
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DockPanel.Style>
+                                        <TextBlock VerticalAlignment="Center" Margin="4, 2">间距为最小变动单位</TextBlock>
+                                        <DockPanel Margin="4, 2">
+                                            <TextBlock DockPanel.Dock="Right" Margin="4, 2">倍</TextBlock>
+                                            <xctk:DecimalUpDown Value="{Binding Settings.TargetGain, FallbackValue=4, Mode=TwoWay}" Maximum="999999" Minimum="0"/>
+                                        </DockPanel>
                                     </DockPanel>
                                 </DockPanel>
                             </DockPanel>
                         </Border>
-
+                     
                         <Border>
                             <DockPanel>
                                 <DockPanel DockPanel.Dock="Top" LastChildFill="False">
                                     <TextBlock DockPanel.Dock="Left" Margin="6, 2" FontWeight="Bold">止损条件</TextBlock>
-                                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" Margin="2, 0, 12, 0">
-                                        <TextBlock Margin="6, 2">预计止损于</TextBlock>
-                                        <TextBlock Margin="2" Text="{Binding EstimatedStopLossValue}" MinWidth="40" TextAlignment="Right"/>
-                                    </StackPanel>
                                 </DockPanel>
-                                
-                                <DockPanel Margin="12, 0, 6, 2">
-                                    <DockPanel>
-                                        <TextBlock VerticalAlignment="Center" Margin="4, 2">亏损</TextBlock>
-                                        <ComboBox Margin="4, 2" Width="80" ItemsSource="{Binding StopLossCondItemsSource}"
+                                <StackPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <DockPanel>
+                                            <TextBlock VerticalAlignment="Center" Margin="4, 2">止损方式</TextBlock>
+                                            <ComboBox Margin="4, 2" Width="80" ItemsSource="{Binding StopLossTypeItemsSource}"
+                                  SelectedValuePath="Value" SelectedValue="{Binding Settings.StopLossType, Mode=TwoWay}"
+                                  ItemTemplate="{StaticResource combItemTemplate}">
+                                            </ComboBox>
+                                        </DockPanel>
+                                    </DockPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <DockPanel.Style>
+                                            <Style TargetType="DockPanel">
+                                                <Setter Property="IsEnabled" Value="False"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Settings.StopLossType}" Value="STOP_LOSS_Fixed">
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DockPanel.Style>
+                                        <DockPanel>
+                                            <TextBlock VerticalAlignment="Center" Margin="4, 2">亏损</TextBlock>
+                                            <ComboBox Margin="4, 2" Width="80" ItemsSource="{Binding StopLossCondItemsSource}"
                                   SelectedValuePath="Condition" SelectedValue="{Binding Settings.StopLossCondition, Mode=TwoWay}"
                                   ItemTemplate="{StaticResource combItemTemplate}">
-                                        </ComboBox>
+                                            </ComboBox>
+                                        </DockPanel>
+                                        <DockPanel Margin="4, 2">
+                                            <TextBlock DockPanel.Dock="Right" Margin="4, 2">点</TextBlock>
+                                            <xctk:DecimalUpDown Value="{Binding Settings.StopLossThreshold, FallbackValue=100, Mode=TwoWay}" Minimum="0" Maximum="999999"/>
+                                        </DockPanel>
                                     </DockPanel>
-                                    <DockPanel Margin="4, 2">
-                                        <TextBlock DockPanel.Dock="Right" Margin="4, 2">点</TextBlock>
-                                        <igEditor:XamTextEditor Value="{Binding Settings.StopLossThreshold, FallbackValue=100, Mode=TwoWay}" ValueType="{x:Type sys:Double}"/>
-                                    </DockPanel>
-                                </DockPanel>
+                                </StackPanel>
+                                
                             </DockPanel>
                         </Border>
                     </StackPanel>

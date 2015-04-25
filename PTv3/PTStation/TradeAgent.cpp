@@ -124,6 +124,8 @@ boost::tuple<bool, string> CTradeAgent::Login(const string& frontAddr, const str
 
 		logger.Info(boost::str(boost::format("Try to connect trade server (%s) ...") % frontAddr));
 
+		FakeLogin();
+		/*
 		// wait for connected event
 		{
 			boost::unique_lock<boost::mutex> lock(m_mutConnecting);
@@ -175,7 +177,7 @@ boost::tuple<bool, string> CTradeAgent::Login(const string& frontAddr, const str
 				return boost::make_tuple(false, m_loginErr);
 			}
 		}
-
+		*/
 		return boost::make_tuple(true, m_loginErr);
 	}
 	catch(std::exception& ex)
@@ -192,6 +194,8 @@ boost::tuple<bool, string> CTradeAgent::Login(const string& frontAddr, const str
 
 	return boost::make_tuple(false, m_loginErr);
 }
+
+
 
 void CTradeAgent::Login()
 {
@@ -945,5 +949,21 @@ void CTradeAgent::OnRspQryInstrument( CThostFtdcInstrumentField *pInstrument, CT
 	}
 	// something wrong
 	m_symbInfoReqFactory.Response(nRequestID, false, NULL);
+}
+
+void CTradeAgent::FakeLogin()
+{
+	FRONT_ID = 123456;
+	SESSION_ID = 654321;
+#ifdef FAKE_DEAL
+	m_fakeDealer.SetSessionParams(FRONT_ID, SESSION_ID);
+#endif
+	m_maxOrderRef = 1;
+
+	//string ds(pRspUserLogin->TradingDay);
+	string ds("20150324");
+	m_tradingDay = boost::gregorian::from_undelimited_string(ds);
+
+	m_orderProcessor->OnRspUserLogin(true, string(), m_maxOrderRef);
 }
 

@@ -98,6 +98,7 @@ private:
 
 	void RunTradingFunc(string address);
 	void Login();
+	void FakeLogin();
 	void ReqSettlementInfoConfirm();
 	int RequestIDIncrement() { return ++m_iRequestID; }
 	bool IsMyOrder(CThostFtdcOrderField *pOrder)

@@ -39,8 +39,8 @@ void CArbitrageMultiStrategy::OnApply(const entity::StrategyItem& strategyItem, 
 	if (m_retryTimes == 0)
 		m_retryTimes = 8;
 
-	//m_useTargetGain = strategyItem.ar_usetargetgain();
-	m_useTargetGain = true;
+	m_useTargetGain = strategyItem.ar_usetargetgain();
+	//m_useTargetGain = true;
 	m_targetGainTimes = strategyItem.ar_targetgain();
 	if (m_targetGainTimes < 1)
 		m_targetGainTimes = 4;

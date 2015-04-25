@@ -138,7 +138,7 @@ void ApplyStrategySettingsService::handle( LogicalConnection* pClient, IncomingP
 	CPortfolio* pPortf = avatarClient->PortfolioManager().Get(applyStrategyReq.pid());
 	logger.Debug(boost::str(boost::format("[%s] Applying Strategy setting change for portfolio %s")
 		% avatarClient->Pseudo() % pPortf->ID()));
-	pPortf->Strategy()->Apply(applyStrategyReq.strategy(), true);
+	pPortf->Strategy()->Apply(applyStrategyReq.strategy(), pPortf, true);
 }
 
 void HeartbeatService::handle( LogicalConnection* pClient, IncomingPacket* pRequest )

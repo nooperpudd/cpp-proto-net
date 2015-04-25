@@ -37,6 +37,7 @@ void ArbitrageStrategyItem::To( entity::StrategyItem* pNativeStrategyItem )
 		pNativeStrategyItem->set_ar_stddevmultiplier(_stdDevMultiplier);
 		pNativeStrategyItem->set_ar_usetargetgain(_useTargetGain);
 		pNativeStrategyItem->set_ar_targetgain(_targetGain);
+		pNativeStrategyItem->set_ar_stoplosstype(static_cast<entity::ArbitrageStopLossType>(_stoplossType));
 		pNativeStrategyItem->set_ar_stoplosscondition(static_cast<entity::CompareCondition>(_stoplossCondition));
 		pNativeStrategyItem->set_ar_stoplossthreshold(_stopLossThreshold);
 

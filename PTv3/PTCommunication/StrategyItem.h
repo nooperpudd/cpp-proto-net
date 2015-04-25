@@ -166,6 +166,18 @@ public:
 		}
 	}
 
+	property ArbitrageStopLossType StoplossType
+	{
+		ArbitrageStopLossType get()
+		{
+			return _stoplossType;
+		}
+		void set(ArbitrageStopLossType val)
+		{
+			_stoplossType = val;
+		}
+	}
+
 	property CompareCondition StoplossCondition
 	{
 		CompareCondition get()
@@ -200,6 +212,7 @@ private:
 	double _stdDevMultiplier;
 	bool _useTargetGain;
 	int _targetGain;
+	ArbitrageStopLossType _stoplossType;
 	CompareCondition _stoplossCondition;
 	double _stopLossThreshold;
 };
