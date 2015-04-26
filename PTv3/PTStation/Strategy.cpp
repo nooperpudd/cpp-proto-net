@@ -196,6 +196,10 @@ void CStrategy::Start()
 			ResetForceOpen();
 			ResetForceClose();
 		}
+		else
+		{
+			logger.Warning("Strategy OnStart did NOT get success");
+		}
 	}
 	else
 	{

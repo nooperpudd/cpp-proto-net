@@ -60,7 +60,10 @@ void CMultiOpenStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfo
 	m_maxQuantity = strategyItem.maxposition();
 	m_perOpenQuantity = pPortfolio->Quantity();
 
-	if (m_perOpenQuantity > 0 && m_maxQuantity >= m_perOpenQuantity)
+	if (m_perOpenQuantity > 0 
+		&& m_maxQuantity >= m_perOpenQuantity
+		&& m_workingExecutors.size() == m_executorsPool.size())	
+		// Only when all executors are idle or there is no executor at all 
 		InitializeExecutors();
 }
 
@@ -200,6 +203,11 @@ bool CMultiOpenStrategy::Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfo
 
 void CMultiOpenStrategy::InitializeExecutors()
 {
+	// empty executor pool
+	while (!m_executorsPool.empty())
+		m_executorsPool.pop();
+	m_strategyExecutors.clear();
+
 	int remainingQty = m_maxQuantity;
 	int execId = 1;
 	while (remainingQty > 0)

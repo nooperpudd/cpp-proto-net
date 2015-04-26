@@ -239,7 +239,7 @@ int CPortfolio::NewOrderId( string& newId )
 void CPortfolio::GetStatisticsUpdate()
 {
 	m_portfolioUpdate.set_totalopentimes(m_totalOpenTimes);
-	m_portfolioUpdate.set_totalclosetimes(m_totalOpenTimes);
+	m_portfolioUpdate.set_totalclosetimes(m_totalCloseTimes);
 	m_portfolioUpdate.set_currentposition(m_currentPosition);
 	m_portfolioUpdate.set_canceltimes(m_cancelTimes);
 	m_portfolioUpdate.set_profit(m_profit);
@@ -283,6 +283,10 @@ void CPortfolio::StopStrategy()
 	if (m_strategy->IsRunning())
 	{
 		m_strategy->Stop();
+	}
+	else
+	{
+		logger.Info(boost::str(boost::format("[%s] Portfolio (%s) is NOT Running yet") % InvestorId() % ID()));
 	}
 }
 

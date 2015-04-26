@@ -428,6 +428,8 @@ bool CPortfolioOrderPlacer::Prepare()
 
 		m_isReady = true;
 	}
+	else
+		return false;
 
 	return m_isReady;
 }

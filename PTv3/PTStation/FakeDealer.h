@@ -6,6 +6,7 @@
 #include <sstream>
 #include <boost/date_time.hpp>
 #include <boost/atomic.hpp>
+#include <boost/unordered_map.hpp>
 
 using namespace std;
 
@@ -59,6 +60,8 @@ public:
 
 typedef boost::shared_ptr<CFakeMessage> FakeMsgPtr;
 
+typedef boost::shared_ptr<CThostFtdcInputOrderField> InputOrderPtr;
+
 class CFakeDealer
 {
 public:
@@ -98,6 +101,7 @@ private:
 	void CancelOrder(boost::shared_ptr<CThostFtdcInputOrderActionField> pInputOrderAction, int nRequestID);
 	
 	void SetDateField(CThostFtdcOrderField* pRtnOrder);
+	CThostFtdcInputOrderField* CreatePendingOrder(CThostFtdcInputOrderField * pInputOrder);
 
 	RtnOrderFunc m_funcRtnOrder;
 	RspOrderInsertFunc m_funcRspOrderInsert;
@@ -113,6 +117,8 @@ private:
 	string m_tradingDay;
 	
 	CThostFtdcInputOrderField m_pendingInputOrder;
+	boost::unordered_map<string, InputOrderPtr> m_pendingOrderMap;
+	boost::mutex m_mutPendingOrder;
 	int m_pendingOrdSysId;
 
 	std::ostringstream m_timeStream;

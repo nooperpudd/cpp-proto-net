@@ -230,6 +230,11 @@ bool CLegOrderPlacer::IsLegPlacerEligibleRetry()
 	return !(IsOpen()) && CanRetry();
 }
 
+bool CLegOrderPlacer::CanRetry()
+{
+	return m_submitTimes <= m_maxRetry;
+}
+
 bool CArbitrageLegOrderPlacer::IsOpen()
 {
 	return m_sequenceNo == 0;

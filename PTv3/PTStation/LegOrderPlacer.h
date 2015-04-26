@@ -52,7 +52,7 @@ public:
 
 	int SubmitTimes() { return m_submitTimes; }
 	int AddSubmitTimes() { return ++m_submitTimes; }
-	bool CanRetry(){ return m_submitTimes <= m_maxRetry; }
+	bool CanRetry();
 	bool ModifyPrice(entity::Quote* pQuote);
 	bool ModifyPriceBasedOnTick(entity::Quote* pQuote);
 	bool ModifyPriceBasedOnOpposite(entity::Quote* pQuote);

@@ -22,7 +22,7 @@ CFakeDealer::CFakeDealer(void)
 	boost::posix_time::time_facet* const timeFormat = new boost::posix_time::time_facet("%H:%M:%S");
 	m_timeStream.imbue(std::locale(m_timeStream.getloc(), timeFormat));
 
-	memset(&m_pendingInputOrder, 0, sizeof(m_pendingInputOrder));
+	//memset(&m_pendingInputOrder, 0, sizeof(m_pendingInputOrder));
 
 	m_msgPump.Init(boost::bind(&CFakeDealer::DispatchMsg, this, _1));
 }
@@ -244,8 +244,12 @@ void CFakeDealer::FullFillOrder( boost::shared_ptr<CThostFtdcInputOrderField> pI
 
 void CFakeDealer::PartiallyFillOrder( boost::shared_ptr<CThostFtdcInputOrderField> pInputOrder, int nRequestID )
 {
-	m_pendingInputOrder = *pInputOrder;
-
+	//m_pendingInputOrder = *pInputOrder;
+	{
+		boost::mutex::scoped_lock l(m_mutPendingOrder);
+		InputOrderPtr pendingOrder(CreatePendingOrder(pInputOrder.get()));
+		m_pendingOrderMap.insert(std::make_pair(string(pInputOrder->OrderRef), pendingOrder));
+	}
 	FakeMsgPtr msgAccept(GetAcceptOrder(pInputOrder.get(), nRequestID));
 	m_msgPump.Enqueue(msgAccept);
 
@@ -264,8 +268,12 @@ void CFakeDealer::PartiallyFillOrder( boost::shared_ptr<CThostFtdcInputOrderFiel
 
 void CFakeDealer::PendingOrder( boost::shared_ptr<CThostFtdcInputOrderField> pInputOrder, int nRequestID )
 {
-	m_pendingInputOrder = *pInputOrder;
-
+	{
+		boost::mutex::scoped_lock l(m_mutPendingOrder);
+		//m_pendingInputOrder = *pInputOrder;
+		InputOrderPtr pendingOrder(CreatePendingOrder(pInputOrder.get()));
+		m_pendingOrderMap.insert(std::make_pair(string(pInputOrder->OrderRef), pendingOrder));
+	}
 	FakeMsgPtr msgAccept(GetAcceptOrder(pInputOrder.get(), nRequestID));
 	m_msgPump.Enqueue(msgAccept);
 
@@ -280,12 +288,24 @@ void CFakeDealer::CancelOrder( boost::shared_ptr<CThostFtdcInputOrderActionField
 	int orderSysId = atoi(pInputOrderAction->OrderSysID);
 
 	int filledAmount = m_testPartiallyFill ? m_partiallyFilledAmount : 0;
+	boost::mutex::scoped_lock l(m_mutPendingOrder);
+	string orderRef(pInputOrderAction->OrderRef);
+	boost::unordered_map<string, InputOrderPtr>::iterator iter = m_pendingOrderMap.find(orderRef);
+	if (iter != m_pendingOrderMap.end())
+	{
+		CThostFtdcInputOrderField* origPendingOrder = (iter->second).get();
+		FakeMsgPtr msgPending(GetPendingOrder(origPendingOrder, nRequestID, orderSysId, filledAmount));
+		m_msgPump.Enqueue(msgPending);
 
-	FakeMsgPtr msgPending(GetPendingOrder(&m_pendingInputOrder, nRequestID, orderSysId, filledAmount));
-	m_msgPump.Enqueue(msgPending);
+		FakeMsgPtr msgCanceled(GetCanceledOrder(origPendingOrder, nRequestID, orderSysId, filledAmount));
+		m_msgPump.Enqueue(msgCanceled);
 
-	FakeMsgPtr msgCanceled(GetCanceledOrder(&m_pendingInputOrder, nRequestID, orderSysId, filledAmount));
-	m_msgPump.Enqueue(msgCanceled);
+		m_pendingOrderMap.erase(iter);
+	}
+	else
+	{
+		cout << "Failed to find out pending order " << orderRef << endl;
+	}
 }
 
 void CFakeDealer::SetDateField( CThostFtdcOrderField* pRtnOrder )
@@ -315,6 +335,14 @@ CFakeRtnOrder* CFakeDealer::CreateOrderTemplate( CThostFtdcInputOrderField * pIn
 	pOrdField->SessionID = SESSION_ID;
 
 	return pFakeOrder;
+}
+
+CThostFtdcInputOrderField* CFakeDealer::CreatePendingOrder(CThostFtdcInputOrderField * pInputOrder)
+{
+	CThostFtdcInputOrderField* pPendingOrder = new CThostFtdcInputOrderField;
+	memset(pPendingOrder, 0, sizeof(CThostFtdcInputOrderField));
+	*pPendingOrder = *pInputOrder;
+	return pPendingOrder;
 }
 
 void CopyCommonField(CThostFtdcInputOrderField * pInputOrder, CThostFtdcOrderField* pRtnOrder)
