@@ -13,6 +13,8 @@ CArbitrageMultiStrategy::CArbitrageMultiStrategy(CAvatarClient* pAvatar, CPortfo
 	, m_stdDevMultiplier(2)
 	, m_targetGain(0.8)
 	, m_minStep(0.2)
+	, m_specifyBandRange(false)
+	, m_bandRange(0.8)
 	, m_useTargetGain(true)
 	, m_allowPending(true)
 	, m_stopLossType(entity::STOP_LOSS_Disabled)
@@ -39,8 +41,11 @@ void CArbitrageMultiStrategy::OnApply(const entity::StrategyItem& strategyItem, 
 	if (m_retryTimes == 0)
 		m_retryTimes = 8;
 
+	m_specifyBandRange = strategyItem.ar_specifybandrange();
+	m_bandRangeTimes = strategyItem.ar_bandrange();
+	if (m_bandRangeTimes < 1)
+		m_bandRangeTimes = 4;
 	m_useTargetGain = strategyItem.ar_usetargetgain();
-	//m_useTargetGain = true;
 	m_targetGainTimes = strategyItem.ar_targetgain();
 	if (m_targetGainTimes < 1)
 		m_targetGainTimes = 4;
@@ -48,6 +53,7 @@ void CArbitrageMultiStrategy::OnApply(const entity::StrategyItem& strategyItem, 
 	m_stopLossThreshold = strategyItem.ar_stoplossthreshold();
 	m_stopLossComparison = strategyItem.ar_stoplosscondition();
 	m_targetGain = m_targetGainTimes * m_minStep;
+	m_bandRange = m_bandRangeTimes * m_minStep;
 	assert(m_targetGain > 0);
 
 	if (!withTriggers)
@@ -144,9 +150,9 @@ void CArbitrageMultiStrategy::CalculateContext(entity::Quote* pQuote, CPortfolio
 	m_bollDataSet->Calculate(m_diffRecordSet.get(), pPortfolio);
 
 	m_context.BollMid = m_bollDataSet->GetRef(IND_MID, 1);
-	if (m_useTargetGain)
+	if (m_specifyBandRange)
 	{
-		m_context.ActualMid = CalcBoundaryByTargetGain(m_context.BollMid, m_targetGain, m_minStep, &m_context.BollTop, &m_context.BollBottom);
+		m_context.ActualMid = CalcBoundaryByTargetGain(m_context.BollMid, m_bandRange, m_minStep, &m_context.BollTop, &m_context.BollBottom);
 	}
 	else
 	{
@@ -185,7 +191,7 @@ void CArbitrageMultiStrategy::BeforeTestForTrade(entity::Quote* pQuote, CPortfol
 	entity::PosiDirectionType direction = GetTradeDirection(arbitrageContext);
 	entity::PosiDirectionType directionFast = GetFastTradeDirection(arbitrageContext);
 
-	if (m_useTargetGain)
+	if (m_specifyBandRange)
 	{
 		LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) Testing Direction - Mid:%.2f, longDiff:%.2f vs bottom:%.2f, shortDiff:%.2f vs top:%.2f -->> %s")
 			% pPortfolio->InvestorId() % pPortfolio->ID() % arbitrageContext.ActualMid % arbitrageContext.LongDiff % arbitrageContext.BollBottom % arbitrageContext.ShortDiff % arbitrageContext.BollTop % GetPosiDirectionText(direction)));
@@ -198,7 +204,7 @@ void CArbitrageMultiStrategy::BeforeTestForTrade(entity::Quote* pQuote, CPortfol
 
 	if (directionFast != entity::NET)
 	{
-		if (m_useTargetGain)
+		if (m_specifyBandRange)
 		{
 			LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) Testing Fast Direction - Mid:%.2f, longDiffFast:%.2f vs bottom:%.2f, shortDiffFast:%.2f vs top:%.2f -->> %s")
 				% pPortfolio->InvestorId() % pPortfolio->ID() % arbitrageContext.ActualMid % arbitrageContext.LongDiffFast % arbitrageContext.BollBottom % arbitrageContext.ShortDiffFast % arbitrageContext.BollTop % GetPosiDirectionText(directionFast)));
@@ -304,6 +310,9 @@ bool CArbitrageStrategyExecutor::TestForOpen(entity::Quote* pQuote, CPortfolio* 
 
 bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
 {
+	if (m_pParentStrategy->UseTargetGain())
+		return TestForCloseUseTargetGain(pQuote, pPortfolio, pContext, timestamp);
+
 	ArbitrageStrategyContext* arbitrageContext = dynamic_cast<ArbitrageStrategyContext*>(pContext);
 	entity::PosiDirectionType side = PosiDirection();
 	ARBI_DIFF_CALC& diffPrices = side == entity::LONG ? arbitrageContext->StructShortDiff : arbitrageContext->StructLongDiff;
@@ -390,6 +399,127 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 
 	return false;
 }
+
+entity::PosiDirectionType GetStopGainDirection(double cost, double targetGain, entity::PosiDirectionType posiDirection, ArbitrageStrategyContext* arbitrageContext, bool* fastDeal)
+{
+	*fastDeal = false;
+
+	if (posiDirection == entity::LONG)
+	{
+		double gain = arbitrageContext->ShortDiffFast - cost;
+		if (DoubleGreaterEqual(gain, targetGain))
+		{
+			*fastDeal = true;
+			return entity::SHORT;
+		}
+		// normal gain
+		gain = arbitrageContext->ShortDiff - cost;
+		if (DoubleGreaterEqual(gain, targetGain))
+		{
+			return entity::SHORT;
+		}
+	}
+	else if (posiDirection == entity::SHORT)
+	{
+		double gain = cost - arbitrageContext->LongDiffFast;
+		if (DoubleGreaterEqual(gain, targetGain))
+		{
+			*fastDeal = true;
+			return entity::LONG;
+		}
+		// normal gain
+		gain = cost - arbitrageContext->LongDiff;
+		if (DoubleGreaterEqual(gain, targetGain))
+		{
+			return entity::LONG;
+		}
+	}
+
+	return entity::NET;
+}
+
+bool CArbitrageStrategyExecutor::TestForCloseUseTargetGain(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
+{
+	ArbitrageStrategyContext* arbitrageContext = dynamic_cast<ArbitrageStrategyContext*>(pContext);
+	entity::PosiDirectionType side = PosiDirection();
+	ARBI_DIFF_CALC& diffPrices = side == entity::LONG ? arbitrageContext->StructShortDiff : arbitrageContext->StructLongDiff;
+
+	bool fastDeal = false;
+	entity::PosiDirectionType stopGainDirection = GetStopGainDirection(m_costDiff, m_pParentStrategy->TargetGain(), side, arbitrageContext, &fastDeal);
+
+	if (stopGainDirection != entity::NET && stopGainDirection != side)
+	{
+		if (fastDeal)
+			diffPrices = side == entity::LONG ? arbitrageContext->StructShortDiffFast : arbitrageContext->StructLongDiffFast;
+
+		if (side == entity::LONG)
+		{
+			// Fast/Normal Stop Gain
+			m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
+			string logTxt = boost::str(boost::format("%s StopGain: Short diff(%.2f) - cost(%.2f) >= Target Gain(%.2f)")
+				% (fastDeal ? "FAST" : "")
+				% (fastDeal ? arbitrageContext->ShortDiffFast : arbitrageContext->ShortDiff)
+				% m_costDiff % m_pParentStrategy->TargetGain());
+			LOG_DEBUG(logger, logTxt);
+			pPortfolio->PrintLegsQuote();
+
+			string comment = boost::str(boost::format("%s空价差(%.2f) - 成本(%.2f) >= %.2f -> 止盈平仓")
+				% (fastDeal ? "对价" : "")
+				% (fastDeal ? arbitrageContext->ShortDiffFast : arbitrageContext->ShortDiff)
+				% m_costDiff % m_pParentStrategy->TargetGain());
+
+			return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopGain);
+		}
+		else if (side == entity::SHORT)
+		{
+			// Fast/Normal Stop Gain
+			m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
+			string logTxt = boost::str(boost::format("%s StopGain: cost(%.2f) - Long diff(%.2f) >= Target Gain(%.2f)")
+				% (fastDeal ? "FAST" : "")
+				% m_costDiff
+				% (fastDeal ? arbitrageContext->LongDiffFast : arbitrageContext->LongDiff)
+				% m_pParentStrategy->TargetGain());
+			LOG_DEBUG(logger, logTxt);
+			pPortfolio->PrintLegsQuote();
+			string comment = boost::str(boost::format("成本(%.2f) - %s多价差(%.2f) >= %.2f -> 止盈平仓")
+				% m_costDiff
+				% (fastDeal ? "对价" : "")
+				% (fastDeal ? arbitrageContext->LongDiffFast : arbitrageContext->LongDiff)
+				% m_pParentStrategy->TargetGain());
+			return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopGain);
+		}
+	}
+
+	// Stop loss logic in ArbitrageStrategy
+	if (arbitrageContext->Direction != entity::NET)
+	{
+		if (side == entity::LONG)
+		{
+			string comment;
+			if (StopLossLong(arbitrageContext, &comment))
+			{
+				pPortfolio->PrintLegsQuote();
+				// Stop Loss
+				m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
+				return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopLoss);
+			}
+		}
+		else if (side == entity::SHORT)
+		{
+			string comment;
+			if (StopLossShort(arbitrageContext, &comment))
+			{
+				pPortfolio->PrintLegsQuote();
+				// Stop Loss
+				m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
+				return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopLoss);
+			}
+		}
+	}
+
+	return false;
+}
+
 
 void CArbitrageStrategyExecutor::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc, PortfolioTradedEvent porfTradedEventHandler)
 {

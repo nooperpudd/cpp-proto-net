@@ -56,6 +56,9 @@ public:
 
 	virtual void CalculateContext(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 
+	bool UseTargetGain(){ return m_useTargetGain; }
+	double TargetGain(){ return m_targetGain; }
+
 protected:
 	StrategyExecutorPtr CreateExecutor(int execId, int quantity);
 	StrategyContext& GetContext(){ return m_context; }
@@ -78,9 +81,12 @@ private:
 	int m_bollPeriod;
 	int m_stdDevMultiplier;
 	int m_targetGainTimes;
+	int m_bandRangeTimes;
 	double m_targetGain;
 	double m_minStep;
 	bool m_useTargetGain;
+	bool m_specifyBandRange;
+	double m_bandRange;
 	double m_stopLossThreshold;
 	entity::CompareCondition m_stopLossComparison;
 	entity::ArbitrageStopLossType m_stopLossType;
@@ -115,6 +121,8 @@ protected:
 	bool ClosePosition(ARBI_DIFF_CALC diffPrices, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, const string& comment, trade::SubmitReason reason);
 
 private:
+	bool TestForCloseUseTargetGain(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
+
 	bool StopLossLong(ArbitrageStrategyContext* arbitrageContext, string* outComment);
 	bool StopLossShort(ArbitrageStrategyContext* arbitrageContext, string* outComment);
 

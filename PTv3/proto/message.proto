@@ -188,11 +188,13 @@ message StrategyItem
 	// Arbitrage
 	optional double AR_BollPeriod = 101;
 	optional double AR_StdDevMultiplier = 102;
-	optional bool AR_UseTargetGain = 103;
-	optional int32 AR_TargetGain = 104;
-	optional CompareCondition AR_StopLossCondition = 105;
-	optional double AR_StopLossThreshold = 106;
-	optional ArbitrageStopLossType AR_StopLossType = 107; 
+	optional bool AR_SpecifyBandRange = 103;
+	optional int32 AR_BandRange = 104;
+	optional bool AR_UseTargetGain = 105;
+	optional int32 AR_TargetGain = 106;
+	optional CompareCondition AR_StopLossCondition = 107;
+	optional double AR_StopLossThreshold = 108;
+	optional ArbitrageStopLossType AR_StopLossType = 109; 
 
 	// Change Position
 	optional string CP_CloseLeg = 201;
