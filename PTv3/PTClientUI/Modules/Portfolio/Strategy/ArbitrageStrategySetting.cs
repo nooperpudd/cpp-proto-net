@@ -130,6 +130,57 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         }
         #endregion
 
+        #region TargetGain
+        private int targetGain;
+
+        public int TargetGain
+        {
+            get { return targetGain; }
+            set
+            {
+                if (targetGain != value)
+                {
+                    targetGain = value;
+                    RaisePropertyChanged("TargetGain");
+                }
+            }
+        }
+        #endregion
+
+        #region SpecifyBandRange
+        private bool _specifyBandRange;
+
+        public bool SpecifyBandRange
+        {
+            get { return _specifyBandRange; }
+            set
+            {
+                if (_specifyBandRange != value)
+                {
+                    _specifyBandRange = value;
+                    RaisePropertyChanged("SpecifyBandRange");
+                }
+            }
+        }
+        #endregion
+
+        #region BandRange
+        private int _bandRange;
+
+        public int BandRange
+        {
+            get { return _bandRange; }
+            set
+            {
+                if (_bandRange != value)
+                {
+                    _bandRange = value;
+                    RaisePropertyChanged("BandRange");
+                }
+            }
+        }
+        #endregion
+
         #region StopLossType
         private PTEntity.ArbitrageStopLossType stopLossType;
 
@@ -176,24 +227,6 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
                 {
                     _stopLossThreshold = value;
                     RaisePropertyChanged("StopLossThreshold");
-                }
-            }
-        }
-        #endregion
-        
-
-        #region TargetGain
-        private int targetGain;
-
-        public int TargetGain
-        {
-            get { return targetGain; }
-            set
-            {
-                if (targetGain != value)
-                {
-                    targetGain = value;
-                    RaisePropertyChanged("TargetGain");
                 }
             }
         }
@@ -246,6 +279,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             UseTargetGain = false;
             TargetGain = 4;
 
+            SpecifyBandRange = false;
+            BandRange = 10;
+
             StopLossType = PTEntity.ArbitrageStopLossType.STOP_LOSS_Disabled;
             StopLossCondition = PTEntity.CompareCondition.GREATER_THAN;
             StopLossThreshold = 0;
@@ -257,6 +293,8 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             elem.Add(
                 new XAttribute("useTargetGain", UseTargetGain),
                 new XAttribute("targetGain", TargetGain),
+                new XAttribute("specifyBandRange", SpecifyBandRange),
+                new XAttribute("bandRange", BandRange),
                 new XAttribute("maxPosition", MaxPosition),
                 new XAttribute("stopLossType", StopLossType),
                 new XAttribute("retryTimes", RetryTimes),
@@ -288,9 +326,16 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             attr = elem.Attribute("targetGain");
             if (attr != null)
                 TargetGain = int.Parse(attr.Value);
+            attr = elem.Attribute("specifyBandRange");
+            if (attr != null)
+                SpecifyBandRange = bool.Parse(attr.Value);
+            attr = elem.Attribute("bandRange");
+            if (attr != null)
+                BandRange = int.Parse(attr.Value);
             attr = elem.Attribute("maxPosition");
             if (attr != null)
                 MaxPosition = int.Parse(attr.Value);
+            
             attr = elem.Attribute("stopLossType");
             if (attr != null)
                 StopLossType = (PTEntity.ArbitrageStopLossType)Enum.Parse(typeof(PTEntity.ArbitrageStopLossType), attr.Value);
@@ -367,6 +412,8 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             strategyItem.StoplossType = StopLossType;
             strategyItem.UseTargetGain = UseTargetGain;
             strategyItem.TargetGain = TargetGain;
+            strategyItem.SpecifyBandRange = SpecifyBandRange;
+            strategyItem.BandRange = BandRange;
             strategyItem.StoplossCondition = StopLossCondition;
             strategyItem.StopLossThreshold = StopLossThreshold;
            
@@ -385,6 +432,8 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
 			this.TimeFrame = strategySettings.TimeFrame;
             this.MaxPosition = strategySettings.MaxPosition;
             this.UseTargetGain = strategySettings.UseTargetGain;
+            this.SpecifyBandRange = strategySettings.SpecifyBandRange;
+            this.BandRange = strategySettings.BandRange;
             this.TargetGain = strategySettings.TargetGain;
             this.StopLossType = strategySettings.StopLossType;
             this.StopLossCondition = strategySettings.StopLossCondition;

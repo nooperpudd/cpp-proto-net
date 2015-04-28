@@ -166,6 +166,30 @@ public:
 		}
 	}
 
+	property bool SpecifyBandRange
+	{
+		bool get()
+		{
+			return _specifyBandRange;
+		}
+		void set(bool val)
+		{
+			_specifyBandRange = val;
+		}
+	}
+
+	property int BandRange
+	{
+		int get()
+		{
+			return _bandRange;
+		}
+		void set(int val)
+		{
+			_bandRange = val;
+		}
+	}
+
 	property ArbitrageStopLossType StoplossType
 	{
 		ArbitrageStopLossType get()
@@ -212,6 +236,8 @@ private:
 	double _stdDevMultiplier;
 	bool _useTargetGain;
 	int _targetGain;
+	bool _specifyBandRange;
+	int _bandRange;
 	ArbitrageStopLossType _stoplossType;
 	CompareCondition _stoplossCondition;
 	double _stopLossThreshold;
