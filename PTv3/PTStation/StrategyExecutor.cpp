@@ -21,6 +21,7 @@ namespace strategy// Concrete FSM implementation
 	struct evtOpening {};
 	struct evtClosing {};
 	struct evtOrderFilled {};
+	struct evtOrderCancelled {};
 	struct evtErrorFound {};
 
 
@@ -177,8 +178,10 @@ namespace strategy// Concrete FSM implementation
 			//  +-------------------+-------------------+-------------------+---------------------------+--------------------------+
 			_row < EmptyPosition	, evtOpening		, PendingOpen		>,
 			_row < PendingOpen		, evtOrderFilled	, HoldPosition		>,
+			_row < PendingOpen		, evtOrderCancelled	, EmptyPosition		>,
 			_row < HoldPosition		, evtClosing		, PendingClose		>,
 			_row < PendingClose		, evtOrderFilled	, Idle			    >,
+			_row < PendingClose		, evtOrderCancelled	, HoldPosition		>,
 			_row < AllOk			, evtErrorFound		, Error				>
 		> {};
 
@@ -232,6 +235,9 @@ void CStrategyExecutor::FireEvent(ExecutorEvent execEvent)
 	case EXEC_FILLED:
 		boost::static_pointer_cast<strategy::ExecutorFsm>(m_fsm)->process_event(strategy::evtOrderFilled());
 		break;
+	case EXEC_CANCELLED:
+		boost::static_pointer_cast<strategy::ExecutorFsm>(m_fsm)->process_event(strategy::evtOrderCancelled());
+		break;
 	default:
 		break;
 	}
@@ -248,6 +254,11 @@ entity::PosiDirectionType CStrategyExecutor::PosiDirection()
 void CStrategyExecutor::OnFilled(int volumeTraded)
 {
 	FireEvent(EXEC_FILLED);
+}
+
+void CStrategyExecutor::OnCanceled()
+{
+	FireEvent(EXEC_CANCELLED);
 }
 
 bool CStrategyExecutor::Prepare()

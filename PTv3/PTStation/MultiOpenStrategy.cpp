@@ -181,6 +181,7 @@ void CMultiOpenStrategy::HandlePortfolioDone(PortfolioDoneMsgPtr msgPtr)
 				LOG_DEBUG(logger, boost::str(boost::format("CLOSE Canceled and RETURN Executor(%d) to OpenedExecutors list") % pExecutor->ExecId()));
 				m_OpenedExecutors.insert(std::make_pair(execId, pExecutor));
 			}
+			pExecutor->OnCanceled();
 		}
 		else // got error
 		{

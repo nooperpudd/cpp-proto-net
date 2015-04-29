@@ -16,7 +16,8 @@ enum ExecutorEvent
 {
 	EXEC_OPEN,
 	EXEC_CLOSE,
-	EXEC_FILLED
+	EXEC_FILLED,
+	EXEC_CANCELLED
 };
 
 class StrategyContext 
@@ -45,6 +46,7 @@ public:
 
 	virtual void OnWorking(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp){}
 	virtual void OnFilled(int volumeTraded);
+	virtual void OnCanceled();
 	virtual void OnFinished();
 	virtual bool TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp) = 0;
 	virtual bool TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp) = 0;
