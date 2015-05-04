@@ -122,7 +122,8 @@ bool CArbitrageMultiStrategy::Prerequisite(entity::Quote* pQuote, CPortfolio* pP
 			return false;
 
 		context.CurrentIndex = m_diffRecordSet->Calculate(ohlc);
-		if (context.CurrentIndex < m_bollPeriod)
+		int nbElems = m_diffRecordSet->NbElements();
+		if (nbElems < m_bollPeriod)
 			return false;
 
 		if (!pPortfolio->LegsTimestampAligned())

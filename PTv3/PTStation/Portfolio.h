@@ -23,6 +23,11 @@ struct ARBI_DIFF_CALC
 	double Diff;
 	double BuyPrice;
 	double SellPrice;
+
+	ARBI_DIFF_CALC(DIFF_TYPE diffType)
+		: DiffType(diffType)
+		, Diff(0), BuyPrice(0), SellPrice(0)
+	{}
 };
 
 double CalcDiff(vector<LegPtr>& legs, DIFF_TYPE diffType);

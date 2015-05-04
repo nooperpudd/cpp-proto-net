@@ -156,11 +156,11 @@ void CArbitrageStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, bo
 	if (!pPortfolio->LegsTimestampAligned())
 		return;
 
-	ARBI_DIFF_CALC structLastDiff = { LAST_DIFF, 0, 0, 0 };
-	ARBI_DIFF_CALC structLongDiff = { LONG_DIFF, 0, 0, 0 };
-	ARBI_DIFF_CALC structShortDiff = { SHORT_DIFF, 0, 0, 0 };
-	ARBI_DIFF_CALC structLongDiffFast = { LONG_DIFF, 0, 0, 0 };
-	ARBI_DIFF_CALC structShortDiffFast = { SHORT_DIFF, 0, 0, 0 };
+	ARBI_DIFF_CALC structLastDiff(LAST_DIFF);
+	ARBI_DIFF_CALC structLongDiff(LONG_DIFF);
+	ARBI_DIFF_CALC structShortDiff(SHORT_DIFF);
+	ARBI_DIFF_CALC structLongDiffFast(LONG_DIFF);
+	ARBI_DIFF_CALC structShortDiffFast(SHORT_DIFF);
 
 	CALC_DIFF_METHOD calcMethod = m_allowPending ? BETTER_PRICE : FAST_DEAL;
 
@@ -207,7 +207,7 @@ void CArbitrageStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, bo
 			m_closePositionPurpose = CLOSE_POSITION_FORCE;
 			LOG_DEBUG(logger, boost::str(boost::format("[%s] Arbitrage Trend - Portfolio(%s) Forcibly Closing position")
 				% pPortfolio->InvestorId() % pPortfolio->ID()));
-			ARBI_DIFF_CALC forceClosePx = { side == entity::LONG ? SHORT_DIFF : LONG_DIFF, 0, 0, 0 };
+			ARBI_DIFF_CALC forceClosePx(side == entity::LONG ? SHORT_DIFF : LONG_DIFF);
 			pPortfolio->CalculateDiff(&forceClosePx, FAST_DEAL);
 			pPortfolio->PrintLegsQuote();
 			ClosePosition(pOrderPlacer, forceClosePx, pQuote, timestamp, " ÷∂Ø∆Ω≤÷", trade::SR_Manual);

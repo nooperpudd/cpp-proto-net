@@ -378,7 +378,19 @@ bool CMultiOpenStrategy::OnStart()
 	{
 		bool indReady = (*iter)->Prepare();
 		if (!indReady)
+		{
 			allReady = false;
+			break;
+		}
+	}
+	if (!allReady)
+	{
+		LOG_DEBUG(logger, "CMultiOpenStrategy preparing executors fail, Cleanup executors.");
+		for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
+			iter != m_strategyExecutors.end(); ++iter)
+		{
+			(*iter)->Cleanup();
+		}
 	}
 	return allReady;
 }

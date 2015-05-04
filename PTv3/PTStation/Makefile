@@ -31,28 +31,29 @@ _FS_OBJS = stdafx \
 		QuoteAgent QuoteAgentFacade QuoteFetcher QuoteRepositry QuoteStore \
 		QuoteUdpAgent ShmQuoteFeed ShmQuoteSubscribe UdpQuoteListener \
 		\
-		ArbitrageStrategy ArbitrageTrigger ASCTrendStrategy ASCTrendTrigger ChangePositionStrategy \
-		ChangePositionTrigger HistSlopeStrategy HistSlopeTrigger LinerRegressionStrategy ManualStrategy \
-		RangeTrendStrategy ScalperStrategy ScalperTrigger StrategyOrderCommand TrailingStopTrigger \
-		WMATrendStrategy WMATrendTrigger \
+		ArbitrageMultiStrategy ArbitrageStrategy ArbitrageTrigger ASCTrendStrategy ASCTrendTrigger \
+		ChangePositionStrategy ChangePositionTrigger HistSlopeStrategy HistSlopeTrigger LinerRegressionStrategy \
+		ManualStrategy RangeTrendStrategy ScalperStrategy ScalperTrigger StrategyOrderCommand \
+		TrailingStopTrigger WMATrendStrategy WMATrendTrigger \
 		\
-		ATRDataSet BollDataSet DiffRecordSet DonchianDataSet HistDataReader HistDataWriter LinerRegressionDataSet \
-		MACDDataSet OHLCRecordSet PriceBarDataProxy PriceBarDataSource PriceBarGen TaIndicatorSet \
+		ATRDataSet BollDataSet DiffRecordSet DonchianDataSet HistDataReader \
+		HistDataWriter LinerRegressionDataSet MACDDataSet MultiOpenStrategy OHLCRecordSet \
+		PriceBarDataProxy PriceBarDataSource PriceBarGen StrategyExecutor TaIndicatorSet \
 		TechAnalyStrategy TechDataRepo WATRStopDataSet WillRDataSet WMATrendDataSet \
 		\
 		LegOrderPlacer ManualOrderPlacer OrderProcessor PortfolioArbitrageOrderPlacer \
 		PortfolioOrderHelper PortfolioOrderPlacer PortfolioScalperOrderPlacer PortfolioTrendOrderPlacer \
 		\
 		AsyncOrderPendingTimer charsetconvert Configuration DoubleCompare FakeDealer \
-		FileOperations LogManager orderhelper ParseZeusingMarketData SettingChangeTrace \
-		SymbolInfo SymbolInfoRepositry SymbolTimeUtil TradingTimeSpan \
+		FileOperations LogManager orderhelper SettingChangeTrace SymbolInfo \
+		SymbolInfoRepositry SymbolTimeUtil TradingTimeSpan \
 		\
 		Leg Portfolio PortfolioManager Strategy StrategyFactory TradeStation Trigger
 
 _FS_CTP_OBJS = InputOrder RtnOrderWrapper TradeAgent 
 
 _FS_FM_OBJS = InputOrder_FM RtnOrderWrapper_FM TradeAgent_FM 
-_FS_ZE_OBJS = InputOrder_Zeus RtnOrderWrapper_Zeus TradeAgent_Zeus 
+_FS_ZE_OBJS = InputOrder_Zeus RtnOrderWrapper_Zeus TradeAgent_Zeus ParseZeusingMarketData
 
 FS_COM_CTP_OBJS = $(patsubst %, $(OBJ_DIR)/%.o, $(_FS_OBJS))
 FS_COM_FM_OBJS = $(patsubst %, $(FS_FM_OBJ_DIR)/%.o, $(_FS_OBJS))

@@ -5,45 +5,6 @@
 #include <boost/thread.hpp>
 #include <boost/atomic.hpp>
 
-template < typename T >
-class CBufferRunner : public CThreadWorker
-{
-public:
-	CBufferRunner(int threadNum = 1) : CThreadWorker(threadNum)
-	{
-	}
-
-	CBufferRunner(boost::function<void(T&)> callback, int threadNum = 1)
-		: CBufferRunner(threadNum)
-	{
-		Init(callback);
-	}
-
-	~CBufferRunner(void)
-	{
-	}
-
-	void Init(boost::function<void(T&)> callback)
-	{
-		m_jobCallback = callback;
-	}
-
-	void Enqueue(T stuff)
-	{
-		QueueWorkItem(boost::bind(&CBufferRunner<T>::DoWork, this, stuff));
-	}
-
-private:
-	void DoWork(T& stuff)
-	{
-		if (!m_jobCallback.empty())
-			m_jobCallback(stuff);
-	}
-
-	boost::function<void(T&)> m_jobCallback;
-};
-
-
 class CThreadWorker
 {
 public:
@@ -82,5 +43,43 @@ private:
 	boost::shared_ptr< boost::asio::io_service::work > work;
 	boost::thread_group worker_threads;
 	boost::atomic<bool> running;
+};
+
+template < typename T >
+class CBufferRunner : public CThreadWorker
+{
+public:
+	CBufferRunner(int threadNum = 1) : CThreadWorker(threadNum)
+	{
+	}
+
+	CBufferRunner(boost::function<void(T&)> callback, int threadNum = 1)
+		: CBufferRunner(threadNum)
+	{
+		Init(callback);
+	}
+
+	~CBufferRunner(void)
+	{
+	}
+
+	void Init(boost::function<void(T&)> callback)
+	{
+		m_jobCallback = callback;
+	}
+
+	void Enqueue(T stuff)
+	{
+		QueueWorkItem(boost::bind(&CBufferRunner<T>::DoWork, this, stuff));
+	}
+
+private:
+	void DoWork(T& stuff)
+	{
+		if (!m_jobCallback.empty())
+			m_jobCallback(stuff);
+	}
+
+	boost::function<void(T&)> m_jobCallback;
 };
 

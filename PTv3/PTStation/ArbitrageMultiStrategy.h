@@ -12,11 +12,11 @@ public:
 		, ShortDiff(0), ShortDiffFast(0), ShortDiffSize(0)
 		, BollTop(0), BollBottom(0), BollMid(0), ActualMid(0)
 		, Direction(entity::NET), DirectionFast(entity::NET), LastStopLossDirection(entity::NET)
-		, StructLastDiff({ LAST_DIFF, 0, 0, 0 })
-		, StructLongDiff({ LONG_DIFF, 0, 0, 0 })
-		, StructShortDiff({ SHORT_DIFF, 0, 0, 0 })
-		, StructLongDiffFast({ LONG_DIFF, 0, 0, 0 })
-		, StructShortDiffFast({ SHORT_DIFF, 0, 0, 0 })
+		, StructLastDiff(LAST_DIFF)
+		, StructLongDiff(LONG_DIFF)
+		, StructShortDiff(SHORT_DIFF)
+		, StructLongDiffFast(LONG_DIFF)
+		, StructShortDiffFast(SHORT_DIFF)
 	{}
 	~ArbitrageStrategyContext(){}
 

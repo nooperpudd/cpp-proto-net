@@ -3,9 +3,9 @@
 #ifndef USE_FEMAS_API
 
 #ifdef USE_ZEUSING_API
-#define APP_VERSION "4.4.3 for Zeusing"
+#define APP_VERSION "4.5.0 for Zeusing"
 #else
-#define APP_VERSION "4.4.3"
+#define APP_VERSION "4.5.0"
 #endif
 
 #else
