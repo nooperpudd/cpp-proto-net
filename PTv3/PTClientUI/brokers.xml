@@ -107,6 +107,15 @@
           <item>udp://255.255.255.255:28444</item>
         </MarketData>
       </Server>
+      <Server>
+        <Name>海通模拟</Name>
+        <Trading>
+          <item>27.115.78.150:26205</item>
+        </Trading>
+        <MarketData>
+          <item>27.115.78.150:26213</item>
+        </MarketData>
+      </Server>
 		</Servers>
 	</broker>
 </root>

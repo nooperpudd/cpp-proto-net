@@ -604,4 +604,15 @@ void CPortfolio::SetHedgeFlag(trade::HedgeFlagType hedgeType)
 	m_hedgeFlag = hedgeType;
 }
 
+COrderProcessor* CPortfolio::OrderProcessor()
+{
+	CAvatarClient* clientAvatar = ParentAvatar();
+	if (clientAvatar != NULL)
+	{
+		return &(clientAvatar->OrderProcessor());
+	}
+	else
+		return NULL;
+}
+
 

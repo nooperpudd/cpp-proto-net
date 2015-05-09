@@ -36,6 +36,7 @@ int CalcSize(vector<LegPtr>& legs, DIFF_TYPE diffType);
 class CQuoteRepositry;
 class CQuoteFetcher;
 class CAvatarClient;
+class COrderProcessor;
 
 class CPortfolio
 {
@@ -47,6 +48,7 @@ public:
 
 	// properties
 	CAvatarClient* ParentAvatar(){ return m_avatar; }
+	COrderProcessor* OrderProcessor();
 	void ReleaseAvatar(){ m_avatar = NULL; }
 	const string& ID(){ return m_portfolioItem.id(); }
 	int Quantity(){ return m_portfolioItem.quantity(); }

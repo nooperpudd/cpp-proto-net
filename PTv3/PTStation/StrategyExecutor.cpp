@@ -270,6 +270,10 @@ bool CStrategyExecutor::Prepare()
 		if (!succ)
 			logger.Warning(boost::str(boost::format("Executor(%d) did NOT get prepared successfully") % m_execId));
 	}
+	else
+	{
+		logger.Warning(boost::str(boost::format("Executor(%d) does NOT contain an OrderPlacer !!!???") % m_execId));
+	}
 	return succ;
 }
 

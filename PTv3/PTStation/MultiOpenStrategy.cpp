@@ -65,6 +65,13 @@ void CMultiOpenStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfo
 		&& m_workingExecutors.size() == m_executorsPool.size())	
 		// Only when all executors are idle or there is no executor at all 
 		InitializeExecutors();
+
+	// re-applying strategy
+	if (withTriggers)
+	{
+		// Must call InitOrderPlacer again
+		InitOrderPlacer(pPortfolio, pPortfolio->OrderProcessor());
+	}
 }
 
 void CMultiOpenStrategy::TestWorkingExecutors(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
