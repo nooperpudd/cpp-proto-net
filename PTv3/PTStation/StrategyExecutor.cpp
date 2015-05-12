@@ -133,7 +133,7 @@ namespace strategy// Concrete FSM implementation
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
-				fsm.Executor->SetState(EXECUTOR_IDLE);
+				fsm.Executor->SetState(EXECUTOR_ERROR);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
@@ -259,6 +259,7 @@ void CStrategyExecutor::OnFilled(int volumeTraded)
 void CStrategyExecutor::OnCanceled()
 {
 	FireEvent(EXEC_CANCELLED);
+	OnFinished();	// in case strategy stop and doing deferred clean up
 }
 
 bool CStrategyExecutor::Prepare()
@@ -279,7 +280,8 @@ bool CStrategyExecutor::Prepare()
 
 void CStrategyExecutor::Cleanup()
 {
-	if (State() <= EMPTY_POSITION)
+	ExecutorState state = State();
+	if (state <= EMPTY_POSITION || state == EXECUTOR_ERROR)
 	{
 		LOG_DEBUG(logger, boost::str(boost::format("Executor(%d) Did 'Actual' Cleanup") % m_execId));
 		if (m_orderPlacer.get() != NULL)
@@ -298,4 +300,9 @@ void CStrategyExecutor::OnFinished()
 {
 	if (m_deferringCleanup)
 		Cleanup();
+}
+
+void CStrategyExecutor::OnError()
+{
+	boost::static_pointer_cast<strategy::ExecutorFsm>(m_fsm)->process_event(strategy::evtErrorFound());
 }

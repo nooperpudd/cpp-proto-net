@@ -189,11 +189,13 @@ void CPortfolioArbitrageOrderPlacer::OnPortfolioDone(PortfolioFinishState portfS
 			offsetFlag = entity::CLOSE;
 		}
 	}
+	/*	Don't stop strategy at once due to MultiOpenStrategy
 	else if (portfState == PortfolioError)
 	{
 		if (m_pPortf != NULL)
 			m_pPortf->StopStrategy();
 	}
+	*/
 }
 
 CLegOrderPlacer* CPortfolioArbitrageOrderPlacer::CreateLegOrderPlacer( int openTimeout, int maxRetryTimes )

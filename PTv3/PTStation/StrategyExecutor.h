@@ -9,7 +9,8 @@ enum ExecutorState
 	EMPTY_POSITION,
 	PENDING_OPEN,
 	HOLD_POSITION,
-	PENDING_CLOSE
+	PENDING_CLOSE,
+	EXECUTOR_ERROR
 };
 
 enum ExecutorEvent
@@ -48,10 +49,11 @@ public:
 	virtual void OnFilled(int volumeTraded);
 	virtual void OnCanceled();
 	virtual void OnFinished();
+	virtual void OnError();
 	virtual bool TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp) = 0;
 	virtual bool TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp) = 0;
 
-	ExecutorState State(){ return m_currentState.load(boost::memory_order_consume); }
+	ExecutorState State(){ return m_currentState.load(boost::memory_order_acquire); }
 	void SetState(ExecutorState state){ m_currentState.store(state, boost::memory_order_release); }
 
 protected:

@@ -7,6 +7,7 @@
 CMultiOpenStrategy::CMultiOpenStrategy(CAvatarClient* pAvatar, CPortfolio* pPortfolio)
 	: CTechAnalyStrategy(pAvatar)
 	, m_activeExecutor(NULL)
+	, m_pPortfolio(pPortfolio)
 	, m_perOpenQuantity(1)
 	, m_maxQuantity(3)
 	, m_longPosition(0)
@@ -19,6 +20,8 @@ CMultiOpenStrategy::CMultiOpenStrategy(CAvatarClient* pAvatar, CPortfolio* pPort
 
 CMultiOpenStrategy::~CMultiOpenStrategy()
 {
+	m_pPortfolio = NULL;
+	m_activeExecutor = NULL;
 }
 
 void CMultiOpenStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp)
@@ -192,8 +195,18 @@ void CMultiOpenStrategy::HandlePortfolioDone(PortfolioDoneMsgPtr msgPtr)
 		}
 		else // got error
 		{
-			logger.Warning(boost::str(boost::format("Got ERROR and RETURN Executor(%d) to executorPool") % pExecutor->ExecId()));
-			m_executorsPool.push(pExecutor);
+			if (offsetFlag == entity::OPEN)
+			{
+				logger.Warning(boost::str(boost::format("OPEN position and Got ERROR then RETURN Executor(%d) to executorPool") % pExecutor->ExecId()));
+				m_executorsPool.push(pExecutor);
+				pExecutor->OnCanceled();
+			}
+			else // error occurs when closing position
+			{
+				logger.Warning(boost::str(boost::format("CLOSE position and Got ERROR then put Executor(%d) to Error list") % pExecutor->ExecId()));
+				PutErrorList(pExecutor);
+				pExecutor->OnError();
+			}
 		}
 	}
 }
@@ -214,6 +227,7 @@ void CMultiOpenStrategy::InitializeExecutors()
 	// empty executor pool
 	while (!m_executorsPool.empty())
 		m_executorsPool.pop();
+	m_errorExecutors.clear();
 	m_strategyExecutors.clear();
 
 	int remainingQty = m_maxQuantity;
@@ -390,7 +404,14 @@ bool CMultiOpenStrategy::OnStart()
 			break;
 		}
 	}
-	if (!allReady)
+	if (allReady)
+	{
+		// ensure all other containers empty
+		m_workingExecutors.clear();
+		m_errorExecutors.clear();
+		m_OpenedExecutors.clear();
+	}
+	else
 	{
 		LOG_DEBUG(logger, "CMultiOpenStrategy preparing executors fail, Cleanup executors.");
 		for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
@@ -399,6 +420,7 @@ bool CMultiOpenStrategy::OnStart()
 			(*iter)->Cleanup();
 		}
 	}
+	
 	return allReady;
 }
 
@@ -419,6 +441,19 @@ void CMultiOpenStrategy::OnStop()
 		(*iter)->Cleanup();
 	}
 	LOG_DEBUG(logger, "CMultiOpenStrategy exit OnStop ...");
+}
+
+void CMultiOpenStrategy::PutErrorList(CStrategyExecutor* pErrExecutor)
+{
+	m_errorExecutors.push_back(pErrExecutor);
+	if (m_errorExecutors.size() == m_strategyExecutors.size())
+	{
+		if (m_pPortfolio != NULL)
+		{
+			logger.Warning(boost::str(boost::format("All executors of Portfolio (%d) in Error and Stop Strategy") % m_pPortfolio->ID()));
+			boost::thread(boost::bind(&CPortfolio::StopStrategy, m_pPortfolio));
+		}
+	}
 }
 
 
