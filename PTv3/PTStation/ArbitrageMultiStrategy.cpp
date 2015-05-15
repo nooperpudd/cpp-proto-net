@@ -16,6 +16,7 @@ CArbitrageMultiStrategy::CArbitrageMultiStrategy(CAvatarClient* pAvatar, CPortfo
 	, m_specifyBandRange(false)
 	, m_bandRange(0.8)
 	, m_useTargetGain(true)
+	, m_absoluteGain(false)
 	, m_allowPending(true)
 	, m_stopLossType(entity::STOP_LOSS_Disabled)
 	, m_stopLossThreshold(5)
@@ -312,7 +313,11 @@ bool CArbitrageStrategyExecutor::TestForOpen(entity::Quote* pQuote, CPortfolio* 
 bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
 {
 	if (m_pParentStrategy->UseTargetGain())
-		return TestForCloseUseTargetGain(pQuote, pPortfolio, pContext, timestamp);
+	{
+		return m_pParentStrategy->AbsoluteGain() ?
+			TestForCloseUseTargetGainToCost(pQuote, pPortfolio, pContext, timestamp) :
+			TestForCloseUseTargetGainToBoundary(pQuote, pPortfolio, pContext, timestamp);
+	}
 
 	ArbitrageStrategyContext* arbitrageContext = dynamic_cast<ArbitrageStrategyContext*>(pContext);
 	entity::PosiDirectionType side = PosiDirection();
@@ -401,7 +406,43 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 	return false;
 }
 
-entity::PosiDirectionType GetStopGainDirection(double cost, double targetGain, entity::PosiDirectionType posiDirection, ArbitrageStrategyContext* arbitrageContext, bool* fastDeal)
+entity::PosiDirectionType GetStopGainDirectionOnOffset(double targetGain, entity::PosiDirectionType posiDirection, ArbitrageStrategyContext* arbitrageContext, bool* fastDeal)
+{
+
+	*fastDeal = false;
+	double targetThreshold = 0;
+	if (posiDirection == entity::LONG)
+	{
+		targetThreshold = arbitrageContext->BollBottom + targetGain;
+		if (arbitrageContext->ShortDiffFast > targetThreshold)
+		{
+			*fastDeal = true;
+			return entity::SHORT;
+		}
+		// normal gain
+		if (arbitrageContext->ShortDiff > targetThreshold)
+		{
+			return entity::SHORT;
+		}
+	}
+	else if (posiDirection == entity::SHORT)
+	{
+		targetThreshold = arbitrageContext->BollTop - targetGain;
+		if (arbitrageContext->LongDiffFast < targetThreshold)
+		{
+			*fastDeal = true;
+			return entity::LONG;
+		}
+		// normal gain
+		if (arbitrageContext->LongDiff < targetThreshold)
+		{
+			return entity::LONG;
+		}
+	}
+	return entity::NET;
+}
+
+entity::PosiDirectionType GetStopGainDirectionOnCost(double cost, double targetGain, entity::PosiDirectionType posiDirection, ArbitrageStrategyContext* arbitrageContext, bool* fastDeal)
 {
 	*fastDeal = false;
 
@@ -439,14 +480,96 @@ entity::PosiDirectionType GetStopGainDirection(double cost, double targetGain, e
 	return entity::NET;
 }
 
-bool CArbitrageStrategyExecutor::TestForCloseUseTargetGain(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
+bool CArbitrageStrategyExecutor::TestForCloseUseTargetGainToBoundary(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
 {
 	ArbitrageStrategyContext* arbitrageContext = dynamic_cast<ArbitrageStrategyContext*>(pContext);
 	entity::PosiDirectionType side = PosiDirection();
 	ARBI_DIFF_CALC& diffPrices = side == entity::LONG ? arbitrageContext->StructShortDiff : arbitrageContext->StructLongDiff;
 
 	bool fastDeal = false;
-	entity::PosiDirectionType stopGainDirection = GetStopGainDirection(m_costDiff, m_pParentStrategy->TargetGain(), side, arbitrageContext, &fastDeal);
+	entity::PosiDirectionType stopGainDirection = GetStopGainDirectionOnOffset(m_pParentStrategy->TargetGain(), side, arbitrageContext, &fastDeal);
+
+	if (stopGainDirection != entity::NET && stopGainDirection != side)
+	{
+		if (fastDeal)
+			diffPrices = side == entity::LONG ? arbitrageContext->StructShortDiffFast : arbitrageContext->StructLongDiffFast;
+
+		if (side == entity::LONG)
+		{
+			// Fast/Normal Stop Gain
+			m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
+			string logTxt = boost::str(boost::format("%s StopGain: Short diff(%.2f) > Bottom(%.2f) + Target Gain(%.2f)")
+				% (fastDeal ? "FAST" : "")
+				% (fastDeal ? arbitrageContext->ShortDiffFast : arbitrageContext->ShortDiff)
+				% arbitrageContext->BollBottom % m_pParentStrategy->TargetGain());
+			LOG_DEBUG(logger, logTxt);
+			pPortfolio->PrintLegsQuote();
+
+			string comment = boost::str(boost::format("%s空价差(%.2f) > 下轨(%.2f) + 目标盈利(%.2f) -> 止盈平仓")
+				% (fastDeal ? "对价" : "")
+				% (fastDeal ? arbitrageContext->ShortDiffFast : arbitrageContext->ShortDiff)
+				% arbitrageContext->BollBottom % m_pParentStrategy->TargetGain());
+
+			return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopGain);
+		}
+		else if (side == entity::SHORT)
+		{
+			// Fast/Normal Stop Gain
+			m_closePositionPurpose = CLOSE_POSITION_STOP_GAIN;
+			string logTxt = boost::str(boost::format("%s StopGain: Long diff(%.2f) < Top(%.2f) - Target Gain(%.2f)")
+				% (fastDeal ? "FAST" : "")
+				% (fastDeal ? arbitrageContext->LongDiffFast : arbitrageContext->LongDiff)
+				% arbitrageContext->BollTop
+				% m_pParentStrategy->TargetGain());
+			LOG_DEBUG(logger, logTxt);
+			pPortfolio->PrintLegsQuote();
+			string comment = boost::str(boost::format("%s多价差(%.2f) < 上轨(%.2f) - 目标盈利(%.2f) -> 止盈平仓")
+				% (fastDeal ? "对价" : "")
+				% (fastDeal ? arbitrageContext->LongDiffFast : arbitrageContext->LongDiff)
+				% arbitrageContext->BollTop
+				% m_pParentStrategy->TargetGain());
+			return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopGain);
+		}
+	}
+
+	// Stop loss logic in ArbitrageStrategy
+	if (arbitrageContext->Direction != entity::NET)
+	{
+		if (side == entity::LONG)
+		{
+			string comment;
+			if (StopLossLong(arbitrageContext, &comment))
+			{
+				pPortfolio->PrintLegsQuote();
+				// Stop Loss
+				m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
+				return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopLoss);
+			}
+		}
+		else if (side == entity::SHORT)
+		{
+			string comment;
+			if (StopLossShort(arbitrageContext, &comment))
+			{
+				pPortfolio->PrintLegsQuote();
+				// Stop Loss
+				m_closePositionPurpose = CLOSE_POSITION_STOP_LOSS;
+				return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_StopLoss);
+			}
+		}
+	}
+
+	return false;
+}
+
+bool CArbitrageStrategyExecutor::TestForCloseUseTargetGainToCost(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
+{
+	ArbitrageStrategyContext* arbitrageContext = dynamic_cast<ArbitrageStrategyContext*>(pContext);
+	entity::PosiDirectionType side = PosiDirection();
+	ARBI_DIFF_CALC& diffPrices = side == entity::LONG ? arbitrageContext->StructShortDiff : arbitrageContext->StructLongDiff;
+
+	bool fastDeal = false;
+	entity::PosiDirectionType stopGainDirection = GetStopGainDirectionOnCost(m_costDiff, m_pParentStrategy->TargetGain(), side, arbitrageContext, &fastDeal);
 
 	if (stopGainDirection != entity::NET && stopGainDirection != side)
 	{
