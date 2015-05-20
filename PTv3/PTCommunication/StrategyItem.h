@@ -154,6 +154,18 @@ public:
 		}
 	}
 
+	property bool AbsoluteGain
+	{
+		bool get()
+		{
+			return _absoluteGain;
+		}
+		void set(bool val)
+		{
+			_absoluteGain = val;
+		}
+	}
+
 	property int TargetGain
 	{
 		int get()
@@ -235,6 +247,7 @@ private:
 	double _bollPeriod;
 	double _stdDevMultiplier;
 	bool _useTargetGain;
+	bool _absoluteGain;
 	int _targetGain;
 	bool _specifyBandRange;
 	int _bandRange;

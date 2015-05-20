@@ -130,6 +130,24 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         }
         #endregion
 
+        #region AbsoluteGain
+        private bool _absoluteGain;
+
+        public bool AbsoluteGain
+        {
+            get { return _absoluteGain; }
+            set
+            {
+                if (_absoluteGain != value)
+                {
+                    _absoluteGain = value;
+                    RaisePropertyChanged("AbsoluteGain");
+                }
+            }
+        }
+        #endregion
+
+
         #region TargetGain
         private int targetGain;
 
@@ -277,6 +295,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             RetryTimes = 8;
 
             UseTargetGain = false;
+            AbsoluteGain = false;
             TargetGain = 4;
 
             SpecifyBandRange = false;
@@ -292,6 +311,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             XElement elem = new XElement("arbitrageStrategySetting");
             elem.Add(
                 new XAttribute("useTargetGain", UseTargetGain),
+                new XAttribute("absoluteGain", AbsoluteGain),
                 new XAttribute("targetGain", TargetGain),
                 new XAttribute("specifyBandRange", SpecifyBandRange),
                 new XAttribute("bandRange", BandRange),
@@ -323,6 +343,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             XAttribute attr = elem.Attribute("useTargetGain");
             if (attr != null)
                 UseTargetGain = bool.Parse(attr.Value);
+            attr = elem.Attribute("absoluteGain");
+            if (attr != null)
+                AbsoluteGain = bool.Parse(attr.Value);
             attr = elem.Attribute("targetGain");
             if (attr != null)
                 TargetGain = int.Parse(attr.Value);
@@ -411,6 +434,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             strategyItem.MaxPosition = MaxPosition;
             strategyItem.StoplossType = StopLossType;
             strategyItem.UseTargetGain = UseTargetGain;
+            strategyItem.AbsoluteGain = AbsoluteGain;
             strategyItem.TargetGain = TargetGain;
             strategyItem.SpecifyBandRange = SpecifyBandRange;
             strategyItem.BandRange = BandRange;
@@ -432,6 +456,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
 			this.TimeFrame = strategySettings.TimeFrame;
             this.MaxPosition = strategySettings.MaxPosition;
             this.UseTargetGain = strategySettings.UseTargetGain;
+            this.AbsoluteGain = strategySettings.AbsoluteGain;
             this.SpecifyBandRange = strategySettings.SpecifyBandRange;
             this.BandRange = strategySettings.BandRange;
             this.TargetGain = strategySettings.TargetGain;

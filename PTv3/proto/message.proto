@@ -194,7 +194,8 @@ message StrategyItem
 	optional int32 AR_TargetGain = 106;
 	optional CompareCondition AR_StopLossCondition = 107;
 	optional double AR_StopLossThreshold = 108;
-	optional ArbitrageStopLossType AR_StopLossType = 109; 
+	optional ArbitrageStopLossType AR_StopLossType = 109;
+	optional bool AR_AbsoluteGain = 110;
 
 	// Change Position
 	optional string CP_CloseLeg = 201;

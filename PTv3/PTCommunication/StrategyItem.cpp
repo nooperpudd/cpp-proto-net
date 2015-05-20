@@ -36,6 +36,7 @@ void ArbitrageStrategyItem::To( entity::StrategyItem* pNativeStrategyItem )
 		pNativeStrategyItem->set_ar_bollperiod(_bollPeriod);
 		pNativeStrategyItem->set_ar_stddevmultiplier(_stdDevMultiplier);
 		pNativeStrategyItem->set_ar_usetargetgain(_useTargetGain);
+		pNativeStrategyItem->set_ar_absolutegain(_absoluteGain);
 		pNativeStrategyItem->set_ar_targetgain(_targetGain);
 		pNativeStrategyItem->set_ar_specifybandrange(_specifyBandRange);
 		pNativeStrategyItem->set_ar_bandrange(_bandRange);

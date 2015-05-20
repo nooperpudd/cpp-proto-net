@@ -170,9 +170,19 @@ namespace PortfolioTrading.Modules.Portfolio
                 {
                     mlOrderVm.From(orderUpdateArgs.LegOrderRef, orderUpdateArgs.LegOrder);
 
-                    if (mlOrderVm.IsAllFinished && !mlOrderVm.IsPortfolio)
+                    if (mlOrderVm.IsAllFinished)
                     {
-                        mlOrderVm.CalcProfit();
+                        if (mlOrderVm.IsPortfolio)
+                        {
+                            if (!mlOrderVm.IsOpenOrder && !string.IsNullOrEmpty(mlOrderVm.OpenOrderId))
+                            {
+                                var openOrderVm = GetMlOrderVm(orderUpdateArgs.AccountId, mlOrderVm.OpenOrderId);
+                                if (openOrderVm != null)
+                                    mlOrderVm.CalcProfit(openOrderVm);
+                            }
+                        }
+                        else
+                            mlOrderVm.CalcProfit();
                     }
                 }
             }

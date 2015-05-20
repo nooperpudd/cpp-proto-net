@@ -47,6 +47,7 @@ void CArbitrageMultiStrategy::OnApply(const entity::StrategyItem& strategyItem, 
 	if (m_bandRangeTimes < 1)
 		m_bandRangeTimes = 4;
 	m_useTargetGain = strategyItem.ar_usetargetgain();
+	m_absoluteGain = strategyItem.ar_absolutegain();
 	m_targetGainTimes = strategyItem.ar_targetgain();
 	if (m_targetGainTimes < 1)
 		m_targetGainTimes = 4;
