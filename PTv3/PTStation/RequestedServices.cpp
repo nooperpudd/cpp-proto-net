@@ -217,6 +217,16 @@ void PortfClosePosiService::handle( LogicalConnection* pClient, IncomingPacket* 
 	CPortfolio* pPortf = avatarClient->PortfolioManager().Get(closePosiParam.portfid());
 	if(pPortf != NULL)
 	{
-		pPortf->StrategyForceClose();
+		string mlOrderId;
+		int quantity = 0;
+		if (closePosiParam.has_mlorderid())
+		{
+			mlOrderId = closePosiParam.mlorderid();
+		}
+		if (closePosiParam.has_quantity())
+		{
+			quantity = closePosiParam.quantity();
+		}
+		pPortf->StrategyForceClose(mlOrderId, quantity);
 	}
 }

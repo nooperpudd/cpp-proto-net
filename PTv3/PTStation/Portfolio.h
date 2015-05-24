@@ -73,7 +73,7 @@ public:
 	void SetQuantity(int perOpenQty, int perStartQty, int totalOpenLimit, int maxCancelQty);
 	void SetEndTimePoints(vector<string>& timepoints);
 	void StrategyForceOpen();
-	void StrategyForceClose();
+	void StrategyForceClose(const string& mlOrderId, int quantity);
 	void PushMessage(const string& msg);
 	void SwitchStopLoss(bool enableStopLoss){ m_stopLoss.store(true, boost::memory_order_release); }
 	void SwitchStopGain(bool enableStopGain){ m_stopGain.store(true, boost::memory_order_release); }

@@ -41,8 +41,8 @@ public:
 	void PortfChangePreferredLeg(const char* portfId, const char* legName);
 
 	void PortfOpenPosition(const char* portfId);
-	void PortfClosePosition(const char* portfId);
-
+	void PortfClosePosition(const char* portfId, const char* orderId);
+	void PortfClosePosition(const char* portfId, int quantity);
 
 	bool logged();
 	void Logout();

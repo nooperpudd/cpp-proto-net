@@ -46,6 +46,9 @@ public:
 	void TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
 	void TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
 
+	void SetForceClose(const string& mlOrderId);
+	void SetForceClose(int quantity);
+	void SetForceClose(){ SetForceClose(0); }
 protected:
 
 	CPortfolioOrderPlacer* CreateOrderPlacer();

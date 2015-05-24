@@ -416,6 +416,7 @@ message ClosePositionParam
 	required string PortfId = 1;
 	optional string MLOrderId = 2;
 	optional string LegOrdRef = 3;
+	optional int32 Quantity = 4;
 }
 
 message LegOrderUpdateParam

@@ -4571,6 +4571,13 @@ class ClosePositionParam : public ::google::protobuf::Message {
   inline ::std::string* release_legordref();
   inline void set_allocated_legordref(::std::string* legordref);
 
+  // optional int32 Quantity = 4;
+  inline bool has_quantity() const;
+  inline void clear_quantity();
+  static const int kQuantityFieldNumber = 4;
+  inline ::google::protobuf::int32 quantity() const;
+  inline void set_quantity(::google::protobuf::int32 value);
+
   // @@protoc_insertion_point(class_scope:entity.ClosePositionParam)
  private:
   inline void set_has_portfid();
@@ -4579,15 +4586,18 @@ class ClosePositionParam : public ::google::protobuf::Message {
   inline void clear_has_mlorderid();
   inline void set_has_legordref();
   inline void clear_has_legordref();
+  inline void set_has_quantity();
+  inline void clear_has_quantity();
 
   ::google::protobuf::UnknownFieldSet _unknown_fields_;
 
   ::std::string* portfid_;
   ::std::string* mlorderid_;
   ::std::string* legordref_;
+  ::google::protobuf::int32 quantity_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(3 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
 
   friend void  protobuf_AddDesc_message_2eproto();
   friend void protobuf_AssignDesc_message_2eproto();
@@ -12787,6 +12797,28 @@ inline void ClosePositionParam::set_allocated_legordref(::std::string* legordref
     clear_has_legordref();
     legordref_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
+}
+
+// optional int32 Quantity = 4;
+inline bool ClosePositionParam::has_quantity() const {
+  return (_has_bits_[0] & 0x00000008u) != 0;
+}
+inline void ClosePositionParam::set_has_quantity() {
+  _has_bits_[0] |= 0x00000008u;
+}
+inline void ClosePositionParam::clear_has_quantity() {
+  _has_bits_[0] &= ~0x00000008u;
+}
+inline void ClosePositionParam::clear_quantity() {
+  quantity_ = 0;
+  clear_has_quantity();
+}
+inline ::google::protobuf::int32 ClosePositionParam::quantity() const {
+  return quantity_;
+}
+inline void ClosePositionParam::set_quantity(::google::protobuf::int32 value) {
+  set_has_quantity();
+  quantity_ = value;
 }
 
 // -------------------------------------------------------------------

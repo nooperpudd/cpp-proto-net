@@ -65,7 +65,7 @@ void CMultiOpenStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfo
 
 	if (m_perOpenQuantity > 0 
 		&& m_maxQuantity >= m_perOpenQuantity
-		&& m_workingExecutors.size() == m_executorsPool.size())	
+		&& m_strategyExecutors.size() == m_executorsPool.size())
 		// Only when all executors are idle or there is no executor at all 
 		InitializeExecutors();
 
@@ -452,6 +452,43 @@ void CMultiOpenStrategy::PutErrorList(CStrategyExecutor* pErrExecutor)
 		{
 			logger.Warning(boost::str(boost::format("All executors of Portfolio (%d) in Error and Stop Strategy") % m_pPortfolio->ID()));
 			boost::thread(boost::bind(&CPortfolio::StopStrategy, m_pPortfolio));
+		}
+	}
+}
+
+void CMultiOpenStrategy::SetForceClose(int quantity)
+{
+	boost::mutex::scoped_lock l(m_mut);
+
+	if (m_OpenedExecutors.size() > 0)
+	{
+		int count = quantity > 0 && quantity < (int)m_OpenedExecutors.size() ? quantity : m_OpenedExecutors.size();
+
+		for (boost::unordered_map<int, CStrategyExecutor*>::iterator iter = m_OpenedExecutors.begin();
+			iter != m_OpenedExecutors.end() && count > 0; ++iter, --count)
+		{
+			CStrategyExecutor* closingExecutor = iter->second;
+			closingExecutor->SetForceClose();
+		}
+	}
+}
+
+void CMultiOpenStrategy::SetForceClose(const string& mlOrderId)
+{
+	boost::mutex::scoped_lock l(m_mut);
+
+	for (boost::unordered_map<int, CStrategyExecutor*>::iterator iter = m_OpenedExecutors.begin(); iter != m_OpenedExecutors.end(); ++iter)
+	{
+		CStrategyExecutor* closingExecutor = iter->second;
+
+		string openedOrderId;
+		if (closingExecutor->GetLastOpenOrderId(openedOrderId))
+		{
+			if (openedOrderId == mlOrderId)
+			{
+				closingExecutor->SetForceClose();
+				break;
+			}
 		}
 	}
 }

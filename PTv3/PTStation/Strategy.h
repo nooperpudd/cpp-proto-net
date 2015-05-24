@@ -47,7 +47,9 @@ public:
 	void ResetForceOpen(){ m_forceOpening.store(false, boost::memory_order_release); }
 	bool IsForceOpening(){ return m_forceOpening.load(boost::memory_order_acquire); }
 
-	void SetForceClose(){ m_forceClosing.store(true, boost::memory_order_release); };
+	virtual void SetForceClose(const string& mlOrderId){ SetForceClose(); }
+	virtual void SetForceClose(int quantity){ SetForceClose(); }
+	virtual void SetForceClose(){ m_forceClosing.store(true, boost::memory_order_release); };
 	void ResetForceClose(){ m_forceClosing.store(false, boost::memory_order_release);};
 	bool IsForceClosing(){ return m_forceClosing.load(boost::memory_order_acquire); };
 

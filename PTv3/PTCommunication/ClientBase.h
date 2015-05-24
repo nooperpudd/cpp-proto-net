@@ -81,6 +81,8 @@ namespace PTCommunication {
 
 		void PortfClosePosition(String ^pid, String ^mlOrder, String ^legRef);
 
+		void PortfClosePosition(String ^pid, int quantity);
+
 		void CancelOrder(Order ^legOrder)
 		{
 

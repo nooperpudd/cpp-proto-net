@@ -43,6 +43,10 @@ public:
 	void FireEvent(ExecutorEvent execEvent);
 	entity::PosiDirectionType PosiDirection();
 
+	void SetForceClose(){ m_forceClosing.store(true, boost::memory_order_release); };
+	void ResetForceClose(){ m_forceClosing.store(false, boost::memory_order_release); };
+	bool IsForceClosing(){ return m_forceClosing.load(boost::memory_order_acquire); };
+
 	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc, PortfolioTradedEvent porfTradedEventHandler) = 0;
 
 	virtual void OnWorking(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp){}
@@ -52,10 +56,11 @@ public:
 	virtual void OnError();
 	virtual bool TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp) = 0;
 	virtual bool TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp) = 0;
+	virtual bool GetLastOpenOrderId(string& outMlOrderId);
 
 	ExecutorState State(){ return m_currentState.load(boost::memory_order_acquire); }
 	void SetState(ExecutorState state){ m_currentState.store(state, boost::memory_order_release); }
-
+	
 protected:
 
 	virtual void OpenPosition(entity::PosiDirectionType direction, ARBI_DIFF_CALC diffPrices, StrategyContext* pContext, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp) = 0;
@@ -69,6 +74,8 @@ protected:
 
 	OrderPlacerPtr m_orderPlacer;
 	bool m_deferringCleanup;
+
+	boost::atomic<bool> m_forceClosing;
 };
 
 typedef boost::shared_ptr<CStrategyExecutor> StrategyExecutorPtr;

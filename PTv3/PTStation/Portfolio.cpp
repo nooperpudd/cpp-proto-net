@@ -494,9 +494,18 @@ void CPortfolio::StrategyForceOpen()
 	m_strategy->SetForceOpen();
 }
 
-void CPortfolio::StrategyForceClose()
+void CPortfolio::StrategyForceClose(const string& mlOrderId, int quantity)
 {
-	m_strategy->SetForceClose();
+	if (!mlOrderId.empty())
+	{
+		m_strategy->SetForceClose(mlOrderId);
+	}
+	else if (quantity > 0)
+	{
+		m_strategy->SetForceClose(quantity);
+	}
+	else
+		m_strategy->SetForceClose();
 }
 
 void CPortfolio::PushMessage( const string& msg )

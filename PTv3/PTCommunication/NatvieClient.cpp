@@ -224,11 +224,21 @@ void CNatvieClient::PortfOpenPosition(const char* portfId)
 
 	sendRequest(&request);
 }
-void CNatvieClient::PortfClosePosition(const char* portfId)
+
+void CNatvieClient::PortfClosePosition(const char* portfId, int quantity)
 {
 	ProtobufPacket<entity::ClosePositionParam> request(PortfolioClosePositionRequestID);
 	request.getData().set_portfid(portfId);
+	request.getData().set_quantity(quantity);
+	sendRequest(&request);
+}
 
+void CNatvieClient::PortfClosePosition(const char* portfId, const char* orderId)
+{
+	ProtobufPacket<entity::ClosePositionParam> request(PortfolioClosePositionRequestID);
+	request.getData().set_portfid(portfId);
+	if (orderId != NULL)
+		request.getData().set_mlorderid(orderId);
 	sendRequest(&request);
 }
 

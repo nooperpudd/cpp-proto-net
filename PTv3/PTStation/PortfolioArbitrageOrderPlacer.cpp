@@ -187,6 +187,7 @@ void CPortfolioArbitrageOrderPlacer::OnPortfolioDone(PortfolioFinishState portfS
 		{
 			m_openedPosition = false;
 			offsetFlag = entity::CLOSE;
+			m_lastOpenOrderId.clear();
 		}
 	}
 	/*	Don't stop strategy at once due to MultiOpenStrategy

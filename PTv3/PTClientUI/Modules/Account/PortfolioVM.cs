@@ -1442,7 +1442,7 @@ namespace PortfolioTrading.Modules.Account
         {
             if (_accountVm.VerifyStatus())
             {
-                _accountVm.Host.PortfClosePosition(Id, "", "");
+                _accountVm.Host.PortfClosePosition(Id, 0);
                 EventLogger.Write("{0} 平仓组合 {1}", _accountVm.InvestorId, DisplayText);
             }
         }
@@ -1460,7 +1460,7 @@ namespace PortfolioTrading.Modules.Account
 
                 if (_accountVm.VerifyStatus())
                 {
-                    _accountVm.Host.PortfClosePosition(Id, "", "");
+                    _accountVm.Host.PortfClosePosition(Id, qty);
                     EventLogger.Write("{0} 平仓组合 {1}, 数量 {2} - ({3})", _accountVm.InvestorId, DisplayText, qty,
                         isVirtual ? "虚拟" : "真实");
                 }

@@ -218,13 +218,26 @@
                                             CommandParameter="{Binding }">
                                         <Button.Style>
                                             <Style TargetType="Button">
+                                                <Setter Property="IsEnabled" Value="False"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding IsOpenOrder}" Value="False">
                                                         <Setter Property="Visibility" Value="Collapsed"/>
                                                     </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsAllFinished}" Value="True">
-                                                        <Setter Property="IsEnabled" Value="False"/>
-                                                    </DataTrigger>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsPortfolio}" Value="True"/>
+                                                            <Condition Binding="{Binding IsOpenOrder}" Value="True" />
+                                                            <Condition Binding="{Binding IsAllFinished}" Value="True" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                    </MultiDataTrigger>
+                                                    <MultiDataTrigger>
+                                                        <MultiDataTrigger.Conditions>
+                                                            <Condition Binding="{Binding IsPortfolio}" Value="False"/>
+                                                            <Condition Binding="{Binding IsOpenOrder}" Value="True" />
+                                                        </MultiDataTrigger.Conditions>
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                    </MultiDataTrigger>
                                                 </Style.Triggers>  
                                             </Style>
                                         </Button.Style>

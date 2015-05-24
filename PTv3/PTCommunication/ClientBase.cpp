@@ -229,10 +229,40 @@ void ClientBase::PortfClosePosition( String ^pid, String ^mlOrder, String ^legRe
 		return;
 
 	IntPtr pPortfIdAddress;
+	IntPtr pOrderIdAddress;
 	try
 	{
 		pPortfIdAddress = (IntPtr)Marshal::StringToHGlobalAnsi(pid);
-		_nativeClient->PortfClosePosition((char*)pPortfIdAddress.ToPointer());
+		if (!String::IsNullOrEmpty(mlOrder))
+		{
+			pOrderIdAddress = (IntPtr)Marshal::StringToHGlobalAnsi(mlOrder);
+			_nativeClient->PortfClosePosition((char*)pPortfIdAddress.ToPointer(), (char*)pOrderIdAddress.ToPointer());
+		}
+		else
+		{
+			_nativeClient->PortfClosePosition((char*)pPortfIdAddress.ToPointer(), NULL);
+		}
+	}
+	finally
+	{
+		Marshal::FreeHGlobal(pPortfIdAddress);
+		if (!String::IsNullOrEmpty(mlOrder))
+		{
+			Marshal::FreeHGlobal(pOrderIdAddress);
+		}
+	}
+}
+
+void ClientBase::PortfClosePosition(String ^pid, int quantity)
+{
+	if (!this->IsConnected)
+		return;
+
+	IntPtr pPortfIdAddress;
+	try
+	{
+		pPortfIdAddress = (IntPtr)Marshal::StringToHGlobalAnsi(pid);
+		_nativeClient->PortfClosePosition((char*)pPortfIdAddress.ToPointer(), quantity);
 	}
 	finally
 	{

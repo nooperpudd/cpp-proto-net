@@ -313,17 +313,39 @@ bool CArbitrageStrategyExecutor::TestForOpen(entity::Quote* pQuote, CPortfolio* 
 
 bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp)
 {
+	ArbitrageStrategyContext* arbitrageContext = dynamic_cast<ArbitrageStrategyContext*>(pContext);
+	entity::PosiDirectionType side = PosiDirection();
+	ARBI_DIFF_CALC& diffPrices = side == entity::LONG ? arbitrageContext->StructShortDiff : arbitrageContext->StructLongDiff;
+
+	// Check if force closing
+	bool forceClosing = IsForceClosing();
+	if (forceClosing)
+	{
+		if(State() == HOLD_POSITION)
+		{
+			// Fast Stop Gain
+			m_closePositionPurpose = CLOSE_POSITION_FORCE;
+			string logTxt = boost::str(boost::format("Manual Close Portfolio(%s) - Executor (%d) at %s")
+				% pPortfolio->ID() % ExecId() % pQuote->update_time());
+			LOG_DEBUG(logger, logTxt);
+			pPortfolio->PrintLegsQuote();
+			string comment = "强制平仓";
+			return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_Manual);
+		}
+		else
+		{
+			ResetForceClose();	// ignore and reset unexpected force closing
+		}
+		return false;
+	}
+
 	if (m_pParentStrategy->UseTargetGain())
 	{
 		return m_pParentStrategy->AbsoluteGain() ?
 			TestForCloseUseTargetGainToCost(pQuote, pPortfolio, pContext, timestamp) :
 			TestForCloseUseTargetGainToBoundary(pQuote, pPortfolio, pContext, timestamp);
 	}
-
-	ArbitrageStrategyContext* arbitrageContext = dynamic_cast<ArbitrageStrategyContext*>(pContext);
-	entity::PosiDirectionType side = PosiDirection();
-	ARBI_DIFF_CALC& diffPrices = side == entity::LONG ? arbitrageContext->StructShortDiff : arbitrageContext->StructLongDiff;
-
+	
 	// Stop gain/loss logic in ArbitrageStrategy
 	if (arbitrageContext->DirectionFast != entity::NET && side != arbitrageContext->DirectionFast)
 	{
@@ -722,7 +744,7 @@ bool CArbitrageStrategyExecutor::ClosePosition(ARBI_DIFF_CALC diffPrices, entity
 		CPortfolioArbitrageOrderPlacer* pOrderPlacer = dynamic_cast<CPortfolioArbitrageOrderPlacer*>(m_orderPlacer.get());
 		pOrderPlacer->ClosePosition(m_volumeToClose, direction, lmtPrice, 2, timestamp, reason);
 
-		//ResetForceClose();
+		ResetForceClose();
 		pOrderPlacer->OutputStatus(boost::str(boost::format("%s - %s 平仓 @ %.2f - %.2f")
 			% comment % GetPosiDirectionText(direction, true) % lmtPrice[0] % lmtPrice[1]));
 
@@ -847,4 +869,18 @@ bool CArbitrageStrategyExecutor::StopLossShort(ArbitrageStrategyContext* arbitra
 	}
 
 	return ret;
+}
+
+bool CArbitrageStrategyExecutor::GetLastOpenOrderId(string& outMlOrderId)
+{
+	if (State() == HOLD_POSITION)
+	{
+		CPortfolioArbitrageOrderPlacer* pOrderPlacer = dynamic_cast<CPortfolioArbitrageOrderPlacer*>(m_orderPlacer.get());
+		if (pOrderPlacer->IsOpened())
+		{
+			outMlOrderId = pOrderPlacer->LastOpenOrderId();
+			return true;
+		}
+	}
+	return false;
 }

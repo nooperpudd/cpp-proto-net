@@ -275,6 +275,7 @@ bool CStrategyExecutor::Prepare()
 	{
 		logger.Warning(boost::str(boost::format("Executor(%d) does NOT contain an OrderPlacer !!!???") % m_execId));
 	}
+	ResetForceClose();
 	return succ;
 }
 
@@ -305,4 +306,9 @@ void CStrategyExecutor::OnFinished()
 void CStrategyExecutor::OnError()
 {
 	boost::static_pointer_cast<strategy::ExecutorFsm>(m_fsm)->process_event(strategy::evtErrorFound());
+}
+
+bool CStrategyExecutor::GetLastOpenOrderId(string& outMlOrderId)
+{
+	return false;
 }

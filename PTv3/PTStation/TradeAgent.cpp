@@ -314,8 +314,7 @@ void CTradeAgent::OnRspUserLogin( CThostFtdcRspUserLoginField *pRspUserLogin, CT
 #ifdef FAKE_LOGIN
 		string ds("20150324"); //Only for test
 #else
-		//string ds(pRspUserLogin->TradingDay);
-		string ds("20150324");
+		string ds(pRspUserLogin->TradingDay);
 #endif
 		m_tradingDay = boost::gregorian::from_undelimited_string(ds);
 
