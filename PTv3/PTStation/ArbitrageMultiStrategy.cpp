@@ -315,8 +315,7 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 {
 	ArbitrageStrategyContext* arbitrageContext = dynamic_cast<ArbitrageStrategyContext*>(pContext);
 	entity::PosiDirectionType side = PosiDirection();
-	ARBI_DIFF_CALC& diffPrices = side == entity::LONG ? arbitrageContext->StructShortDiff : arbitrageContext->StructLongDiff;
-
+	
 	// Check if force closing
 	bool forceClosing = IsForceClosing();
 	if (forceClosing)
@@ -330,6 +329,7 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 			LOG_DEBUG(logger, logTxt);
 			pPortfolio->PrintLegsQuote();
 			string comment = "Ç¿ÖÆÆ½²Ö";
+			ARBI_DIFF_CALC& diffPrices = side == entity::LONG ? arbitrageContext->StructShortDiffFast : arbitrageContext->StructLongDiffFast;
 			return ClosePosition(diffPrices, pQuote, timestamp, comment, trade::SR_Manual);
 		}
 		else
@@ -346,6 +346,8 @@ bool CArbitrageStrategyExecutor::TestForClose(entity::Quote* pQuote, CPortfolio*
 			TestForCloseUseTargetGainToBoundary(pQuote, pPortfolio, pContext, timestamp);
 	}
 	
+	ARBI_DIFF_CALC& diffPrices = side == entity::LONG ? arbitrageContext->StructShortDiff : arbitrageContext->StructLongDiff;
+
 	// Stop gain/loss logic in ArbitrageStrategy
 	if (arbitrageContext->DirectionFast != entity::NET && side != arbitrageContext->DirectionFast)
 	{
