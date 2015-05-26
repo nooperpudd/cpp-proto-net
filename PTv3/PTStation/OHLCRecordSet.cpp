@@ -22,7 +22,9 @@ COHLCRecordSet::COHLCRecordSet(const string& symbol, int precision, HISTORY_DATA
 	, m_countInBar(0)
 	, m_totalInBar(0.0)
 {
-	bool isIF = boost::starts_with(symbol, "IF");
+	bool isIF = boost::starts_with(symbol, "IF") || 
+				boost::starts_with(symbol, "IC") || 
+				boost::starts_with(symbol, "IH");
 	int tradingTime = isIF ? IF_TOTAL_TRADING_SECONDS : NON_IF_TOTAL_TRADING_SECONDS ;
 	assert(precision != 0);
 	int countPerDay = tradingTime / precision;

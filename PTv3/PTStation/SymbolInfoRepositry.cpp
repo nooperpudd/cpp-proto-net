@@ -43,6 +43,8 @@ CSymbolInfoRepositry::CSymbolInfoRepositry(void)
 	m_prodExchMap.insert(make_pair("RS", EX_CZCE));
 
 	m_prodExchMap.insert(make_pair("IF", EX_FFEX));
+	m_prodExchMap.insert(make_pair("IC", EX_FFEX));
+	m_prodExchMap.insert(make_pair("IH", EX_FFEX));
 }
 
 CSymbolInfoRepositry::~CSymbolInfoRepositry(void)
