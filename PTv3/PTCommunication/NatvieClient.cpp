@@ -157,6 +157,16 @@ void CNatvieClient::PortfEnableStrategy( const char* portfId, bool isEnabled, in
 	sendRequest(&request);
 }
 
+void CNatvieClient::PortfPauseStrategy(const char* portfId, bool isSuspending)
+{
+	ProtobufPacket<entity::SwitchPortfolioRequest> request(PortfolioSwitchRequestID);
+	request.getData().set_pid(portfId);
+	request.getData().set_switchtype(entity::PAUSE_SWITCH);
+	request.getData().set_pausestrategy(isSuspending);
+
+	sendRequest(&request);
+}
+
 void CNatvieClient::PortfTurnSwitches( const char* portfId, int triggerIndex, bool enabled )
 {
 	ProtobufPacket<entity::SwitchPortfolioRequest> request(PortfolioSwitchRequestID);

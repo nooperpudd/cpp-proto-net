@@ -66,7 +66,7 @@ void CScalperStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, boos
 	m_bid = pQuote->bid();
 	m_bidSize = pQuote->bid_size();
 
-	if(m_askSize > 0 && m_bidSize > 0 && IsRunning())
+	if(m_askSize > 0 && m_bidSize > 0 && IsRunning() && !IsSuspending())
 	{
 		CPortfolioOrderPlacer* pOrderPlacer = pPortfolio->OrderPlacer();
 		if(!(pOrderPlacer->IsWorking()))

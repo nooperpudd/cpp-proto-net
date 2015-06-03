@@ -62,19 +62,54 @@ void CMultiOpenStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfo
 
 	m_maxQuantity = strategyItem.maxposition();
 	m_perOpenQuantity = pPortfolio->Quantity();
+}
 
-	if (m_perOpenQuantity > 0 
-		&& m_maxQuantity >= m_perOpenQuantity
-		&& m_strategyExecutors.size() == m_executorsPool.size())
-		// Only when all executors are idle or there is no executor at all 
-		InitializeExecutors();
-
-	// re-applying strategy
-	if (withTriggers)
+int CMultiOpenStrategy::GetCurrentPreparedQuantity()
+{
+	int currentMaxQuantity = 0;
+	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
+		iter != m_strategyExecutors.end(); ++iter)
 	{
-		// Must call InitOrderPlacer again
-		InitOrderPlacer(pPortfolio, pPortfolio->OrderProcessor());
+		currentMaxQuantity += (*iter)->Quantity();
 	}
+
+	return currentMaxQuantity;
+}
+
+bool CMultiOpenStrategy::PrepareExecutors()
+{
+	if (m_perOpenQuantity > 0
+		&& m_maxQuantity >= m_perOpenQuantity)
+	{
+		int currentQty = GetCurrentPreparedQuantity();
+		if (m_maxQuantity != currentQty) // Current quantity is not different than set m_maxQuantity
+		{
+			int idleExecutors = m_activeExecutor != NULL ? m_executorsPool.size() + 1 : m_executorsPool.size();
+			idleExecutors += m_errorExecutors.size();
+
+			if (m_strategyExecutors.size() == idleExecutors)
+			{
+				// Only when all executors are idle or there is no executor at all 
+				InitializeExecutors();
+
+				// Must call InitOrderPlacer before use
+				InitOrderPlacer(m_pPortfolio, m_pPortfolio->OrderProcessor());
+
+				return true;
+			}
+			else{
+				logger.Warning(boost::str(boost::format("Portfolio(%s) cannot prepare executors due to possiblity of unfinished executor existing. Total Idle = %d")
+					% m_pPortfolio->ID() % idleExecutors));
+			}
+		}
+		else
+		{
+			// Desired max quantity is already met by existing executors
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void CMultiOpenStrategy::TestWorkingExecutors(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
@@ -219,7 +254,7 @@ void CMultiOpenStrategy::OnPortfolioDone(int execId, PortfolioFinishState doneSt
 
 bool CMultiOpenStrategy::Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext& context, boost::chrono::steady_clock::time_point& timestamp)
 {
-	return IsMarketOpen(pQuote);
+	return IsMarketOpen(pQuote) && !IsSuspending();
 }
 
 void CMultiOpenStrategy::InitializeExecutors()
@@ -228,7 +263,9 @@ void CMultiOpenStrategy::InitializeExecutors()
 	while (!m_executorsPool.empty())
 		m_executorsPool.pop();
 	m_errorExecutors.clear();
+	m_activeExecutor = NULL;
 	m_strategyExecutors.clear();
+	
 
 	int remainingQty = m_maxQuantity;
 	int execId = 1;
@@ -392,6 +429,9 @@ CPortfolioOrderPlacer* CMultiOpenStrategy::CreateOrderPlacer()
 bool CMultiOpenStrategy::OnStart()
 {
 	boost::mutex::scoped_lock l(m_mut);
+
+	if (!PrepareExecutors())
+		return false;
 
 	bool allReady = true;
 	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();

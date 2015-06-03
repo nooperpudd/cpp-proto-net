@@ -8,6 +8,7 @@
 
 CStrategy::CStrategy()
 	: m_running(false)
+	, m_suspending(false)
 	, m_forceOpening(false)
 	, m_forceClosing(false)
 	, m_retryTimes(0)
@@ -66,6 +67,7 @@ void CStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chro
 void CStrategy::GetStrategyUpdate( entity::PortfolioUpdateItem* pPortfUpdateItem )
 {
 	pPortfUpdateItem->set_running(IsRunning());
+	pPortfUpdateItem->set_suspending(IsSuspending());
 	for(int i = 0; i < pPortfUpdateItem->triggers_size(); ++i)
 	{
 		entity::TriggerStatus* triggerStatus = pPortfUpdateItem->mutable_triggers(i);

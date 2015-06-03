@@ -65,7 +65,8 @@ namespace PTEntity {
 	{
 		STOP_LOSS_Disabled = 0,
 		STOP_LOSS_Fixed = 1,
-		STOP_LOSS_Auto = 2
+		STOP_LOSS_Auto = 2,
+		STOP_LOSS_Fixed_Price = 3
 	};
 
 	public enum class StopLossCloseMethods : int

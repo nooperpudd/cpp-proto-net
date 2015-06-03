@@ -672,7 +672,7 @@ bool CArbitrageStrategyExecutor::TestForCloseUseTargetGainToCost(entity::Quote* 
 
 void CArbitrageStrategyExecutor::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc, PortfolioTradedEvent porfTradedEventHandler)
 {
-	m_orderPlacer = OrderPlacerPtr(new CPortfolioArbitrageOrderPlacer(m_execId));
+	m_orderPlacer = OrderPlacerPtr(new CPortfolioArbitrageOrderPlacer(m_execId, m_quantity));
 	if (m_orderPlacer.get() != NULL)
 	{
 		m_orderPlacer->Initialize(pPortf, pOrderProc);
@@ -817,6 +817,21 @@ bool CArbitrageStrategyExecutor::StopLossLong(ArbitrageStrategyContext* arbitrag
 				% m_pParentStrategy->StopLossThreshold());
 		}
 	}
+	else if (m_pParentStrategy->StopLossType() == entity::STOP_LOSS_Fixed_Price)
+	{
+		ret = DoubleGreaterEqual(arbitrageContext->ShortDiff, m_pParentStrategy->StopLossThreshold());
+		if (ret)
+		{
+			string logTxt = boost::str(boost::format("Short Diff(%.2f) >= Threshold(%.2f) -> Force Close Long")
+				% arbitrageContext->ShortDiff
+				% m_pParentStrategy->StopLossThreshold());
+			LOG_DEBUG(logger, logTxt);
+
+			*outComment = boost::str(boost::format("空价差(%.2f)>=设定值(%.2f) -> 强制平多仓")
+				% arbitrageContext->ShortDiff
+				% m_pParentStrategy->StopLossThreshold());
+		}
+	}
 	else // entity::STOP_LOSS_Disabled
 	{
 		return false;
@@ -862,6 +877,21 @@ bool CArbitrageStrategyExecutor::StopLossShort(ArbitrageStrategyContext* arbitra
 
 			*outComment = boost::str(boost::format("对价亏损(%.2f)%s设定值(%.2f) -> 止损平仓")
 				% lost % (m_pParentStrategy->StopLossComparison() == entity::GREATER_THAN ? "大于" : "大于等于")
+				% m_pParentStrategy->StopLossThreshold());
+		}
+	}
+	else if (m_pParentStrategy->StopLossType() == entity::STOP_LOSS_Fixed_Price)
+	{
+		ret = DoubleGreaterEqual(m_pParentStrategy->StopLossThreshold(), arbitrageContext->LongDiff);
+		if (ret)
+		{
+			string logTxt = boost::str(boost::format("Long Diff(%.2f) <= Threshold(%.2f) -> Force Close Short")
+				% arbitrageContext->LongDiff
+				% m_pParentStrategy->StopLossThreshold());
+			LOG_DEBUG(logger, logTxt);
+
+			*outComment = boost::str(boost::format("多价差(%.2f)<=设定值(%.2f) -> 强制平空仓")
+				% arbitrageContext->LongDiff
 				% m_pParentStrategy->StopLossThreshold());
 		}
 	}

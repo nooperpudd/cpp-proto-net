@@ -31,6 +31,7 @@ namespace PortfolioTrading.Modules.Account
             ModifyQtyCommand = new DelegateCommand(OnModifyQuantity);
             StartCommand = new DelegateCommand(OnStart);
             StopCommand = new DelegateCommand(OnStop);
+            PauseCommand = new DelegateCommand(OnPause);
 
             LongOpenCommand = new DelegateCommand(OnLongOpen);
             ShortOpenCommand = new DelegateCommand(OnShortOpen);
@@ -426,6 +427,24 @@ namespace PortfolioTrading.Modules.Account
             }
         }
         #endregion
+
+        #region IsSuspending
+        private bool _isSuspending;
+
+        public bool IsSuspending
+        {
+            get { return _isSuspending; }
+            set
+            {
+                if (_isSuspending != value)
+                {
+                    _isSuspending = value;
+                    RaisePropertyChanged("IsSuspending");
+                }
+            }
+        }
+        #endregion
+        
 
         #region MaxOpenPerStart
         private int _maxOpenPerStart = 200;
@@ -1048,6 +1067,7 @@ namespace PortfolioTrading.Modules.Account
 
         public ICommand StartCommand { get; private set; }
         public ICommand StopCommand { get; private set; }
+        public ICommand PauseCommand { get; private set; }
         
         public IEnumerable<LegVM> Legs
         {
@@ -1093,6 +1113,25 @@ namespace PortfolioTrading.Modules.Account
             return null;
         }
 
+        public string[] LegSymbols()
+        {
+            var a = from l in _legs select l.Symbol;
+            return a.ToArray();
+        }
+
+        public void UpdateLegSymbols(string[] legSymbols)
+        {
+            if (legSymbols == null) return;
+            for(int i = 0; i < legSymbols.Length; ++i)
+            {
+                if (i < _legs.Count)
+                    _legs[i].Symbol = legSymbols[i];
+            }
+            StrategySetting.ChangeSymbols(
+                legSymbols.Length > 0 ? legSymbols[0] : null,
+                legSymbols.Length > 1 ? legSymbols[1] : null);
+        }
+
         public static PortfolioVM Load(AccountVM acct, XElement xmlElement)
         {
             PortfolioVM portf = new PortfolioVM(acct);
@@ -1106,7 +1145,7 @@ namespace PortfolioTrading.Modules.Account
             {
                 portf.Quantity = int.Parse(attr.Value);
             }
-            
+            /*
             attr = xmlElement.Attribute("currentPosition");
             if (attr != null)
             {
@@ -1114,7 +1153,7 @@ namespace PortfolioTrading.Modules.Account
                 portf.Position = currPos;
                 portf.OpenTimes = currPos;
             }
-            
+            */
             attr = xmlElement.Attribute("avgCost");
             if(attr != null)
             {
@@ -1200,7 +1239,7 @@ namespace PortfolioTrading.Modules.Account
             XElement elem = new XElement("portfolio");
             elem.Add(new XAttribute("id", _id));
             elem.Add(new XAttribute("quantity", _qty));
-            elem.Add(new XAttribute("currentPosition", _position));
+            //elem.Add(new XAttribute("currentPosition", _position));
             elem.Add(new XAttribute("avgCost", _avgCost.ToString("F2")));
             elem.Add(new XAttribute("autoOpen", _autoOpen.ToString()));
             elem.Add(new XAttribute("autoStopGain", _autoStopGain.ToString()));
@@ -1352,6 +1391,7 @@ namespace PortfolioTrading.Modules.Account
             //AvgCost = item.AvgCost;
 
             IsRunning = item.StrategyUpdate.Running;
+            IsSuspending = item.StrategyUpdate.Suspending;
 
             for (int i = 0; i < item.Legs.Count; ++i )
             {
@@ -1487,7 +1527,7 @@ namespace PortfolioTrading.Modules.Account
                 MaxCancel = viewModel.MaxCancel;
                 EndTimePointsExpr = viewModel.EndTimePointsExpr;
 
-                if (_accountVm.VerifyStatus())
+                if (_accountVm.IsConnected)
                 {
                     _accountVm.Host.PortfModifyQuantity(Id, Quantity, MaxOpenPerStart, TotalOpenLimit, MaxCancel, viewModel.getEndTimePoints());
                     EventLogger.Write("{0} 修改组合 {1}数量: 每次->{2}, 每组->{3}， 最多->{4}, 撤单->{5}",
@@ -1507,6 +1547,19 @@ namespace PortfolioTrading.Modules.Account
         {
             IsRunning = false;
             OnRunningChanged();
+        }
+
+        private void OnPause()
+        {
+            OnSuspendingChanged(!IsSuspending);
+        }
+
+        private void OnSuspendingChanged(bool pause)
+        {
+            if (_accountVm.IsConnected)
+            {
+                _accountVm.Host.PortfPauseStrategy(Id, pause);
+            }
         }
 
         private void OnRunningChanged()
@@ -1559,7 +1612,10 @@ namespace PortfolioTrading.Modules.Account
         public void ApplyStrategySettings(StrategySetting settings)
         {
             this.StrategySetting.CopyFrom(settings);
-            _accountVm.Host.PortfApplyStrategySettings(this.Id, StrategySetting.GetEntity());
+            if(_accountVm.IsConnected)
+            {
+                _accountVm.Host.PortfApplyStrategySettings(this.Id, StrategySetting.GetEntity());
+            }
 
             _accountVm.PublishChanged();
         }

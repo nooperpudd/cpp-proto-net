@@ -34,6 +34,7 @@
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition />
                                 <ColumnDefinition />
+                                <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <Grid.RowDefinitions>
                                 <RowDefinition />
@@ -48,10 +49,11 @@
                             </Border>
                             <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" BorderBrush="Blue" BorderThickness="0, 0, 1, 0">
                                 <DockPanel>
-                                    <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" DockPanel.Dock="Top" IsChecked="{Binding IsArbitrage}">套利</CheckBox>
+                                    <TextBlock VerticalAlignment="Center" DockPanel.Dock="Top">策略</TextBlock>
                                     
                                     <Grid>
                                         <Grid.ColumnDefinitions>
+                                            <ColumnDefinition />
                                             <ColumnDefinition />
                                             <ColumnDefinition />
                                         </Grid.ColumnDefinitions>
@@ -67,7 +69,22 @@
                                             </Button.Style>
                                             启动
                                         </Button>
-                                        <Button Grid.Column="1" Name="btnStop" Margin="2, 6" Command="{Binding StopCommand}">
+                                        <Button Grid.Column="1" Name="btnPause" Margin="2, 6" Command="{Binding PauseCommand}">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Content" Value="暂停"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsRunning}" Value="False">
+                                                            <Setter Property="IsEnabled" Value="False"/>
+                                                        </DataTrigger>
+                                                        <DataTrigger Binding="{Binding IsSuspending}" Value="True">
+                                                            <Setter Property="Content" Value="恢复"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+                                        </Button>
+                                        <Button Grid.Column="2" Name="btnStop" Margin="2, 6" Command="{Binding StopCommand}">
                                             <Button.Style>
                                                 <Style TargetType="Button">
                                                     <Style.Triggers>
@@ -82,7 +99,7 @@
                                     </Grid>
                                 </DockPanel>
                             </Border>
-                            <Border Grid.Column="2" Grid.Row="0" BorderBrush="Blue" BorderThickness="0, 0, 0, 1">
+                            <Border Grid.Column="2" Grid.Row="0" BorderBrush="Blue" BorderThickness="0, 0, 1, 1">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Style="{StaticResource operBtnStyle}"
                                             Command="{Binding OpenPositionCommand}">开仓</Button>
@@ -100,7 +117,7 @@
                                     </local:DropDownMenuContainer>
                                 </StackPanel>
                             </Border>
-                            <Border Grid.Column="2" Grid.Row="1" >
+                            <Border Grid.Column="2" Grid.Row="1" BorderBrush="Blue" BorderThickness="0, 0, 1, 0">
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button Style="{StaticResource operBtnStyle}"
                                             Command="{Binding ClosePositionCommand}">平仓</Button>
@@ -117,6 +134,9 @@
                                         </MenuItem>
                                     </local:DropDownMenuContainer>
                                 </StackPanel>
+                            </Border>
+                            <Border Grid.Column="3" Grid.RowSpan="2">
+                                <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding IsArbitrage}">套利</CheckBox>
                             </Border>
                         </Grid>
                     </Border>

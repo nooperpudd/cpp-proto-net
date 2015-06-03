@@ -160,6 +160,9 @@
       <DependentUpon>AccountMgrView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Account\AccountModule.cs" />
+    <Compile Include="Modules\Account\ChangePortfSymbolDlg.xaml.cs">
+      <DependentUpon>ChangePortfSymbolDlg.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Modules\Account\PositionDetailVM.cs" />
     <Compile Include="Modules\Account\PositionView.xaml.cs">
       <DependentUpon>PositionView.xaml</DependentUpon>
@@ -268,6 +271,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Modules\Account\AccountMgrView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Modules\Account\ChangePortfSymbolDlg.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

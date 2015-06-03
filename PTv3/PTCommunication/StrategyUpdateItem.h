@@ -54,6 +54,14 @@ public:
 		}
 	}
 
+	property bool Suspending
+	{
+		bool get()
+		{
+			return _suspending;
+		}
+	}
+
 	property array<TriggerStatusItem^>^ Triggers
 	{
 		array<TriggerStatusItem^>^ get()
@@ -74,8 +82,14 @@ internal:
 		_running = val; 
 	}
 
+	void SetSuspending(bool val)
+	{
+		_suspending = val;
+	}
+
 protected:
 	bool _running;
+	bool _suspending;
 	array<TriggerStatusItem^>^ _triggers;
 };
 

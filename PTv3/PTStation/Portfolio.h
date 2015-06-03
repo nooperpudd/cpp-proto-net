@@ -69,6 +69,8 @@ public:
 	// operation
 	void StartStrategy(int lastOrderId);
 	void StopStrategy();
+	void PauseStrategy();
+	void ResumeStrategy();
 	void EnableTrigger(int triggerIdx, bool enabled);
 	void SetQuantity(int perOpenQty, int perStartQty, int totalOpenLimit, int maxCancelQty);
 	void SetEndTimePoints(vector<string>& timepoints);
@@ -112,6 +114,7 @@ private:
 	void CheckForStart(const string& quoteUpdateTime);
 	void StopStrategyDueTo(const string& stopReason);
 	void StartStrategyDueTo(const string& startReason);
+	void PauseStrategyDueTo(const string& pauseReason);
 	
 	void OnQuoteRecevied(boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote);
 	
@@ -149,6 +152,7 @@ private:
 	vector<string> m_endTimePoints;
 	vector<string> m_beginTimePoints;
 	string m_targetEnd;
+	bool m_lastTargetEnd;
 	boost::mutex m_endTimeMutex;
 
 	// statistics

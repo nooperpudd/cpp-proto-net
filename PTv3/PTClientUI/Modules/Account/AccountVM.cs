@@ -43,6 +43,7 @@ namespace PortfolioTrading.Modules.Account
             ConnectCommand = new DelegateCommand<AccountVM>(OnConnectHost);
             DisconnectCommand = new DelegateCommand<AccountVM>(OnDisconnectHost);
             RemovePortfolioCommand = new DelegateCommand<XamDataGrid>(OnRemovePortfolio);
+            ChangePortfSymbolCommand = new DelegateCommand<XamDataGrid>(OnChgPortfSymbols);
             DetachCommand = new DelegateCommand<AccountVM>(OnDetachHost);
             StartAllPortfolioCmd = new DelegateCommand<AccountVM>(OnStartAllPortfolio);
             StopAllPortfolioCmd = new DelegateCommand<AccountVM>(OnStopAllPortfolio);
@@ -308,6 +309,12 @@ namespace PortfolioTrading.Modules.Account
             private set;
         }
 
+        public ICommand ChangePortfSymbolCommand
+        {
+            get;
+            private set;
+        }
+
         public ICommand ConnectCommand
         {
             get;
@@ -434,6 +441,38 @@ namespace PortfolioTrading.Modules.Account
                 return (int.Parse(_acctPortfolios.Last().Id) + 1).ToString();
             else
                 return "1";
+        }
+
+        private void OnChgPortfSymbols(XamDataGrid dataGrid)
+        {
+            if (dataGrid == null) return;
+
+            DataRecord dr = dataGrid.ActiveRecord as DataRecord;
+            if (dr != null)
+            {
+                PortfolioVM portfVm = dr.DataItem as PortfolioVM;
+                if (portfVm != null)
+                {
+                    if(portfVm.Account.IsConnected)
+                    {
+                        MessageBox.Show(Application.Current.MainWindow,
+                            "只能在未连接服务器时修改组合合约！",
+                            "不能修改", MessageBoxButton.OK, MessageBoxImage.Error);
+                        return;
+                    }
+
+                    ChangePortfSymbolDlg dlg = new ChangePortfSymbolDlg();
+                    dlg.Owner = System.Windows.Application.Current.MainWindow;
+                    dlg.SetSymbols(portfVm.LegSymbols());
+
+                    bool? res = dlg.ShowDialog();
+                    if(res ?? false)
+                    {
+                        portfVm.UpdateLegSymbols(dlg.GetSymbols());
+                        PublishChanged();
+                    }
+                }
+            }
         }
 
         private void OnRemovePortfolio(XamDataGrid dataGrid)

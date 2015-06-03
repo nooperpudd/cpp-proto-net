@@ -33,6 +33,7 @@ public:
 	void AddPortfolio(PTEntity::PortfolioItem ^portfolioItem);
 	void AddPortfolios(array<PTEntity::PortfolioItem^> ^portfolioItems);
 	void PortfEnableStrategy(const char* portfId, bool isEnabled, int lastOrderId);
+	void PortfPauseStrategy(const char* portfId, bool isSuspending);
 	void PortfTurnSwitches(const char* portfId, int triggerIndex, bool enabled);
 	void PortfChangeArbitrage(const char* portfId, bool isArbitrage);
 	void ApplyStrategySettings(const char* portfId, PTEntity::StrategyItem ^strategyItem);

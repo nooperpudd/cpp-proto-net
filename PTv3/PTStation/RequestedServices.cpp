@@ -107,6 +107,17 @@ void PortfolioSwitchService::handle( LogicalConnection* pClient, IncomingPacket*
 				pPortf->StopStrategy();
 			}
 		}
+		else if (switchPortfReq.switchtype() == entity::PAUSE_SWITCH && switchPortfReq.has_pausestrategy())
+		{
+			if (switchPortfReq.pausestrategy())
+			{
+				pPortf->PauseStrategy();
+			}
+			else
+			{
+				pPortf->ResumeStrategy();
+			}
+		}
 		else if(switchPortfReq.switchtype() == entity::TRIGGER_SWITCH 
 			&& switchPortfReq.has_triggerindex() && switchPortfReq.has_enabletrigger())
 		{

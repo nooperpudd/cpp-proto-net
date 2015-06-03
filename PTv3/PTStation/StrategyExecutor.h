@@ -37,6 +37,7 @@ public:
 	virtual ~CStrategyExecutor();
 
 	int ExecId(){ return m_execId; }
+	int Quantity() { return m_quantity; }
 	bool Prepare();
 	void Cleanup();
 	void Start();

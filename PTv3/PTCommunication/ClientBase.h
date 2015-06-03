@@ -94,6 +94,8 @@ namespace PTCommunication {
 
 		void PortfEnableStrategy(String ^portfId, bool isEnabled, int lastOrderId);
 
+		void PortfPauseStrategy(String ^portfId, bool suspending);
+
 		void PortfTurnSwitches(String ^portfId, int triggerIndex, bool enabled);
 
 		void PortfChangeArbitrage(String ^portfId, bool isArbitrage);

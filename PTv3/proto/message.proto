@@ -78,6 +78,7 @@ enum PortfolioSwitchType
 	ARBITRAGE_SWITCH = 2;
 	STOP_GAIN_SWITCH = 3;
 	STOP_LOSS_SWITCH = 4;
+	PAUSE_SWITCH = 5;
 }
 
 message SwitchPortfolioRequest
@@ -96,6 +97,8 @@ message SwitchPortfolioRequest
 	// Stop Gain/Loss
 	optional bool StopGain = 41;
 	optional bool StopLoss = 42;
+	// Pause strategy
+	optional bool PauseStrategy = 51;
 }
 
 message ApplyStrategySettingsRequest
@@ -161,6 +164,7 @@ enum ArbitrageStopLossType
 	STOP_LOSS_Disabled = 0;
 	STOP_LOSS_Fixed = 1;
 	STOP_LOSS_Auto = 2;
+	STOP_LOSS_Fixed_Price = 3;
 }
 
 message HistSourceCfg
@@ -319,8 +323,9 @@ message PortfolioUpdateItem
 	required int32 CurrentPosition = 8;
 	required int32 CancelTimes = 9;
 	required double Profit = 10;
+	required bool Suspending = 11;
 
-	optional string Message = 11;
+	optional string Message = 12;
 
 	// Followings are strategy update items
 	// Arbitrage

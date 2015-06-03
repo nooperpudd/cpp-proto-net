@@ -61,6 +61,8 @@ protected:
 	virtual void OnApply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers){}
 	virtual bool Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext& context, boost::chrono::steady_clock::time_point& timestamp);
 
+	bool PrepareExecutors();
+	int GetCurrentPreparedQuantity();
 	void InitializeExecutors();
 	bool GetReadyExecutor(CStrategyExecutor** pOutExector);
 	void OnPortfolioDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded);

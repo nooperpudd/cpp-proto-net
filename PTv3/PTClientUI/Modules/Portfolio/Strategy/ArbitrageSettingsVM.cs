@@ -23,6 +23,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
                 new StopLossTypeItem { Value = PTEntity.ArbitrageStopLossType.STOP_LOSS_Disabled, DisplayText="不启用"},
                 new StopLossTypeItem { Value = PTEntity.ArbitrageStopLossType.STOP_LOSS_Auto, DisplayText="自动"},
                 new StopLossTypeItem { Value = PTEntity.ArbitrageStopLossType.STOP_LOSS_Fixed, DisplayText="设定亏损"},
+                new StopLossTypeItem { Value = PTEntity.ArbitrageStopLossType.STOP_LOSS_Fixed_Price, DisplayText="设定价差"},
             });
         }
 

@@ -464,5 +464,11 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             this.StopLossCondition = strategySettings.StopLossCondition;
             this.StopLossThreshold = strategySettings.StopLossThreshold;
         }
+
+        public override void ChangeSymbols(string firstLeg, string secondLeg)
+        {
+            this.FirstLegSymbol = firstLeg;
+            this.SecondLegSymbol = secondLeg;
+        }
     }
 }

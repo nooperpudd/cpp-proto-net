@@ -99,6 +99,7 @@ StrategyUpdateItem^ CreateStrategyUpdate(StrategyType straType, entity::Portfoli
 	}
 
 	retStrategyUpdate->SetRunning(pEntity->running());
+	retStrategyUpdate->SetSuspending(pEntity->suspending());
 
 	List<TriggerStatusItem^> ^triggerList = gcnew List<TriggerStatusItem^>();
 	for(int i = 0; i < pEntity->triggers_size(); ++i)

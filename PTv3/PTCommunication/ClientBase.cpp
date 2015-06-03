@@ -147,6 +147,23 @@ void ClientBase::PortfEnableStrategy( String ^portfId, bool isEnabled, int lastO
 	}
 }
 
+void ClientBase::PortfPauseStrategy(String ^portfId, bool suspending)
+{
+	if (!this->IsConnected)
+		return;
+
+	IntPtr pPortfIdAddress;
+	try
+	{
+		pPortfIdAddress = (IntPtr)Marshal::StringToHGlobalAnsi(portfId);
+		_nativeClient->PortfPauseStrategy((char*)pPortfIdAddress.ToPointer(), suspending);
+	}
+	finally
+	{
+		Marshal::FreeHGlobal(pPortfIdAddress);
+	}
+}
+
 void ClientBase::PortfTurnSwitches( String ^portfId, int triggerIndex, bool enabled )
 {
 	if(!this->IsConnected)

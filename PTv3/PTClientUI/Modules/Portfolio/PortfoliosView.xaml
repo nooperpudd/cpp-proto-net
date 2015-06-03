@@ -18,6 +18,8 @@
                         CommandParameter="{Binding }">启动全部组合</Button>
                 <Button Width="80" Height="24" Margin="4, 2" Command="{Binding StopAllPortfolioCmd}"
                         CommandParameter="{Binding }">停止全部组合</Button>
+                <Button Width="80" Height="24" Margin="4, 2" Command="{Binding ChangePortfSymbolCommand}"
+                        CommandParameter="{Binding ElementName=xamDG_Portfolio}">变换合约</Button>
             </StackPanel>
             <TextBlock DockPanel.Dock="Right" Text="{Binding InvestorId}"/>
         </DockPanel>
@@ -340,6 +342,13 @@
             <igDP:XamDataGrid.FieldSettings>
                 <igDP:FieldSettings AllowEdit="False" Width="Auto"/>
             </igDP:XamDataGrid.FieldSettings>
+            <igDP:XamDataGrid.ContextMenu>
+                <ContextMenu DataContext="{Binding RelativeSource={RelativeSource Mode=Self}, Path=PlacementTarget.DataContext}">
+                    <MenuItem Header="新建组合" Command="{Binding AddPortfolioCommand}" CommandParameter="{Binding }"></MenuItem>
+                    <MenuItem Header="全部开始" Command="{Binding StartAllPortfolioCmd}" CommandParameter="{Binding }"></MenuItem>
+                    <MenuItem Header="全部停止" Command="{Binding StopAllPortfolioCmd}" CommandParameter="{Binding }"></MenuItem>
+                </ContextMenu>
+            </igDP:XamDataGrid.ContextMenu>
             <igDP:XamDataGrid.FieldLayoutSettings>
                 <igDP:FieldLayoutSettings  AutoGenerateFields="False" AutoArrangeCells="Never" RecordSelectorLocation="None"
                                            HeaderLabelAreaStyle="{StaticResource shrinkHeaderLabelArea}"/>

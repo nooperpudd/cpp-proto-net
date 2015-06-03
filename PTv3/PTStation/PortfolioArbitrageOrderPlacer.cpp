@@ -6,9 +6,10 @@
 
 #include <boost/date_time.hpp>
 
-CPortfolioArbitrageOrderPlacer::CPortfolioArbitrageOrderPlacer(int execId)
+CPortfolioArbitrageOrderPlacer::CPortfolioArbitrageOrderPlacer(int execId, int qty)
 	: m_openedPosition(false)
 	, m_openingPosition(false)
+	, m_quantity(qty)
 {
 	SetExecId(execId);
 }
@@ -22,7 +23,7 @@ void CPortfolioArbitrageOrderPlacer::BuildTemplateOrder()
 {
     boost::shared_ptr<trade::MultiLegOrder> pMultiLegOrder(new trade::MultiLegOrder);
 
-	pMultiLegOrder->set_quantity(m_pPortf->Quantity());
+	pMultiLegOrder->set_quantity(m_quantity);
 	pMultiLegOrder->set_portfolioid(m_pPortf->ID());
 	//pMultiLegOrder->set_offset(trade::ML_OF_OTHER);
 	pMultiLegOrder->set_haswarn(false);

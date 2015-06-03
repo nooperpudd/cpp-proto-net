@@ -30,6 +30,8 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
 
         public abstract void CopyFrom(StrategySetting settings);
 
+        public virtual void ChangeSymbols(string firstLeg, string secondLeg) { }
+
         public static string GetDisplayStrategyName(string strategyName)
         {
             switch (strategyName)

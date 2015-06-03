@@ -77,6 +77,7 @@ CPortfolio::CPortfolio(CAvatarClient* client, const entity::PortfolioItem& srcPo
 	, m_hedgeFlag(trade::SPECULATION)
 	, m_stopGain(false)
 	, m_stopLoss(false)
+	, m_lastTargetEnd(false)
 {
 	// Backup created portfolio item
 	m_portfolioItem.CopyFrom(srcPortfolioItem);
@@ -271,6 +272,7 @@ void CPortfolio::StartStrategy(int lastOrderId)
 	}
 	m_openTimes = 0;
 	m_targetEnd.clear();
+	m_lastTargetEnd = false;
 	if(lastOrderId >= m_serialOrderId)
 		m_serialOrderId = lastOrderId;
 	
@@ -389,6 +391,7 @@ void CPortfolio::SetEndTimePoints(vector<string>& timepoints)
 	boost::mutex::scoped_lock l(m_endTimeMutex);
 
 	m_targetEnd.clear();
+	m_lastTargetEnd = false;
 	m_beginTimePoints.clear();
 	m_endTimePoints.clear();
 
@@ -444,11 +447,13 @@ void CPortfolio::CheckForStop(const string& quoteUpdateTime)
 
 	if(m_targetEnd.empty())
 	{
-		for(vector<string>::iterator iter = m_endTimePoints.begin(); iter !=m_endTimePoints.end(); ++iter)
+		int idx = 0;
+		for (vector<string>::iterator iter = m_endTimePoints.begin(); iter != m_endTimePoints.end(); ++iter, ++idx)
 		{
 			if(iter->compare(quoteUpdateTime) > 0)
 			{
 				m_targetEnd = *iter;
+				m_lastTargetEnd = (idx == m_endTimePoints.size() - 1);
 				break;
 			}
 		}
@@ -457,15 +462,33 @@ void CPortfolio::CheckForStop(const string& quoteUpdateTime)
 	{
 		if(quoteUpdateTime.compare(m_targetEnd) >= 0)
 		{
-			string msg = boost::str(boost::format("策略已自动停止于%s") % m_targetEnd);
-			StopStrategyDueTo(msg);
-			logger.Info(boost::str(boost::format("[%s] Portfolio (%s) Auto Stop at %s") 
-				% InvestorId() % ID() % m_targetEnd));
+			if (m_lastTargetEnd)
+			{
+				string msg = boost::str(boost::format("策略已自动停止于%s") % m_targetEnd);
+				StopStrategyDueTo(msg);
+				logger.Info(boost::str(boost::format("[%s] Portfolio (%s) Auto Stop at %s")
+					% InvestorId() % ID() % m_targetEnd));
+			}
+			else
+			{
+				string msg = boost::str(boost::format("策略已自动暂停于%s") % m_targetEnd);
+				PauseStrategyDueTo(msg);
+				logger.Info(boost::str(boost::format("[%s] Portfolio (%s) Auto PAUSE at %s")
+					% InvestorId() % ID() % m_targetEnd));
+			}
 		}
 	}
 }
 
+void CPortfolio::PauseStrategyDueTo(const string& pauseReason)
+{
+	PauseStrategy();
 
+	if (pauseReason.length() > 0)
+	{
+		PushMessage(pauseReason);
+	}
+}
 
 void CPortfolio::StopStrategyDueTo( const string& stopReason )
 {
@@ -480,10 +503,17 @@ void CPortfolio::StopStrategyDueTo( const string& stopReason )
 
 void CPortfolio::StartStrategyDueTo( const string& startReason )
 {
-	StartStrategy(0);
-	m_portfolioUpdate.set_running(true);
+	if(!m_strategy->IsRunning())
+	{
+		StartStrategy(0);
+		m_portfolioUpdate.set_running(true);
+	}
+	else if (m_strategy->IsSuspending())
+	{
+		ResumeStrategy();
+	}
 
-	if(startReason.length() > 0)
+	if (startReason.length() > 0)
 	{
 		PushMessage(startReason);
 	}
@@ -622,6 +652,18 @@ COrderProcessor* CPortfolio::OrderProcessor()
 	}
 	else
 		return NULL;
+}
+
+void CPortfolio::PauseStrategy()
+{
+	logger.Info(boost::str(boost::format("[%s] Portfolio (%s) PAUSE strategy <<<<<") % InvestorId() % ID()));
+	m_strategy->Pause();
+}
+
+void CPortfolio::ResumeStrategy()
+{
+	logger.Info(boost::str(boost::format("[%s] Portfolio (%s) RESUME strategy >>>>>") % InvestorId() % ID()));
+	m_strategy->Resume();
 }
 
 

@@ -95,7 +95,7 @@ void CManualStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost:
 		}
 	}
 	
-	if (!IsRunning())
+	if (!IsRunning() || IsSuspending())
 		return;
 
 	if (pOrderPlacer->IsOpened())

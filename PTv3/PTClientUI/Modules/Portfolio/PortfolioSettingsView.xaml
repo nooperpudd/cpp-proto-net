@@ -149,10 +149,10 @@
                                     <DockPanel Margin="12, 0, 6, 2">
                                         <DockPanel.Style>
                                             <Style TargetType="DockPanel">
-                                                <Setter Property="IsEnabled" Value="False"/>
+                                                <Setter Property="Visibility" Value="Collapsed"/>
                                                 <Style.Triggers>
                                                     <DataTrigger Binding="{Binding Settings.StopLossType}" Value="STOP_LOSS_Fixed">
-                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                        <Setter Property="Visibility" Value="Visible"/>
                                                     </DataTrigger>
                                                 </Style.Triggers>
                                             </Style>
@@ -165,6 +165,23 @@
                                             </ComboBox>
                                         </DockPanel>
                                         <DockPanel Margin="4, 2">
+                                            <TextBlock DockPanel.Dock="Right" Margin="4, 2">点</TextBlock>
+                                            <xctk:DecimalUpDown Value="{Binding Settings.StopLossThreshold, FallbackValue=100, Mode=TwoWay}" Minimum="0" Maximum="999999"/>
+                                        </DockPanel>
+                                    </DockPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <DockPanel.Style>
+                                            <Style TargetType="DockPanel">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding Settings.StopLossType}" Value="STOP_LOSS_Fixed_Price">
+                                                        <Setter Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </DockPanel.Style>
+                                        <TextBlock VerticalAlignment="Center" Margin="4, 2" Width="112">强制平仓于</TextBlock>
+                                        <DockPanel Margin="4, 2" DockPanel.Dock="Right">
                                             <TextBlock DockPanel.Dock="Right" Margin="4, 2">点</TextBlock>
                                             <xctk:DecimalUpDown Value="{Binding Settings.StopLossThreshold, FallbackValue=100, Mode=TwoWay}" Minimum="0" Maximum="999999"/>
                                         </DockPanel>
@@ -733,10 +750,13 @@
                         <ContentControl.Style>
                             <Style TargetType="ContentControl">
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding CurrentPortfolio.Account.IsConnected, Mode=OneWay}"
-                                         Value="False">
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding CurrentPortfolio.IsRunning, Mode=OneWay}" Value="True"/>
+                                            <Condition Binding="{Binding CurrentPortfolio.IsSuspending, Mode=OneWay}" Value="False"/>
+                                        </MultiDataTrigger.Conditions>
                                         <Setter Property="IsEnabled" Value="False"/>
-                                    </DataTrigger>
+                                    </MultiDataTrigger>
                                 </Style.Triggers>
                             </Style>
                         </ContentControl.Style>
