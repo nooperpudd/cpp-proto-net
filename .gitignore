@@ -15,3 +15,7 @@
 /PTv3/PTStation/Release/PTStationZeus
 /PTv3/quote-broadcast
 /PTv3/PTCommunication/Release
+/PTv3/PTStation/Release
+/PTv3/*.zip
+/PTv3/PTCommunication/*.aps
+/PTv3/PTStation/*.aps
