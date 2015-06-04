@@ -77,7 +77,7 @@ CPortfolio::CPortfolio(CAvatarClient* client, const entity::PortfolioItem& srcPo
 	, m_hedgeFlag(trade::SPECULATION)
 	, m_stopGain(false)
 	, m_stopLoss(false)
-	, m_lastTargetEnd(false)
+	, m_lastTargetEnd(true)
 {
 	// Backup created portfolio item
 	m_portfolioItem.CopyFrom(srcPortfolioItem);
@@ -285,6 +285,7 @@ void CPortfolio::StopStrategy()
 	if (m_strategy->IsRunning())
 	{
 		m_strategy->Stop();
+		m_strategy->Resume(); // clear suspending status if existing
 	}
 	else
 	{
@@ -372,12 +373,17 @@ void CPortfolio::InitEndTimePoints( const entity::PortfolioItem& srcPortfolioIte
 			boost::split( SplitVec, timeScope, boost::is_any_of("-"));
 			if(SplitVec.size() > 1)
 			{
-				m_beginTimePoints.push_back(SplitVec[0]);
-				m_endTimePoints.push_back(SplitVec[1]);
+				string beginTime, endTime;
+				GetStandardTimeString(SplitVec[0], beginTime);
+				GetStandardTimeString(SplitVec[1], endTime);
+				m_beginTimePoints.push_back(beginTime);
+				m_endTimePoints.push_back(endTime);
 			}
 			else if(SplitVec.size() == 1)
 			{
-				m_endTimePoints.push_back(SplitVec[0]);
+				string endTime;
+				GetStandardTimeString(SplitVec[0], endTime);
+				m_endTimePoints.push_back(endTime);
 			}
 		}
 
@@ -391,7 +397,7 @@ void CPortfolio::SetEndTimePoints(vector<string>& timepoints)
 	boost::mutex::scoped_lock l(m_endTimeMutex);
 
 	m_targetEnd.clear();
-	m_lastTargetEnd = false;
+	m_lastTargetEnd = true;
 	m_beginTimePoints.clear();
 	m_endTimePoints.clear();
 
@@ -402,12 +408,17 @@ void CPortfolio::SetEndTimePoints(vector<string>& timepoints)
 		boost::split( SplitVec, timeScope, boost::is_any_of("-"));
 		if(SplitVec.size() > 1)
 		{
-			m_beginTimePoints.push_back(SplitVec[0]);
-			m_endTimePoints.push_back(SplitVec[1]);
+			string beginTime, endTime;
+			GetStandardTimeString(SplitVec[0], beginTime);
+			GetStandardTimeString(SplitVec[1], endTime);
+			m_beginTimePoints.push_back(beginTime);
+			m_endTimePoints.push_back(endTime);
 		}
 		else if(SplitVec.size() == 1)
 		{
-			m_endTimePoints.push_back(SplitVec[0]);
+			string endTime;
+			GetStandardTimeString(SplitVec[0], endTime);
+			m_endTimePoints.push_back(endTime);
 		}
 	}
 	
@@ -419,7 +430,7 @@ void CPortfolio::CheckForStart( const string& quoteUpdateTime )
 {
 	boost::mutex::scoped_lock l(m_endTimeMutex);
 
-	if(m_strategy->IsRunning() || m_beginTimePoints.size() == 0)
+	if ((m_strategy->IsRunning() && !m_strategy->IsSuspending()) || m_beginTimePoints.size() == 0)
 		return;
 
 	for(vector<string>::iterator iter = m_beginTimePoints.begin(); iter !=m_beginTimePoints.end(); ++iter)
@@ -428,7 +439,7 @@ void CPortfolio::CheckForStart( const string& quoteUpdateTime )
 		boost::chrono::seconds tpQuote = ParseTimeString(quoteUpdateTime);
 		if(tpQuote >= tpTarget && tpQuote - tpTarget <= boost::chrono::seconds(2))
 		{
-			string msg = boost::str(boost::format("策略从%s起启动") % quoteUpdateTime);
+			string msg = boost::str(boost::format("策略(%s-%s)从%s起启动") % InvestorId() % ID() % quoteUpdateTime);
 			StartStrategyDueTo(msg);
 			logger.Info(boost::str(boost::format("[%s] Portfolio (%s) Auto Start at %s") 
 				% InvestorId() % ID() % quoteUpdateTime));
@@ -440,7 +451,7 @@ void CPortfolio::CheckForStop(const string& quoteUpdateTime)
 {
 	boost::mutex::scoped_lock l(m_endTimeMutex);
 
-	if(m_endTimePoints.size() == 0 || !m_strategy->IsRunning())
+	if(m_endTimePoints.size() == 0 || !m_strategy->IsRunning() || m_strategy->IsSuspending())
 	{
 		return;
 	}
@@ -464,14 +475,14 @@ void CPortfolio::CheckForStop(const string& quoteUpdateTime)
 		{
 			if (m_lastTargetEnd)
 			{
-				string msg = boost::str(boost::format("策略已自动停止于%s") % m_targetEnd);
+				string msg = boost::str(boost::format("策略(%s-%s)已自动停止于%s") % InvestorId() % ID() % m_targetEnd);
 				StopStrategyDueTo(msg);
 				logger.Info(boost::str(boost::format("[%s] Portfolio (%s) Auto Stop at %s")
 					% InvestorId() % ID() % m_targetEnd));
 			}
 			else
 			{
-				string msg = boost::str(boost::format("策略已自动暂停于%s") % m_targetEnd);
+				string msg = boost::str(boost::format("策略(%s-%s)已自动暂停于%s") % InvestorId() % ID() % m_targetEnd);
 				PauseStrategyDueTo(msg);
 				logger.Info(boost::str(boost::format("[%s] Portfolio (%s) Auto PAUSE at %s")
 					% InvestorId() % ID() % m_targetEnd));
@@ -662,6 +673,8 @@ void CPortfolio::PauseStrategy()
 
 void CPortfolio::ResumeStrategy()
 {
+	m_targetEnd.clear();
+	m_lastTargetEnd = true;
 	logger.Info(boost::str(boost::format("[%s] Portfolio (%s) RESUME strategy >>>>>") % InvestorId() % ID()));
 	m_strategy->Resume();
 }

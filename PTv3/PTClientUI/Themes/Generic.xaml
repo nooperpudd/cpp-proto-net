@@ -49,7 +49,23 @@
                             </Border>
                             <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" BorderBrush="Blue" BorderThickness="0, 0, 1, 0">
                                 <DockPanel>
-                                    <TextBlock VerticalAlignment="Center" DockPanel.Dock="Top">策略</TextBlock>
+                                    <TextBlock VerticalAlignment="Center" TextAlignment="Center" DockPanel.Dock="Top">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Text" Value="停止中"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsRunning}" Value="True">
+                                                        <Setter Property="Text" Value="运行中"/>
+                                                        <Setter Property="Background" Value="Green" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsSuspending}" Value="True">
+                                                        <Setter Property="Text" Value="暂停中"/>
+                                                        <Setter Property="Background" Value="Yellow" />
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
                                     
                                     <Grid>
                                         <Grid.ColumnDefinitions>
@@ -136,7 +152,18 @@
                                 </StackPanel>
                             </Border>
                             <Border Grid.Column="3" Grid.RowSpan="2">
-                                <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding IsArbitrage}">套利</CheckBox>
+                                <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" IsChecked="{Binding IsArbitrage}">
+                                    <CheckBox.Style>
+                                        <Style TargetType="CheckBox">
+                                            <Style.Triggers>
+                                                <Trigger Property="IsChecked" Value="True">
+                                                    <Setter Property="Foreground" Value="Red"/>
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </CheckBox.Style>
+                                    套利
+                                </CheckBox>
                             </Border>
                         </Grid>
                     </Border>

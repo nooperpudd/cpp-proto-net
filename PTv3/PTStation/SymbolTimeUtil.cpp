@@ -47,7 +47,9 @@ bool ParseTimeString(const string& time, unsigned int* hour, unsigned int* min, 
 
 bool isSymbolIF(const string& symbol)
 {
-	return boost::starts_with(symbol, IF_PREFIX);
+	return boost::starts_with(symbol, IF_PREFIX) ||
+		boost::starts_with(symbol, IC_PREFIX) ||
+		boost::starts_with(symbol, IH_PREFIX);
 }
 
 // returned index is 0 based
@@ -73,4 +75,10 @@ string GetISOTimeString(const boost::chrono::seconds& timepoint)
 	boost::chrono::hours h = boost::chrono::duration_cast<boost::chrono::hours>(m);
 	m -= h;
 	return boost::str(boost::format("%02d:%02d:%02d") % h.count() % m.count() % s.count());
+}
+
+void GetStandardTimeString(const string& srcTime, string& targetTime)
+{
+	boost::chrono::seconds sec = ParseTimeString(srcTime);
+	targetTime = GetISOTimeString(sec);
 }

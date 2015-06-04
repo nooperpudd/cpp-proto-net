@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        Title="修改组合开仓数量" Width="300" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" SizeToContent="Height">
+        Title="修改组合开仓数量" Width="350" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" SizeToContent="Height">
     <DockPanel>
         <StackPanel Orientation="Horizontal" DockPanel.Dock="Bottom" HorizontalAlignment="Center" Margin="10, 2, 10, 16">
             <Button Width="80" Height="26" Margin="10,4" IsDefault="True" Name="btnOK"
@@ -40,8 +40,8 @@
                                     Value="{Binding MaxCancel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </DockPanel>
             <DockPanel Margin="4">
-                <TextBlock VerticalAlignment="Center" Margin="2">自动停止时间点</TextBlock>
-                <TextBox VerticalAlignment="Center" Margin="2" DockPanel.Dock="Right" Text="{Binding EndTimePointsExpr, Mode=TwoWay}"/>
+                <TextBlock VerticalAlignment="Center" Margin="2" DockPanel.Dock="Top">自动起讫时间点(开始-停止,停止)</TextBlock>
+                <TextBox VerticalAlignment="Center" Margin="2" DockPanel.Dock="Right" Text="{Binding EndTimePointsExpr, Mode=TwoWay}" TextWrapping="Wrap"/>
             </DockPanel>
         </StackPanel>
     </DockPanel>

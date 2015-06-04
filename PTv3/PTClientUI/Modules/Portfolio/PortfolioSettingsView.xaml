@@ -183,7 +183,7 @@
                                         <TextBlock VerticalAlignment="Center" Margin="4, 2" Width="112">强制平仓于</TextBlock>
                                         <DockPanel Margin="4, 2" DockPanel.Dock="Right">
                                             <TextBlock DockPanel.Dock="Right" Margin="4, 2">点</TextBlock>
-                                            <xctk:DecimalUpDown Value="{Binding Settings.StopLossThreshold, FallbackValue=100, Mode=TwoWay}" Minimum="0" Maximum="999999"/>
+                                            <xctk:DecimalUpDown Value="{Binding Settings.StopLossThreshold, FallbackValue=100, Mode=TwoWay}"/>
                                         </DockPanel>
                                     </DockPanel>
                                 </StackPanel>

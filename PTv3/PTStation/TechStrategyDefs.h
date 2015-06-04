@@ -16,6 +16,8 @@
 #define NON_IF_END_3 "15:00:00"
 
 #define IF_PREFIX "IF"
+#define IC_PREFIX "IC"
+#define IH_PREFIX "IH"
 
 #define HIST_DATA_FOLDER "HistData"
 

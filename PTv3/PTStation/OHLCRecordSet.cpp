@@ -2,6 +2,7 @@
 #include "OHLCRecordSet.h"
 #include "TechStrategyDefs.h"
 #include "globalmembers.h"
+#include "SymbolTimeUtil.h"
 
 #include <boost/algorithm/string.hpp>
 
@@ -22,9 +23,7 @@ COHLCRecordSet::COHLCRecordSet(const string& symbol, int precision, HISTORY_DATA
 	, m_countInBar(0)
 	, m_totalInBar(0.0)
 {
-	bool isIF = boost::starts_with(symbol, "IF") || 
-				boost::starts_with(symbol, "IC") || 
-				boost::starts_with(symbol, "IH");
+	bool isIF = isSymbolIF(symbol);
 	int tradingTime = isIF ? IF_TOTAL_TRADING_SECONDS : NON_IF_TOTAL_TRADING_SECONDS ;
 	assert(precision != 0);
 	int countPerDay = tradingTime / precision;

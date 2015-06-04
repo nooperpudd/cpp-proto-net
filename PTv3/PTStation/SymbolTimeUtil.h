@@ -8,4 +8,5 @@ bool ParseTimeString(const string& time, unsigned int* hour, unsigned int* min, 
 bool isSymbolIF(const string& symbol);
 int GetIndexFromTime(const boost::chrono::seconds& baseTp, const boost::chrono::seconds& timePoint, int precision);
 string GetISOTimeString(const boost::chrono::seconds& timepoint);
+void GetStandardTimeString(const string& srcTime, string& targetTime);
 
