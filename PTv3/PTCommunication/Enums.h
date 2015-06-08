@@ -43,7 +43,8 @@ namespace PTEntity {
 		RANGE_TREND = 7,
 		MANUAL = 8,
 		QUICK_SCORE = 9,
-		TREND_REVERT = 10
+		TREND_REVERT = 10,
+		ARBITRAGE_MANUAL = 11
 	};
 
 	public enum class DirectionDepends : int

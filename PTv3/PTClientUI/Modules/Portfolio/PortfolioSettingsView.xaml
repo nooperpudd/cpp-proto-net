@@ -193,6 +193,107 @@
                     </StackPanel>
                 </DataTemplate>
 
+                <DataTemplate x:Key="arbitrageManualSettingTemplate">
+                    <StackPanel>
+                        <StackPanel.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="Margin" Value="2"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Padding" Value="2"/>
+                                <Setter Property="BorderBrush" Value="Green" />
+                                <Setter Property="CornerRadius" Value="2"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <Border>
+                            <StackPanel>
+                                <TextBlock Margin="6, 2" FontWeight="Bold">开平仓方向</TextBlock>
+                                <DockPanel Margin="12, 0, 6, 2">
+                                    <TextBlock VerticalAlignment="Center" Margin="4, 2" Width="100">方向</TextBlock>
+                                    <ComboBox Margin="4, 2" Width="80" ItemsSource="{Binding DirectionItemsSource}"
+                                  SelectedValuePath="Direction" SelectedValue="{Binding Settings.Direction, Mode=TwoWay}"
+                                  ItemTemplate="{StaticResource combItemTemplate}">
+                                    </ComboBox>
+                                </DockPanel>
+                                <DockPanel Margin="12, 0, 6, 2">
+                                    <TextBlock VerticalAlignment="Center" Margin="4, 2" Width="100">开平</TextBlock>
+                                    <ComboBox Margin="4, 2" Width="80" ItemsSource="{Binding OffsetFlagItemsSource}"
+                                  SelectedValuePath="OffsetFlag" SelectedValue="{Binding Settings.PosiOffset, Mode=TwoWay}"
+                                  ItemTemplate="{StaticResource combItemTemplate}">
+                                    </ComboBox>
+                                </DockPanel>
+                                <DockPanel Margin="12, 0, 6, 2">
+                                    <TextBlock VerticalAlignment="Center" Margin="4" Width="100">最大持仓</TextBlock>
+                                    <xctk:DecimalUpDown Margin="4, 2" Width="80" Value="{Binding Settings.MaxPosition, Mode=TwoWay}" 
+                                                        Minimum="1"/>
+                                </DockPanel>
+                            </StackPanel>
+                        </Border>
+                        
+                        <Border>
+                            <Border.Style>
+                                <Style TargetType="Border" BasedOn="{StaticResource {x:Type Border}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Settings.PosiOffset}" Value="CLOSE">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <DockPanel>
+                                <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                                    <TextBlock DockPanel.Dock="Left" Margin="6, 2" FontWeight="Bold">开仓条件</TextBlock>
+                                </DockPanel>
+                                <StackPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <DockPanel>
+                                            <TextBlock VerticalAlignment="Center" Margin="4, 2">价差</TextBlock>
+                                            <ComboBox Margin="4, 2" Width="80" ItemsSource="{Binding OpenCondItemsSource}"
+                                  SelectedValuePath="Condition" SelectedValue="{Binding Settings.OpenCondition, Mode=TwoWay}"
+                                  ItemTemplate="{StaticResource combItemTemplate}">
+                                            </ComboBox>
+                                        </DockPanel>
+                                        <DockPanel Margin="4, 2">
+                                            <TextBlock DockPanel.Dock="Right" Margin="4, 2">点</TextBlock>
+                                            <xctk:DecimalUpDown Value="{Binding Settings.OpenThreshold, FallbackValue=100, Mode=TwoWay}"/>
+                                        </DockPanel>
+                                    </DockPanel>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <Border>
+                            <Border.Style>
+                                <Style TargetType="Border" BasedOn="{StaticResource {x:Type Border}}">
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Settings.PosiOffset}" Value="OPEN">
+                                            <Setter Property="Visibility" Value="Collapsed" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Border.Style>
+                            <DockPanel>
+                                <DockPanel DockPanel.Dock="Top" LastChildFill="False">
+                                    <TextBlock DockPanel.Dock="Left" Margin="6, 2" FontWeight="Bold">平仓条件</TextBlock>
+                                </DockPanel>
+                                <StackPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <DockPanel>
+                                            <TextBlock VerticalAlignment="Center" Margin="4, 2">价差</TextBlock>
+                                            <ComboBox Margin="4, 2" Width="80" ItemsSource="{Binding CloseCondItemsSource}"
+                                  SelectedValuePath="Condition" SelectedValue="{Binding Settings.CloseCondition, Mode=TwoWay}"
+                                  ItemTemplate="{StaticResource combItemTemplate}">
+                                            </ComboBox>
+                                        </DockPanel>
+                                        <DockPanel Margin="4, 2">
+                                            <TextBlock DockPanel.Dock="Right" Margin="4, 2">点</TextBlock>
+                                            <xctk:DecimalUpDown Value="{Binding Settings.CloseThreshold, FallbackValue=100, Mode=TwoWay}"/>
+                                        </DockPanel>
+                                    </DockPanel>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </StackPanel>
+                </DataTemplate>
+
                 <DataTemplate x:Key="manualSettingTemplate">
                     <StackPanel>
                         <StackPanel.Resources>
@@ -723,6 +824,7 @@
                 
                 <local:PortfSettingTemplateSelector x:Key="strategySettingSelector"
                                     ArbitrageTemplate="{StaticResource arbitrageSettingTemplate}"
+                                    ArbitrageManualTemplate="{StaticResource arbitrageManualSettingTemplate}"
                                     ChangePositionTemplate="{StaticResource changePositionSettingTemplate}"
                                     ScalperTemplate="{StaticResource scalperSettingTemplate}"
                                     MACDHistSlopeTemplate="{StaticResource macdHistSlopeSettingTemplate}"

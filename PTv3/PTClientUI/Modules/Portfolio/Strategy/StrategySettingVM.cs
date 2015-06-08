@@ -8,6 +8,24 @@ using PortfolioTrading.Modules.Account;
 
 namespace PortfolioTrading.Modules.Portfolio.Strategy
 {
+    public class DirectionItem
+    {
+        public PTEntity.PosiDirectionType Direction { get; set; }
+        public string DisplayText { get; set; }
+    }
+
+    public class CompareCondItem
+    {
+        public PTEntity.CompareCondition Condition { get; set; }
+        public string DisplayText { get; set; }
+    }
+
+    public class PosiOffsetItem
+    {
+        public PTEntity.PosiOffsetFlag OffsetFlag { get; set; }
+        public string DisplayText { get; set; }
+    }
+
     public abstract class StrategySettingVM : NotificationObject
     {
         private List<DirectionItem> _directionItems = new List<DirectionItem>();

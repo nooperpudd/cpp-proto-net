@@ -39,7 +39,7 @@ public:
 	int ExecId(){ return m_execId; }
 	int Quantity() { return m_quantity; }
 	bool Prepare();
-	void Cleanup();
+	virtual void Cleanup();
 	void Start();
 	void FireEvent(ExecutorEvent execEvent);
 	entity::PosiDirectionType PosiDirection();

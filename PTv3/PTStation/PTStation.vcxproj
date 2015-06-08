@@ -103,6 +103,7 @@ copy /y ThostTraderApi\*.dll $(OutDir)</Command>
     <None Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ArbitrageManualMultiStrategy.h" />
     <ClInclude Include="ArbitrageMultiStrategy.h" />
     <ClInclude Include="ArbitrageStrategy.h" />
     <ClInclude Include="ArbitrageTrigger.h" />
@@ -211,6 +212,7 @@ copy /y ThostTraderApi\*.dll $(OutDir)</Command>
     <ClInclude Include="Trigger.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ArbitrageManualMultiStrategy.cpp" />
     <ClCompile Include="ArbitrageMultiStrategy.cpp" />
     <ClCompile Include="ArbitrageStrategy.cpp" />
     <ClCompile Include="ArbitrageTrigger.cpp" />

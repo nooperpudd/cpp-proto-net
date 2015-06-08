@@ -256,6 +256,98 @@ private:
 	double _stopLossThreshold;
 };
 
+public ref class ArbitrageManualStrategyItem : StrategyItem
+{
+public:
+	ArbitrageManualStrategyItem()
+	{
+		_type = StrategyType::ARBITRAGE_MANUAL;
+	}
+
+	virtual void To(entity::StrategyItem* pNativeStrategyItem) override;
+
+	property CompareCondition OpenCondition
+	{
+		CompareCondition get()
+		{
+			return _openCondition;
+		}
+		void set(CompareCondition val)
+		{
+			_openCondition = val;
+		}
+	}
+
+	property double OpenThreshold
+	{
+		double get()
+		{
+			return _openThreshold;
+		}
+		void set(double val)
+		{
+			_openThreshold = val;
+		}
+	}
+
+	property CompareCondition CloseCondition
+	{
+		CompareCondition get()
+		{
+			return _closeCondition;
+		}
+		void set(CompareCondition val)
+		{
+			_closeCondition = val;
+		}
+	}
+
+	property double CloseThreshold
+	{
+		double get()
+		{
+			return _closeThreshold;
+		}
+		void set(double val)
+		{
+			_closeThreshold = val;
+		}
+	}
+
+	property PosiDirectionType Direction
+	{
+		PosiDirectionType get()
+		{
+			return _direction;
+		}
+		void set(PosiDirectionType val)
+		{
+			_direction = val;
+		}
+	}
+
+	property PosiOffsetFlag OffsetFlag
+	{
+		PosiOffsetFlag get()
+		{
+			return _offsetFlag;
+		}
+		void set(PosiOffsetFlag val)
+		{
+			_offsetFlag = val;
+		}
+	}
+
+private:
+
+	PosiDirectionType _direction;
+	PosiOffsetFlag _offsetFlag;
+	CompareCondition _openCondition;
+	double _openThreshold;
+	CompareCondition _closeCondition;
+	double _closeThreshold;
+};
+
 public ref class ChangePositionStrategyItem : StrategyItem
 {
 public:

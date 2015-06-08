@@ -49,6 +49,10 @@ namespace PortfolioTrading.Modules.Portfolio
             {
                 viewModel = ServiceLocator.Current.GetInstance<ArbitrageSettingsVM>();
             }
+            else if (portfVm.StrategySetting.Name == StrategySetting.ArbitrageManualStrategyName)
+            {
+                viewModel = ServiceLocator.Current.GetInstance<ArbitrageManualSettingsVM>();
+            }
             else if(portfVm.StrategySetting.Name == StrategySetting.ChangePositionStrategyName)
             {
                 viewModel = ServiceLocator.Current.GetInstance<ChangePositionSettingsVM>();

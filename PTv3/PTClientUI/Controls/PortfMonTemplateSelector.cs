@@ -12,6 +12,7 @@ namespace PortfolioTrading.Controls
     public class PortfMonTemplateSelector : DataTemplateSelector
     {
         public DataTemplate ArbitrageTemplate { get; set; }
+        public DataTemplate ArbitrageManualTemplate { get; set; }
         public DataTemplate ScalperTemplate { get; set; }
         public DataTemplate ChangePositionTemplate { get; set; }
         public DataTemplate MACDHistSlopeTemplate { get; set; }
@@ -29,6 +30,8 @@ namespace PortfolioTrading.Controls
             {
                 if (portfVm.StrategySetting.Name == StrategySetting.ArbitrageStrategyName)
                     return ArbitrageTemplate;
+                else if (portfVm.StrategySetting.Name == StrategySetting.ArbitrageManualStrategyName)
+                    return ArbitrageManualTemplate;
                 else if (portfVm.StrategySetting.Name == StrategySetting.ChangePositionStrategyName)
                     return ChangePositionTemplate;
                 else if (portfVm.StrategySetting.Name == StrategySetting.ScalperStrategyName)

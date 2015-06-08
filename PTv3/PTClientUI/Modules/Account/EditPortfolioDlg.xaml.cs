@@ -190,6 +190,14 @@ namespace PortfolioTrading.Modules.Account
                     l.MinPriceChange = PriceTick;
                 }
             }
+            else if(StrategyName == StrategySetting.ArbitrageManualStrategyName)
+            {
+                ArbitrageManualStrategySettings setting = (ArbitrageManualStrategySettings)portf.StrategySetting;
+                foreach (var l in portf.Legs)
+                {
+                    l.MinPriceChange = PriceTick;
+                }
+            }
             else if (StrategyName == StrategySetting.ChangePositionStrategyName)
             {
                 portf.AutoOpen = true;

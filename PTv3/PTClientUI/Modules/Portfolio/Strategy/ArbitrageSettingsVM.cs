@@ -57,18 +57,6 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         private ArbitrageStrategySetting _innerSettings;
     }
 
-    public class DirectionItem
-    {
-        public PTEntity.PosiDirectionType Direction { get; set; }
-        public string DisplayText { get; set; }
-    }
-
-    public class CompareCondItem
-    {
-        public PTEntity.CompareCondition Condition { get; set; }
-        public string DisplayText { get; set; }
-    }
-
     public class StopLossTypeItem
     {
         public PTEntity.ArbitrageStopLossType Value { get; set; }

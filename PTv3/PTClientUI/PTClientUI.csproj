@@ -181,6 +181,8 @@
       <DependentUpon>ModifyMaxQtyDlg.xaml</DependentUpon>
     </Compile>
     <Compile Include="Modules\Portfolio\PortfolioContentPane.cs" />
+    <Compile Include="Modules\Portfolio\Strategy\ArbitrageManualSettingsVM.cs" />
+    <Compile Include="Modules\Portfolio\Strategy\ArbitrageManualStrategySettings.cs" />
     <Compile Include="Modules\Portfolio\Strategy\ArbitrageStrategySetting.cs" />
     <Compile Include="Modules\Account\EditAccountDlg.xaml.cs">
       <DependentUpon>EditAccountDlg.xaml</DependentUpon>

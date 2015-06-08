@@ -259,14 +259,10 @@ bool CMultiOpenStrategy::Prerequisite(entity::Quote* pQuote, CPortfolio* pPortfo
 
 void CMultiOpenStrategy::InitializeExecutors()
 {
-	// empty executor pool
-	while (!m_executorsPool.empty())
-		m_executorsPool.pop();
 	m_errorExecutors.clear();
 	m_activeExecutor = NULL;
 	m_strategyExecutors.clear();
 	
-
 	int remainingQty = m_maxQuantity;
 	int execId = 1;
 	while (remainingQty > 0)
@@ -274,13 +270,7 @@ void CMultiOpenStrategy::InitializeExecutors()
 		int execQty = remainingQty >= m_perOpenQuantity ? m_perOpenQuantity : remainingQty;
 		StrategyExecutorPtr executorPtr = CreateExecutor(execId++, execQty);
 		m_strategyExecutors.push_back(executorPtr);
-		m_executorsPool.push(executorPtr.get());
 		remainingQty -= execQty;
-	}
-
-	if (m_strategyExecutors.size() > 0)
-	{
-		GetReadyExecutor(&m_activeExecutor);
 	}
 }
 
@@ -433,6 +423,10 @@ bool CMultiOpenStrategy::OnStart()
 	if (!PrepareExecutors())
 		return false;
 
+	// empty executor pool
+	while (!m_executorsPool.empty())
+		m_executorsPool.pop();
+
 	bool allReady = true;
 	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
 		iter != m_strategyExecutors.end(); ++iter)
@@ -443,13 +437,21 @@ bool CMultiOpenStrategy::OnStart()
 			allReady = false;
 			break;
 		}
+		m_executorsPool.push((*iter).get());
 	}
+
 	if (allReady)
 	{
 		// ensure all other containers empty
 		m_workingExecutors.clear();
 		m_errorExecutors.clear();
 		m_OpenedExecutors.clear();
+
+
+		if (m_strategyExecutors.size() > 0)
+		{
+			GetReadyExecutor(&m_activeExecutor);
+		}
 	}
 	else
 	{

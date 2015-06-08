@@ -61,6 +61,23 @@ void ArbitrageStrategyItem::To( entity::StrategyItem* pNativeStrategyItem )
 	}
 }
 
+void ArbitrageManualStrategyItem::To(entity::StrategyItem* pNativeStrategyItem)
+{
+	try
+	{
+		pNativeStrategyItem->set_am_direction(static_cast<entity::PosiDirectionType>(_direction));
+		pNativeStrategyItem->set_am_offset(static_cast<entity::PosiOffsetFlag>(_offsetFlag));
+		pNativeStrategyItem->set_am_opencondition(static_cast<entity::CompareCondition>(_openCondition));
+		pNativeStrategyItem->set_am_openthreshold(_openThreshold);
+		pNativeStrategyItem->set_am_closecondition(static_cast<entity::CompareCondition>(_closeCondition));
+		pNativeStrategyItem->set_am_closethreshold(_closeThreshold);
+
+		StrategyItem::To(pNativeStrategyItem);
+	}
+	finally
+	{
+	}
+}
 
 void ChangePositionStrategyItem::To( entity::StrategyItem* pNativeStrategyItem )
 {

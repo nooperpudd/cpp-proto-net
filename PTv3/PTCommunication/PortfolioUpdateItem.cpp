@@ -10,6 +10,7 @@ StrategyUpdateItem^ CreateStrategyUpdate(StrategyType straType, entity::Portfoli
 	switch(straType)
 	{
 	case StrategyType::ARBITRAGE:
+	case StrategyType::ARBITRAGE_MANUAL:
 		retStrategyUpdate = gcnew ArbitrageStrategyUpdateItem
 			(
 				pEntity->ar_diff(),

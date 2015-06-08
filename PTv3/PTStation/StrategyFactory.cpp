@@ -10,6 +10,7 @@
 #include "LinerRegressionStrategy.h"
 #include "ASCTrendStrategy.h"
 #include "RangeTrendStrategy.h"
+#include "ArbitrageManualMultiStrategy.h"
 
 
 CStrategyFactory::CStrategyFactory(CPortfolio* pPortf, CAvatarClient* pAvatar)
@@ -55,7 +56,10 @@ CStrategy* CStrategyFactory::Create(const entity::StrategyItem& strategyItem)
 		break;
 	case entity::RANGE_TREND:
 		created = new CRangeTrendStrategy(m_avatar);
-			break;
+		break;
+	case entity::ARBITRAGE_MANUAL:
+		created = new CArbitrageManualMultiStrategy(m_avatar, m_portfolio);
+		break;
 	}
 
 	created->Apply(strategyItem, m_portfolio, false);

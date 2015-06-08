@@ -69,6 +69,7 @@ public:
 	// operation
 	void StartStrategy(int lastOrderId);
 	void StopStrategy();
+	void StopStrategyDueTo(const string& stopReason);
 	void PauseStrategy();
 	void ResumeStrategy();
 	void EnableTrigger(int triggerIdx, bool enabled);
@@ -112,7 +113,6 @@ private:
 	void InitEndTimePoints( const entity::PortfolioItem& srcPortfolioItem);
 	void CheckForStop(const string& quoteUpdateTime);
 	void CheckForStart(const string& quoteUpdateTime);
-	void StopStrategyDueTo(const string& stopReason);
 	void StartStrategyDueTo(const string& startReason);
 	void PauseStrategyDueTo(const string& pauseReason);
 	

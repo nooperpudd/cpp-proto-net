@@ -10,6 +10,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
     public abstract class StrategySetting : INotifyPropertyChanged
     {
         public const string ArbitrageStrategyName = "ArbitrageStrategy";
+        public const string ArbitrageManualStrategyName = "ArbitrageManualStrategy";
         public const string ChangePositionStrategyName = "ChangePosition";
         public const string ScalperStrategyName = "Scalper";
         public const string MACDHistSlopeStrategyName = "MACDHistSlope";
@@ -38,6 +39,8 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             {
                 case ArbitrageStrategyName:
                     return "套利";
+                case ArbitrageManualStrategyName:
+                    return "手动套利";
                 case ChangePositionStrategyName:
                     return "移仓";
                 case ScalperStrategyName:
@@ -74,6 +77,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             {
                 case ArbitrageStrategyName:
                     setting = new ArbitrageStrategySetting();
+                    break;
+                case ArbitrageManualStrategyName:
+                    setting = new ArbitrageManualStrategySettings();
                     break;
                 case ChangePositionStrategyName:
                     setting = new ChangePositionSetting();

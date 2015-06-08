@@ -11,6 +11,7 @@ namespace PortfolioTrading.Controls
     public class PortfSettingTemplateSelector : DataTemplateSelector
     {
         public DataTemplate ArbitrageTemplate { get; set; }
+        public DataTemplate ArbitrageManualTemplate { get; set; }
         public DataTemplate ChangePositionTemplate { get; set; }
         public DataTemplate ScalperTemplate { get; set; }
         public DataTemplate MACDHistSlopeTemplate { get; set; }
@@ -24,6 +25,8 @@ namespace PortfolioTrading.Controls
         {
             if (item is ArbitrageSettingsVM)
                 return ArbitrageTemplate;
+            else if (item is ArbitrageManualSettingsVM)
+                return ArbitrageManualTemplate;
             else if (item is ChangePositionSettingsVM)
                 return ChangePositionTemplate;
             else if (item is ScalperSettingVM)

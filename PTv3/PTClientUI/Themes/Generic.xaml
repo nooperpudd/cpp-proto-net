@@ -245,6 +245,84 @@
         </Grid>
     </DataTemplate>
 
+    <DataTemplate x:Key="arbitrageManualTemplate">
+        <Grid>
+            <Grid.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="BorderBrush" Value="Blue"/>
+                </Style>
+            </Grid.Resources>
+            <Border BorderThickness="0, 1, 1, 1"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="38"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="36"/>
+                    <RowDefinition Height="36"/>
+                </Grid.RowDefinitions>
+                <Border Grid.Column="0" Grid.Row="0" BorderThickness="0, 0, 1, 1">
+                    <TextBlock Margin="4" VerticalAlignment="Center">方向</TextBlock>
+                </Border>
+                <Border Grid.Column="0" Grid.Row="1" BorderThickness="0, 0, 1, 0">
+                    <TextBlock Margin="4" VerticalAlignment="Center">条件</TextBlock>
+            </Border>
+
+                <!--开平-->
+                <Border Grid.Column="1" Grid.Row="0" BorderThickness="0, 0, 0, 1">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Width="54" Margin="4"  TextAlignment="Center" 
+                               Text="{Binding StrategySetting.Direction, Converter={StaticResource directionDisplayConverter}}" />
+                        <TextBlock Width="40" Margin="4">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="平仓"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding StrategySetting.PosiOffset}" Value="OPEN">
+                                            <Setter Property="Text" Value="开仓"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+                <!--条件-->
+                <Border Grid.Column="1" Grid.Row="1">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                        <TextBlock Width="54" Margin="4, 0" TextAlignment="Center">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="{Binding StrategySetting.CloseCondition, Converter={StaticResource condDisplayConverter}}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding StrategySetting.PosiOffset}" Value="OPEN">
+                                            <Setter Property="Text" Value="{Binding StrategySetting.OpenCondition, Converter={StaticResource condDisplayConverter}}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+
+                        <TextBlock Width="40" Margin="4, 0">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="{Binding StrategySetting.CloseThreshold}"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding StrategySetting.PosiOffset}" Value="OPEN">
+                                            <Setter Property="Text" Value="{Binding StrategySetting.OpenThreshold}"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </StackPanel>
+                </Border>
+
+            </Grid>
+        </Grid>
+    </DataTemplate>
+    
     <DataTemplate x:Key="manualTemplate">
         <Grid>
             <Grid.Resources>
@@ -592,6 +670,7 @@
 
     <local:PortfMonTemplateSelector x:Key="portfMonSelector"
                                     ArbitrageTemplate="{StaticResource arbitrageTemplate}"
+                                    ArbitrageManualTemplate="{StaticResource arbitrageManualTemplate}"
                                     ChangePositionTemplate="{StaticResource changePositionTemplate}"
                                     ScalperTemplate="{StaticResource scalperTemplate}"
                                     MACDHistSlopeTemplate="{StaticResource macdHistSlopeTemplate}"

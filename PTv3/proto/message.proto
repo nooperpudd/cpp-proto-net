@@ -150,7 +150,8 @@ enum StrategyType
 	RANGE_TREND = 7;
 	MANUAL = 8;
 	QUICK_SCORE = 9;
-	TREND_REVERT = 10; 
+	TREND_REVERT = 10;
+	ARBITRAGE_MANUAL = 11;
 }
 
 enum StopPriceType
@@ -200,6 +201,14 @@ message StrategyItem
 	optional double AR_StopLossThreshold = 108;
 	optional ArbitrageStopLossType AR_StopLossType = 109;
 	optional bool AR_AbsoluteGain = 110;
+	
+	// Arbitrage Manual
+	optional PosiDirectionType AM_Direction = 131;
+	optional PosiOffsetFlag AM_Offset = 132;
+	optional CompareCondition AM_OpenCondition = 133;
+	optional double AM_OpenThreshold = 134;
+	optional CompareCondition AM_CloseCondition = 135;
+	optional double AM_CloseThreshold = 136;
 
 	// Change Position
 	optional string CP_CloseLeg = 201;
