@@ -338,8 +338,6 @@ void CPortfolio::CheckOpenCancelLimit()
 void CPortfolio::UpdatePosition()
 {
 	int posiQty = m_totalOpenTimes - m_totalCloseTimes;
-	if(posiQty < 0)
-		posiQty = 0;
 	m_currentPosition = posiQty;
 }
 

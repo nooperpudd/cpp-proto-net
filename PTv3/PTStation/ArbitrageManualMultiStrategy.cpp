@@ -97,7 +97,7 @@ void CArbitrageManualMultiStrategy::TestForOpen(entity::Quote* pQuote, CPortfoli
 	}
 	else if (Offset() == entity::CLOSE)
 	{
-		if (m_OpenedExecutors.empty())
+		if (m_executorsPool.size() == m_strategyExecutors.size())
 		{
 			LOG_DEBUG(logger, boost::str(boost::format("Portfolio(%s) STOP Strategy due to Done closing position") % pPortfolio->ID()));
 			m_doneComment = boost::str(boost::format("平仓%d手已完成,策略停止") % m_maxQuantity);
@@ -112,6 +112,37 @@ void CArbitrageManualMultiStrategy::TestForOpen(entity::Quote* pQuote, CPortfoli
 	{
 		boost::thread(boost::bind(&CPortfolio::StopStrategyDueTo, pPortfolio, m_doneComment));
 	}
+}
+
+void CArbitrageManualMultiStrategy::VirtualOpenPosition()
+{
+	if (m_activeExecutor != NULL)
+	{
+		m_executorsPool.push(m_activeExecutor);
+		m_activeExecutor = NULL;
+	}
+
+	while (!m_executorsPool.empty())
+	{
+		CStrategyExecutor* pExecutor = m_executorsPool.front();
+		pExecutor->Start();
+		CArbitrageManualStrategyExecutor* manualExecutor = dynamic_cast<CArbitrageManualStrategyExecutor*>(pExecutor);
+		if (manualExecutor != NULL)
+			manualExecutor->VirtualFill();
+
+		m_OpenedExecutors.insert(std::make_pair(pExecutor->ExecId(), pExecutor));
+		m_executorsPool.pop();
+	}
+}
+
+bool CArbitrageManualMultiStrategy::OnStart()
+{
+	bool start = CMultiOpenStrategy::OnStart();
+	if (Offset() == entity::CLOSE)
+	{
+		VirtualOpenPosition();
+	}
+	return start;
 }
 
 
@@ -439,4 +470,11 @@ void CArbitrageManualStrategyExecutor::Cleanup()
 	LOG_DEBUG(logger, boost::str(boost::format("Executor(%d) Did 'Actual' Cleanup") % m_execId));
 	if (m_orderPlacer.get() != NULL)
 		m_orderPlacer->Cleanup();
+}
+
+void CArbitrageManualStrategyExecutor::SetOpened()
+{
+	CPortfolioArbitrageOrderPlacer* pOrderPlacer = dynamic_cast<CPortfolioArbitrageOrderPlacer*>(m_orderPlacer.get());
+	if (pOrderPlacer != NULL)
+		pOrderPlacer->SetOpened();
 }

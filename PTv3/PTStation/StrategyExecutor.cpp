@@ -23,6 +23,7 @@ namespace strategy// Concrete FSM implementation
 	struct evtOrderFilled {};
 	struct evtOrderCancelled {};
 	struct evtErrorFound {};
+	struct evtVirtualFilled {};
 
 
 	struct ExecutorFront_ : public msm::front::state_machine_def < ExecutorFront_ >
@@ -177,6 +178,7 @@ namespace strategy// Concrete FSM implementation
 			//    Start					Event					Next			Action                     Guard
 			//  +-------------------+-------------------+-------------------+---------------------------+--------------------------+
 			_row < EmptyPosition	, evtOpening		, PendingOpen		>,
+			_row < EmptyPosition	, evtVirtualFilled	, HoldPosition		>,
 			_row < PendingOpen		, evtOrderFilled	, HoldPosition		>,
 			_row < PendingOpen		, evtOrderCancelled	, EmptyPosition		>,
 			_row < HoldPosition		, evtClosing		, PendingClose		>,
@@ -311,4 +313,9 @@ void CStrategyExecutor::OnError()
 bool CStrategyExecutor::GetLastOpenOrderId(string& outMlOrderId)
 {
 	return false;
+}
+
+void CStrategyExecutor::VirtualFill()
+{
+	boost::static_pointer_cast<strategy::ExecutorFsm>(m_fsm)->process_event(strategy::evtVirtualFilled());
 }

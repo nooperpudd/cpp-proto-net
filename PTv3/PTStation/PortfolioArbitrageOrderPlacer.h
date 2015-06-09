@@ -11,6 +11,7 @@ public:
 	void OpenPosition(entity::PosiDirectionType posiDirection, double* pLmtPxArr, int iPxSize, const boost::chrono::steady_clock::time_point& trigQuoteTimestamp, trade::SubmitReason reason);
 	void ClosePosition(int volumeToClose, entity::PosiDirectionType posiDirection, double* pLmtPxArr, int iPxSize, const boost::chrono::steady_clock::time_point& trigQuoteTimestamp, trade::SubmitReason reason);
 	bool IsOpened();
+	void SetOpened(){ m_openedPosition = true; }
 	const string& LastOpenOrderId() { return m_lastOpenOrderId; }
 
 	void Run(entity::PosiDirectionType posiDirection, int quantity, trade::OffsetFlagType offset, double* pLmtPxArr, int iPxSize, const boost::chrono::steady_clock::time_point& trigQuoteTimestamp, const char* openOrderId = NULL);

@@ -31,10 +31,10 @@ _FS_OBJS = stdafx \
 		QuoteAgent QuoteAgentFacade QuoteFetcher QuoteRepositry QuoteStore \
 		QuoteUdpAgent ShmQuoteFeed ShmQuoteSubscribe UdpQuoteListener \
 		\
-		ArbitrageMultiStrategy ArbitrageStrategy ArbitrageTrigger ASCTrendStrategy ASCTrendTrigger \
-		ChangePositionStrategy ChangePositionTrigger HistSlopeStrategy HistSlopeTrigger LinerRegressionStrategy \
-		ManualStrategy RangeTrendStrategy ScalperStrategy ScalperTrigger StrategyOrderCommand \
-		TrailingStopTrigger WMATrendStrategy WMATrendTrigger \
+		ArbitrageManualMultiStrategy ArbitrageMultiStrategy ArbitrageStrategy ArbitrageTrigger ASCTrendStrategy \
+		ASCTrendTrigger ChangePositionStrategy ChangePositionTrigger HistSlopeStrategy HistSlopeTrigger \
+		LinerRegressionStrategy ManualStrategy RangeTrendStrategy ScalperStrategy ScalperTrigger \
+		StrategyOrderCommand TrailingStopTrigger WMATrendStrategy WMATrendTrigger \
 		\
 		ATRDataSet BollDataSet DiffRecordSet DonchianDataSet HistDataReader \
 		HistDataWriter LinerRegressionDataSet MACDDataSet MultiOpenStrategy OHLCRecordSet \

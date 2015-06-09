@@ -43,6 +43,7 @@ public:
 	void Start();
 	void FireEvent(ExecutorEvent execEvent);
 	entity::PosiDirectionType PosiDirection();
+	void VirtualFill();
 
 	void SetForceClose(){ m_forceClosing.store(true, boost::memory_order_release); };
 	void ResetForceClose(){ m_forceClosing.store(false, boost::memory_order_release); };

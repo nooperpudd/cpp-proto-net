@@ -26,8 +26,10 @@ protected:
 	StrategyExecutorPtr CreateExecutor(int execId, int quantity);
 	StrategyContext& GetContext(){ return m_context; }
 	void GetStrategyUpdate(entity::PortfolioUpdateItem* pPortfUpdateItem);
+	bool OnStart();
 
 private:
+	void VirtualOpenPosition();
 
 	ArbitrageStrategyContext m_context;
 
@@ -45,7 +47,7 @@ class CArbitrageManualStrategyExecutor : public CStrategyExecutor
 {
 public:
 	CArbitrageManualStrategyExecutor(int execId, int quantity, CArbitrageManualMultiStrategy* parentStrategy)
-		: CStrategyExecutor(execId, quantity), m_pParentStrategy(parentStrategy), m_volumeToClose(0)
+		: CStrategyExecutor(execId, quantity), m_pParentStrategy(parentStrategy), m_volumeToClose(quantity)
 	{}
 	~CArbitrageManualStrategyExecutor(){}
 
@@ -56,8 +58,9 @@ public:
 	bool TestForOpen(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
 	bool TestForClose(entity::Quote* pQuote, CPortfolio* pPortfolio, StrategyContext* pContext, boost::chrono::steady_clock::time_point& timestamp);
 	bool GetLastOpenOrderId(string& outMlOrderId);
-
 	void Cleanup();
+
+	void SetOpened();
 
 protected:
 	void OpenPosition(entity::PosiDirectionType direction, ARBI_DIFF_CALC diffPrices, StrategyContext* pContext, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp){}
