@@ -1,9 +1,7 @@
 #include "StdAfx.h"
 #include "PortfolioManager.h"
-#include "QuoteRepositry.h"
 
 CPortfolioManager::CPortfolioManager(void)
-	: m_pQuoteRepositry(NULL)
 {
 }
 
@@ -16,7 +14,8 @@ void CPortfolioManager::AddPortfolio( CAvatarClient* client, const entity::Portf
 {
 	PortfolioPtr portf(new CPortfolio(client, portfItem));
 	m_portfolios.push_back(portf);
-	portf->SubscribeQuotes(m_pQuoteRepositry);
+	if (!m_onAddPortfolioHandler.empty())
+		m_onAddPortfolioHandler(portf.get());
 }
 
 CPortfolio* CPortfolioManager::Get( const string& portfolioId )

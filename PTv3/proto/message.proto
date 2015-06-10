@@ -19,7 +19,8 @@ message LoginRequest
 	required bool is_new = 1;
 	required string session_id = 2;
 	required string previous_session_id = 3;
-	optional string pseudo = 4;
+	required bool multi_client = 4;
+	optional string pseudo = 5;
 }
 
 message LoginResponse
@@ -47,7 +48,8 @@ message ServerLoginRequest
 	required string BrokerId = 3;
 	required string InvestorId = 4;
 	required string UserId = 5;
-	required string Password = 6; 
+	required string Password = 6;
+	repeated string AlternativeUserIds = 7;
 }
 
 message ServerLoginResponse

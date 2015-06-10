@@ -5,18 +5,21 @@
 class CQuoteRepositry;
 class CAvatarClient;
 
+typedef boost::function<void(CPortfolio*)> OnAddPortfolioHandler;
+
 class CPortfolioManager
 {
 public:
 	CPortfolioManager(void);
-	~CPortfolioManager(void);
+	virtual ~CPortfolioManager(void);
 
-	void SetQuoteRepository(CQuoteRepositry* pQuoteRepository){ m_pQuoteRepositry = pQuoteRepository; }
+	void SetOnAddPortfolioHandler(OnAddPortfolioHandler handler){ m_onAddPortfolioHandler = handler; }
 	void AddPortfolio(CAvatarClient* client, const entity::PortfolioItem& portfItem);
 	CPortfolio* Get(const string& portfolioId);
 	void Clear();
-private:
+protected:
 	std::vector<PortfolioPtr> m_portfolios;
-	CQuoteRepositry* m_pQuoteRepositry;
+	OnAddPortfolioHandler m_onAddPortfolioHandler;
 };
+
 

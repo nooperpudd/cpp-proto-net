@@ -325,5 +325,25 @@ void ClientBase::PortfSetPreferredLeg(String ^portfId, String ^legName)
 	}
 }
 
+void ClientBase::SetUserIds(array<String^> ^userIds)
+{
+	try
+	{
+		vector<string> userIdsVector;
+		for each(String ^uid in userIds)
+		{
+			IntPtr tpPtr = (IntPtr)Marshal::StringToHGlobalAnsi(uid);
+			userIdsVector.push_back((char*)tpPtr.ToPointer());
+			Marshal::FreeHGlobal(tpPtr);
+		}
+		_nativeClient->SetAlternativeUserIds(userIdsVector);
+	}
+	finally
+	{
+
+	}
+	
+}
+
 
 }

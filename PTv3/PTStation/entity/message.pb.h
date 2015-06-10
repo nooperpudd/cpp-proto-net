@@ -424,10 +424,17 @@ class LoginRequest : public ::google::protobuf::Message {
   inline ::std::string* release_previous_session_id();
   inline void set_allocated_previous_session_id(::std::string* previous_session_id);
 
-  // optional string pseudo = 4;
+  // required bool multi_client = 4;
+  inline bool has_multi_client() const;
+  inline void clear_multi_client();
+  static const int kMultiClientFieldNumber = 4;
+  inline bool multi_client() const;
+  inline void set_multi_client(bool value);
+
+  // optional string pseudo = 5;
   inline bool has_pseudo() const;
   inline void clear_pseudo();
-  static const int kPseudoFieldNumber = 4;
+  static const int kPseudoFieldNumber = 5;
   inline const ::std::string& pseudo() const;
   inline void set_pseudo(const ::std::string& value);
   inline void set_pseudo(const char* value);
@@ -444,6 +451,8 @@ class LoginRequest : public ::google::protobuf::Message {
   inline void clear_has_session_id();
   inline void set_has_previous_session_id();
   inline void clear_has_previous_session_id();
+  inline void set_has_multi_client();
+  inline void clear_has_multi_client();
   inline void set_has_pseudo();
   inline void clear_has_pseudo();
 
@@ -453,9 +462,10 @@ class LoginRequest : public ::google::protobuf::Message {
   ::std::string* previous_session_id_;
   ::std::string* pseudo_;
   bool is_new_;
+  bool multi_client_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
 
   friend void  protobuf_AddDesc_message_2eproto();
   friend void protobuf_AssignDesc_message_2eproto();
@@ -883,6 +893,22 @@ class ServerLoginRequest : public ::google::protobuf::Message {
   inline ::std::string* release_password();
   inline void set_allocated_password(::std::string* password);
 
+  // repeated string AlternativeUserIds = 7;
+  inline int alternativeuserids_size() const;
+  inline void clear_alternativeuserids();
+  static const int kAlternativeUserIdsFieldNumber = 7;
+  inline const ::std::string& alternativeuserids(int index) const;
+  inline ::std::string* mutable_alternativeuserids(int index);
+  inline void set_alternativeuserids(int index, const ::std::string& value);
+  inline void set_alternativeuserids(int index, const char* value);
+  inline void set_alternativeuserids(int index, const char* value, size_t size);
+  inline ::std::string* add_alternativeuserids();
+  inline void add_alternativeuserids(const ::std::string& value);
+  inline void add_alternativeuserids(const char* value);
+  inline void add_alternativeuserids(const char* value, size_t size);
+  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& alternativeuserids() const;
+  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_alternativeuserids();
+
   // @@protoc_insertion_point(class_scope:entity.ServerLoginRequest)
  private:
   inline void set_has_type();
@@ -905,10 +931,11 @@ class ServerLoginRequest : public ::google::protobuf::Message {
   ::std::string* investorid_;
   ::std::string* userid_;
   ::std::string* password_;
+  ::google::protobuf::RepeatedPtrField< ::std::string> alternativeuserids_;
   int type_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
 
   friend void  protobuf_AddDesc_message_2eproto();
   friend void protobuf_AssignDesc_message_2eproto();
@@ -6500,15 +6527,37 @@ inline void LoginRequest::set_allocated_previous_session_id(::std::string* previ
   }
 }
 
-// optional string pseudo = 4;
-inline bool LoginRequest::has_pseudo() const {
+// required bool multi_client = 4;
+inline bool LoginRequest::has_multi_client() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
-inline void LoginRequest::set_has_pseudo() {
+inline void LoginRequest::set_has_multi_client() {
   _has_bits_[0] |= 0x00000008u;
 }
-inline void LoginRequest::clear_has_pseudo() {
+inline void LoginRequest::clear_has_multi_client() {
   _has_bits_[0] &= ~0x00000008u;
+}
+inline void LoginRequest::clear_multi_client() {
+  multi_client_ = false;
+  clear_has_multi_client();
+}
+inline bool LoginRequest::multi_client() const {
+  return multi_client_;
+}
+inline void LoginRequest::set_multi_client(bool value) {
+  set_has_multi_client();
+  multi_client_ = value;
+}
+
+// optional string pseudo = 5;
+inline bool LoginRequest::has_pseudo() const {
+  return (_has_bits_[0] & 0x00000010u) != 0;
+}
+inline void LoginRequest::set_has_pseudo() {
+  _has_bits_[0] |= 0x00000010u;
+}
+inline void LoginRequest::clear_has_pseudo() {
+  _has_bits_[0] &= ~0x00000010u;
 }
 inline void LoginRequest::clear_pseudo() {
   if (pseudo_ != &::google::protobuf::internal::kEmptyString) {
@@ -7281,6 +7330,50 @@ inline void ServerLoginRequest::set_allocated_password(::std::string* password) 
     clear_has_password();
     password_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
+}
+
+// repeated string AlternativeUserIds = 7;
+inline int ServerLoginRequest::alternativeuserids_size() const {
+  return alternativeuserids_.size();
+}
+inline void ServerLoginRequest::clear_alternativeuserids() {
+  alternativeuserids_.Clear();
+}
+inline const ::std::string& ServerLoginRequest::alternativeuserids(int index) const {
+  return alternativeuserids_.Get(index);
+}
+inline ::std::string* ServerLoginRequest::mutable_alternativeuserids(int index) {
+  return alternativeuserids_.Mutable(index);
+}
+inline void ServerLoginRequest::set_alternativeuserids(int index, const ::std::string& value) {
+  alternativeuserids_.Mutable(index)->assign(value);
+}
+inline void ServerLoginRequest::set_alternativeuserids(int index, const char* value) {
+  alternativeuserids_.Mutable(index)->assign(value);
+}
+inline void ServerLoginRequest::set_alternativeuserids(int index, const char* value, size_t size) {
+  alternativeuserids_.Mutable(index)->assign(
+    reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* ServerLoginRequest::add_alternativeuserids() {
+  return alternativeuserids_.Add();
+}
+inline void ServerLoginRequest::add_alternativeuserids(const ::std::string& value) {
+  alternativeuserids_.Add()->assign(value);
+}
+inline void ServerLoginRequest::add_alternativeuserids(const char* value) {
+  alternativeuserids_.Add()->assign(value);
+}
+inline void ServerLoginRequest::add_alternativeuserids(const char* value, size_t size) {
+  alternativeuserids_.Add()->assign(reinterpret_cast<const char*>(value), size);
+}
+inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
+ServerLoginRequest::alternativeuserids() const {
+  return alternativeuserids_;
+}
+inline ::google::protobuf::RepeatedPtrField< ::std::string>*
+ServerLoginRequest::mutable_alternativeuserids() {
+  return &alternativeuserids_;
 }
 
 // -------------------------------------------------------------------

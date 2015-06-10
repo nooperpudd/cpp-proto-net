@@ -1,6 +1,7 @@
 #include "StdAfx.h"
 #include "AvatarFactory.h"
 #include "AvatarClient.h"
+#include "AvatarMultiClient.h"
 #include "ProtobufPacket.h"
 #include "ProtocolIDs.h"
 #include "globalmembers.h"
@@ -60,7 +61,16 @@ int CAvatarFactory::onFirstRequest( IncomingPacket& request, ConnectionContext* 
 
 		if(loginRequest.getData().is_new())
 		{
-			CAvatarClient* pClient = new CAvatarClient(loginRequest.getData().session_id());
+			CAvatarClient* pClient = NULL;
+			if (loginRequest.getData().multi_client())
+			{
+				pClient = new CAvatarMultiClient(loginRequest.getData().session_id());
+			}
+			else
+			{
+				pClient = new CAvatarClient(loginRequest.getData().session_id());
+			}
+			
 			if(loginRequest.getData().has_pseudo())
 			{
 				pClient->Pseudo(loginRequest.getData().pseudo());

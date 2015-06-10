@@ -113,6 +113,7 @@ copy /y ThostTraderApi\*.dll $(OutDir)</Command>
     <ClInclude Include="ATRDataSet.h" />
     <ClInclude Include="AvatarClient.h" />
     <ClInclude Include="AvatarFactory.h" />
+    <ClInclude Include="AvatarMultiClient.h" />
     <ClInclude Include="BollDataSet.h" />
     <ClInclude Include="BufferRunner.h" />
     <ClInclude Include="BuildOrderException.h" />
@@ -140,6 +141,7 @@ copy /y ThostTraderApi\*.dll $(OutDir)</Command>
     <ClInclude Include="QuoteTimestamp.h" />
     <ClInclude Include="QuoteUdpAgent.h" />
     <ClInclude Include="RangeTrendStrategy.h" />
+    <ClInclude Include="SimpleQuoteReceiver.h" />
     <ClInclude Include="StrategyExecutor.h" />
     <ClInclude Include="StrategyFactory.h" />
     <ClInclude Include="StrategyOrderCommand.h" />
@@ -222,6 +224,7 @@ copy /y ThostTraderApi\*.dll $(OutDir)</Command>
     <ClCompile Include="ATRDataSet.cpp" />
     <ClCompile Include="AvatarClient.cpp" />
     <ClCompile Include="AvatarFactory.cpp" />
+    <ClCompile Include="AvatarMultiClient.cpp" />
     <ClCompile Include="BollDataSet.cpp" />
     <ClCompile Include="ChangePositionStrategy.cpp" />
     <ClCompile Include="ChangePositionTrigger.cpp" />
@@ -260,6 +263,7 @@ copy /y ThostTraderApi\*.dll $(OutDir)</Command>
     <ClCompile Include="QuoteAgentFacade.cpp" />
     <ClCompile Include="QuoteUdpAgent.cpp" />
     <ClCompile Include="RangeTrendStrategy.cpp" />
+    <ClCompile Include="SimpleQuoteReceiver.cpp" />
     <ClCompile Include="StrategyExecutor.cpp" />
     <ClCompile Include="StrategyFactory.cpp" />
     <ClCompile Include="StrategyOrderCommand.cpp" />

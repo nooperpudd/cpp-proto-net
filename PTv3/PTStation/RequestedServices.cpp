@@ -19,10 +19,22 @@ void ServerLoginService::handle( LogicalConnection* pClient, IncomingPacket* pRe
 	entity::ServerType svrType = pSvrLoginRequest->getData().type();
 	if(svrType == entity::SERV_TRADE)
 	{
+		vector<string> userIds;
+
+		if (avatarClient->MultiClient())
+		{
+			for (int i = 0; i < pSvrLoginRequest->getData().alternativeuserids_size(); ++i)
+			{
+				userIds.push_back(pSvrLoginRequest->getData().alternativeuserids(i));
+			}
+		}
+		else
+			userIds.push_back(pSvrLoginRequest->getData().userid());
+
 		boost::tuple<bool, string> result = avatarClient->TradeLogin(pSvrLoginRequest->getData().address(), 
 			pSvrLoginRequest->getData().brokerid(),
 			pSvrLoginRequest->getData().investorid(),
-			pSvrLoginRequest->getData().userid(), 
+			userIds,
 			pSvrLoginRequest->getData().password());
 		response.getData().set_success(boost::get<0>(result));
 		response.getData().set_errormessage(boost::get<1>(result));
