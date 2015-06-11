@@ -154,6 +154,7 @@ enum StrategyType
 	QUICK_SCORE = 9;
 	TREND_REVERT = 10;
 	ARBITRAGE_MANUAL = 11;
+	DUAL_SCALPER = 12;
 }
 
 enum StopPriceType
@@ -223,7 +224,11 @@ message StrategyItem
 	optional DirectionDepends SC_CaseGE4Tick = 304;
 	optional DirectionDepends SC_CaseNoChange = 305;
 	optional StopLossCloseMethods SC_StopLossStrategy = 306;
-
+	
+	// Dual Scalper
+	optional double DS_PriceTick = 321;
+	optional double DS_DiffThreshold = 322;
+	
 	// TechAnaly
 	repeated HistSourceCfg HistSources = 401;
 

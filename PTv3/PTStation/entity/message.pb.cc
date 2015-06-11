@@ -443,7 +443,7 @@ void protobuf_AssignDesc_message_2eproto() {
       ::google::protobuf::MessageFactory::generated_factory(),
       sizeof(HistSourceCfg));
   StrategyItem_descriptor_ = file->message_type(16);
-  static const int StrategyItem_offsets_[65] = {
+  static const int StrategyItem_offsets_[67] = {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StrategyItem, type_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StrategyItem, retrytimes_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StrategyItem, opentimeout_),
@@ -479,6 +479,8 @@ void protobuf_AssignDesc_message_2eproto() {
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StrategyItem, sc_casege4tick_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StrategyItem, sc_casenochange_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StrategyItem, sc_stoplossstrategy_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StrategyItem, ds_pricetick_),
+    GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StrategyItem, ds_diffthreshold_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StrategyItem, histsources_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StrategyItem, hs_short_),
     GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(StrategyItem, hs_long_),
@@ -1245,7 +1247,7 @@ void protobuf_AddDesc_message_2eproto() {
     "ntity.LegStatus\022\014\n\004Last\030\003 \002(\001\022\013\n\003Ask\030\004 \002"
     "(\001\022\017\n\007AskSize\030\005 \002(\005\022\013\n\003Bid\030\006 \002(\001\022\017\n\007BidS"
     "ize\030\007 \002(\005\"2\n\rHistSourceCfg\022\016\n\006Symbol\030\001 \002"
-    "(\t\022\021\n\tPrecision\030\002 \002(\005\"\260\020\n\014StrategyItem\022\""
+    "(\t\022\021\n\tPrecision\030\002 \002(\005\"\342\020\n\014StrategyItem\022\""
     "\n\004Type\030\001 \002(\0162\024.entity.StrategyType\022\022\n\nRe"
     "tryTimes\030\002 \002(\005\022\023\n\013OpenTimeout\030\003 \002(\005\022%\n\010T"
     "riggers\030\004 \003(\0132\023.entity.TriggerItem\022\023\n\013Ma"
@@ -1279,156 +1281,158 @@ void protobuf_AddDesc_message_2eproto() {
     "ity.DirectionDepends\0222\n\017SC_CaseNoChange\030"
     "\261\002 \001(\0162\030.entity.DirectionDepends\022:\n\023SC_S"
     "topLossStrategy\030\262\002 \001(\0162\034.entity.StopLoss"
-    "CloseMethods\022+\n\013HistSources\030\221\003 \003(\0132\025.ent"
-    "ity.HistSourceCfg\022\021\n\010HS_Short\030\365\003 \001(\005\022\020\n\007"
-    "HS_Long\030\366\003 \001(\005\022\r\n\004HS_M\030\367\003 \001(\005\022\027\n\016HS_Fast"
-    "StdDiff\030\370\003 \001(\001\022\027\n\016HS_SlowStdDiff\030\371\003 \001(\001\022"
-    "\026\n\rHS_FastPeriod\030\372\003 \001(\005\022\026\n\rHS_SlowPeriod"
-    "\030\373\003 \001(\005\022\034\n\023HS_FastShortEMASeed\030\374\003 \001(\001\022\033\n"
-    "\022HS_FastLongEMASeed\030\375\003 \001(\001\022\035\n\024HS_FastSig"
-    "nalEMASeed\030\376\003 \001(\001\022\034\n\023HS_SlowShortEMASeed"
-    "\030\377\003 \001(\001\022\033\n\022HS_SlowLongEMASeed\030\200\004 \001(\001\022\035\n\024"
-    "HS_SlowSignalEMASeed\030\201\004 \001(\001\022\024\n\013WT_WmaPar"
-    "am\030\211\004 \001(\005\022\017\n\006WT_MaN\030\212\004 \001(\005\022\022\n\tWT_Period\030"
-    "\213\004 \001(\005\022\022\n\tLR_Period\030\223\004 \001(\005\022\022\n\tLR_Number\030"
-    "\224\004 \001(\005\022\031\n\020LR_OpenThreshold\030\225\004 \001(\001\022\032\n\021LR_"
-    "CloseThreshold\030\226\004 \001(\001\022\020\n\007AS_Risk\030\235\004 \001(\005\022"
-    "\032\n\021AS_AvergatePeriod\030\236\004 \001(\005\022\032\n\021AS_BreakO"
-    "utLength\030\237\004 \001(\005\022\022\n\tAS_Period\030\240\004 \001(\005\022\025\n\014R"
-    "T_TimeFrame\030\247\004 \001(\005\022\026\n\rRT_OpenPeriod\030\250\004 \001"
-    "(\005\022\027\n\016RT_ClosePeriod\030\251\004 \001(\005\022\032\n\021RT_StopLo"
-    "ssFactor\030\252\004 \001(\001\022\027\n\016RT_TrendFactor\030\253\004 \001(\001"
-    "\"\247\003\n\013TriggerItem\022&\n\010Strategy\030\001 \002(\0162\024.ent"
-    "ity.StrategyType\022\014\n\004Name\030\002 \002(\t\022\017\n\007Enable"
-    "d\030\003 \002(\010\022.\n\014AR_Condition\030e \001(\0162\030.entity.C"
-    "ompareCondition\022\024\n\014AR_Threshold\030f \001(\001\022)\n"
-    "\tAR_Offset\030g \001(\0162\026.entity.PosiOffsetFlag"
-    "\022/\n\014CP_Condition\030\311\001 \001(\0162\030.entity.Compare"
-    "Condition\022\025\n\014CP_Threshold\030\312\001 \001(\001\022\025\n\014SC_T"
-    "hreshold\030\255\002 \001(\001\022*\n\tHS_Offset\030\221\003 \001(\0162\026.en"
-    "tity.PosiOffsetFlag\022\036\n\025HS_FastAngleThres"
-    "hold\030\222\003 \001(\001\022\036\n\025HS_SlowAngleThreshold\030\223\003 "
-    "\001(\001\022\025\n\014TS_BackValue\030\233\003 \001(\001\"V\n\rTriggerSta"
-    "tus\022&\n\010Strategy\030\001 \002(\0162\024.entity.StrategyT"
-    "ype\022\014\n\004Name\030\002 \002(\t\022\017\n\007Enabled\030\003 \002(\010\"\370\001\n\rP"
-    "ortfolioItem\022\n\n\002ID\030\001 \002(\t\022\020\n\010Quantity\030\002 \002"
-    "(\005\022\035\n\004Legs\030\003 \003(\0132\017.entity.LegItem\022\021\n\tMax"
-    "Cancel\030\004 \002(\005\022\027\n\017MaxOpenPerStart\030\005 \002(\005\022\026\n"
-    "\016TotalOpenLimit\030\006 \002(\005\022\025\n\rEndTimePoints\030\007"
-    " \003(\t\022&\n\010Strategy\030\010 \002(\0132\024.entity.Strategy"
-    "Item\022\'\n\tHedgeFlag\030\t \002(\0162\024.trade.HedgeFla"
-    "gType\"\275\t\n\023PortfolioUpdateItem\022\n\n\002ID\030\001 \002("
-    "\t\022#\n\004Legs\030\002 \003(\0132\025.entity.LegUpdateItem\022&"
-    "\n\010Strategy\030\003 \002(\0162\024.entity.StrategyType\022\017"
-    "\n\007Running\030\004 \002(\010\022\'\n\010Triggers\030\005 \003(\0132\025.enti"
-    "ty.TriggerStatus\022\026\n\016TotalOpenTimes\030\006 \002(\005"
-    "\022\027\n\017TotalCloseTimes\030\007 \002(\005\022\027\n\017CurrentPosi"
-    "tion\030\010 \002(\005\022\023\n\013CancelTimes\030\t \002(\005\022\016\n\006Profi"
-    "t\030\n \002(\001\022\022\n\nSuspending\030\013 \002(\010\022\017\n\007Message\030\014"
-    " \001(\t\022\017\n\007AR_Diff\030e \001(\001\022\023\n\013AR_LongDiff\030f \001"
-    "(\001\022\024\n\014AR_ShortDiff\030g \001(\001\022\023\n\013AR_LongSize\030"
-    "h \001(\005\022\024\n\014AR_ShortSize\030i \001(\005\022\022\n\nAR_BollTo"
-    "p\030j \001(\001\022\025\n\rAR_BollBottom\030k \001(\001\022\020\n\007SC_Dif"
-    "f\030\311\001 \001(\001\022\022\n\tMU_Profit\030\323\001 \001(\001\022\024\n\013MU_NearH"
-    "igh\030\324\001 \001(\001\022\023\n\nMU_NearLow\030\325\001 \001(\001\022\024\n\013MU_Fa"
-    "llback\030\326\001 \001(\001\022\022\n\tMU_Bounce\030\327\001 \001(\001\022\025\n\014HS_"
-    "FastAngle\030\255\002 \001(\001\022\025\n\014HS_SlowAngle\030\256\002 \001(\001\022"
-    "\030\n\017HS_FastMacdHist\030\257\002 \001(\001\022\034\n\023HS_FastMacd"
-    "HistDiff\030\260\002 \001(\001\022\030\n\017HS_SlowMacdHist\030\261\002 \001("
-    "\001\022\034\n\023HS_SlowMacdHistDiff\030\262\002 \001(\001\0226\n\025HS_Fa"
-    "stSlopeDirection\030\263\002 \001(\0162\026.entity.SlopeDi"
-    "rection\0226\n\025HS_SlowSlopeDirection\030\264\002 \001(\0162"
-    "\026.entity.SlopeDirection\022\024\n\013WT_FastLine\030\267"
-    "\002 \001(\001\022\024\n\013WT_SlowLine\030\270\002 \001(\001\022\032\n\021LR_Weight"
-    "MidPoint\030\301\002 \001(\001\022\031\n\020LR_LinerRegAngle\030\303\002 \001"
-    "(\001\022\025\n\014AS_WilliamsR\030\313\002 \001(\001\022\022\n\tAS_StopPx\030\314"
-    "\002 \001(\001\022\026\n\rAS_DonchianHi\030\315\002 \001(\001\022\026\n\rAS_Donc"
-    "hianLo\030\316\002 \001(\001\022\032\n\021RT_UpperBoundOpen\030\325\002 \001("
-    "\001\022\032\n\021RT_LowerBoundOpen\030\326\002 \001(\001\022\033\n\022RT_Uppe"
-    "rBoundClose\030\327\002 \001(\001\022\033\n\022RT_LowerBoundClose"
-    "\030\330\002 \001(\001\022\026\n\rRT_LastCostPx\030\331\002 \001(\001\022\034\n\023RT_Re"
-    "centStopLossPx\030\332\002 \001(\001\":\n\014ConnectParam\022\024\n"
-    "\014QuoteAddress\030\001 \002(\t\022\024\n\014StreamFolder\030\002 \002("
-    "\t\"8\n\017OperationReturn\022\017\n\007Success\030\001 \002(\010\022\024\n"
-    "\014ErrorMessage\030\002 \002(\t\"7\n\017AccountSettings\022\021"
-    "\n\tMaxSubmit\030\001 \002(\005\022\021\n\tMaxCancel\030\002 \002(\005\"o\n\n"
-    "LoginParam\022\020\n\010BrokerId\030\001 \002(\t\022\016\n\006UserId\030\002"
-    " \002(\t\022\020\n\010Password\030\003 \002(\t\022-\n\014AcctSettings\030\004"
-    " \001(\0132\027.entity.AccountSettings\" \n\rRegQuot"
-    "eParam\022\017\n\007Symbols\030\001 \003(\t\"B\n\021AddPortfolioP"
-    "aram\022-\n\016PortfolioItems\030\001 \003(\0132\025.entity.Po"
-    "rtfolioItem\"J\n\022PortfOpenPosiParam\022\017\n\007Por"
-    "tfId\030\001 \002(\t\022\020\n\010Quantity\030\002 \001(\005\022\021\n\tIsVirtua"
-    "l\030\003 \001(\010\"]\n\022ClosePositionParam\022\017\n\007PortfId"
-    "\030\001 \002(\t\022\021\n\tMLOrderId\030\002 \001(\t\022\021\n\tLegOrdRef\030\003"
-    " \001(\t\022\020\n\010Quantity\030\004 \001(\005\"t\n\023LegOrderUpdate"
-    "Param\022\017\n\007PortfId\030\001 \002(\t\022\027\n\017MultiLegOrderI"
-    "d\030\002 \002(\t\022\023\n\013LegOrderRef\030\003 \002(\t\022\036\n\010LegOrder"
-    "\030\004 \002(\0132\014.trade.Order\"\260\002\n\031ArbitrageStrate"
-    "gySettings\022\'\n\004Side\030\001 \002(\0162\031.entity.PosiDi"
-    "rectionType\022/\n\rOpenCondition\030\002 \002(\0162\030.ent"
-    "ity.CompareCondition\022\031\n\021OpenPosiThreshol"
-    "d\030\003 \002(\001\0223\n\021StopGainCondition\030\004 \002(\0162\030.ent"
-    "ity.CompareCondition\022\031\n\021StopGainThreshol"
-    "d\030\005 \002(\001\0223\n\021StopLossCondition\030\006 \002(\0162\030.ent"
-    "ity.CompareCondition\022\031\n\021StopLossThreshol"
-    "d\030\007 \002(\001\"\246\001\n\032ChangePosiStrategySettings\022\020"
-    "\n\010CloseLeg\030\001 \002(\t\022/\n\014CloseLegSide\030\002 \002(\0162\031"
-    ".entity.PosiDirectionType\0222\n\020TriggerCond"
-    "ition\030\003 \002(\0162\030.entity.CompareCondition\022\021\n"
-    "\tThreshold\030\004 \002(\001\"\325\002\n\017ScalperSettings\022\021\n\t"
-    "Threshold\030\001 \002(\001\022\021\n\tPriceTick\030\002 \002(\001\022-\n\013Ca"
-    "seLE2Tick\030\003 \002(\0162\030.entity.DirectionDepend"
-    "s\022-\n\013CaseLE3Tick\030\004 \002(\0162\030.entity.Directio"
-    "nDepends\022-\n\013CaseGE4Tick\030\005 \002(\0162\030.entity.D"
-    "irectionDepends\022.\n\014CaseNoChange\030\006 \002(\0162\030."
-    "entity.DirectionDepends\0226\n\020StopLossStrat"
-    "egy\030\007 \002(\0162\034.entity.StopLossCloseMethods\022"
-    "\022\n\nRetryTimes\030\010 \002(\005\022\023\n\013OpenTimeout\030\t \001(\005"
-    "\"R\n\023ModifyStrategyParam\022\017\n\007PortfId\030\001 \002(\t"
-    "\022\024\n\014StrategyName\030\002 \002(\t\022\024\n\014StrategyData\030\003"
-    " \002(\014\"\227\001\n\032ModifyPortfolioSwitchParam\022\017\n\007P"
-    "ortfId\030\001 \002(\t\022\020\n\010AutoOpen\030\002 \002(\010\022\024\n\014AutoSt"
-    "opGain\030\003 \002(\010\022\024\n\014AutoStopLoss\030\004 \002(\010\022\024\n\014Au"
-    "toTracking\030\005 \002(\010\022\024\n\014EnablePrefer\030\006 \002(\010\"\230"
-    "\001\n\027ModifyPortfolioQtyParam\022\017\n\007PortfId\030\001 "
-    "\002(\t\022\022\n\nPerOpenQty\030\002 \002(\005\022\023\n\013PerStartQty\030\003"
-    " \002(\005\022\026\n\016TotalOpenLimit\030\004 \002(\005\022\024\n\014MaxCance"
-    "lQty\030\005 \002(\005\022\025\n\rEndTimePoints\030\006 \003(\t\"<\n\030Mod"
-    "ifyRunningStatusParam\022\017\n\007PortfId\030\001 \002(\t\022\017"
-    "\n\007Enabled\030\002 \002(\010\"F\n ModifyPortfolioPrefer"
-    "redLegParam\022\017\n\007PortfId\030\001 \002(\t\022\021\n\tLegSymbo"
-    "l\030\002 \002(\t\"j\n\020CancelOrderParam\022\020\n\010OrderRef\030"
-    "\001 \002(\t\022\022\n\nExchangeId\030\002 \002(\t\022\020\n\010OrdSysId\030\003 "
-    "\002(\t\022\016\n\006UserId\030\004 \002(\t\022\016\n\006Symbol\030\005 \002(\t\"y\n\025M"
-    "anualCloseOrderParam\022\016\n\006Symbol\030\001 \002(\t\022,\n\t"
-    "Direction\030\002 \002(\0162\031.trade.TradeDirectionTy"
-    "pe\022\020\n\010OpenDate\030\003 \002(\t\022\020\n\010Quantity\030\004 \002(\005\"\212"
-    "\001\n\nSymbolInfo\022\022\n\nInstrument\030\001 \002(\t\022\022\n\nExc"
-    "hangeID\030\002 \002(\t\022\026\n\016ExchangeInstID\030\003 \002(\t\022\021\n"
-    "\tProductID\030\004 \002(\t\022\026\n\016VolumeMultiple\030\005 \002(\005"
-    "\022\021\n\tPriceTick\030\006 \002(\001*,\n\nServerType\022\016\n\nSER"
-    "V_QUOTE\020\000\022\016\n\nSERV_TRADE\020\001*\222\001\n\023PortfolioS"
-    "witchType\022\023\n\017STRATEGY_SWITCH\020\000\022\022\n\016TRIGGE"
-    "R_SWITCH\020\001\022\024\n\020ARBITRAGE_SWITCH\020\002\022\024\n\020STOP"
-    "_GAIN_SWITCH\020\003\022\024\n\020STOP_LOSS_SWITCH\020\004\022\020\n\014"
-    "PAUSE_SWITCH\020\005*\331\001\n\014StrategyType\022\r\n\tARBIT"
-    "RAGE\020\000\022\023\n\017CHANGE_POSITION\020\001\022\013\n\007SCALPER\020\002"
-    "\022\016\n\nHIST_SLOPE\020\003\022\r\n\tWMA_TREND\020\004\022\024\n\020LINER"
-    "_REGRESSION\020\005\022\r\n\tASC_TREND\020\006\022\017\n\013RANGE_TR"
-    "END\020\007\022\n\n\006MANUAL\020\010\022\017\n\013QUICK_SCORE\020\t\022\020\n\014TR"
-    "END_REVERT\020\n\022\024\n\020ARBITRAGE_MANUAL\020\013*1\n\rSt"
-    "opPriceType\022\r\n\tLOSS_STOP\020\000\022\021\n\rTRAILING_S"
-    "TOP\020\001*s\n\025ArbitrageStopLossType\022\026\n\022STOP_L"
-    "OSS_Disabled\020\000\022\023\n\017STOP_LOSS_Fixed\020\001\022\022\n\016S"
-    "TOP_LOSS_Auto\020\002\022\031\n\025STOP_LOSS_Fixed_Price"
-    "\020\003*@\n\016SlopeDirection\022\020\n\014NO_DIRECTION\020\000\022\014"
-    "\n\010GOING_UP\020\001\022\016\n\nGOING_DOWN\020\002*o\n\020Directio"
-    "nDepends\022\017\n\013IGNORE_THIS\020\000\022\021\n\rON_SMALL_SI"
-    "ZE\020\001\022\017\n\013ON_BIG_SIZE\020\002\022\023\n\017ON_SMALL_CHANGE"
-    "\020\003\022\021\n\rON_BIG_CHANGE\020\004*I\n\024StopLossCloseMe"
-    "thods\022\027\n\023BASED_ON_NEXT_QUOTE\020\000\022\030\n\024BASED_"
-    "ON_INPUT_LIMIT\020\001", 8896);
+    "CloseMethods\022\025\n\014DS_PriceTick\030\301\002 \001(\001\022\031\n\020D"
+    "S_DiffThreshold\030\302\002 \001(\001\022+\n\013HistSources\030\221\003"
+    " \003(\0132\025.entity.HistSourceCfg\022\021\n\010HS_Short\030"
+    "\365\003 \001(\005\022\020\n\007HS_Long\030\366\003 \001(\005\022\r\n\004HS_M\030\367\003 \001(\005\022"
+    "\027\n\016HS_FastStdDiff\030\370\003 \001(\001\022\027\n\016HS_SlowStdDi"
+    "ff\030\371\003 \001(\001\022\026\n\rHS_FastPeriod\030\372\003 \001(\005\022\026\n\rHS_"
+    "SlowPeriod\030\373\003 \001(\005\022\034\n\023HS_FastShortEMASeed"
+    "\030\374\003 \001(\001\022\033\n\022HS_FastLongEMASeed\030\375\003 \001(\001\022\035\n\024"
+    "HS_FastSignalEMASeed\030\376\003 \001(\001\022\034\n\023HS_SlowSh"
+    "ortEMASeed\030\377\003 \001(\001\022\033\n\022HS_SlowLongEMASeed\030"
+    "\200\004 \001(\001\022\035\n\024HS_SlowSignalEMASeed\030\201\004 \001(\001\022\024\n"
+    "\013WT_WmaParam\030\211\004 \001(\005\022\017\n\006WT_MaN\030\212\004 \001(\005\022\022\n\t"
+    "WT_Period\030\213\004 \001(\005\022\022\n\tLR_Period\030\223\004 \001(\005\022\022\n\t"
+    "LR_Number\030\224\004 \001(\005\022\031\n\020LR_OpenThreshold\030\225\004 "
+    "\001(\001\022\032\n\021LR_CloseThreshold\030\226\004 \001(\001\022\020\n\007AS_Ri"
+    "sk\030\235\004 \001(\005\022\032\n\021AS_AvergatePeriod\030\236\004 \001(\005\022\032\n"
+    "\021AS_BreakOutLength\030\237\004 \001(\005\022\022\n\tAS_Period\030\240"
+    "\004 \001(\005\022\025\n\014RT_TimeFrame\030\247\004 \001(\005\022\026\n\rRT_OpenP"
+    "eriod\030\250\004 \001(\005\022\027\n\016RT_ClosePeriod\030\251\004 \001(\005\022\032\n"
+    "\021RT_StopLossFactor\030\252\004 \001(\001\022\027\n\016RT_TrendFac"
+    "tor\030\253\004 \001(\001\"\247\003\n\013TriggerItem\022&\n\010Strategy\030\001"
+    " \002(\0162\024.entity.StrategyType\022\014\n\004Name\030\002 \002(\t"
+    "\022\017\n\007Enabled\030\003 \002(\010\022.\n\014AR_Condition\030e \001(\0162"
+    "\030.entity.CompareCondition\022\024\n\014AR_Threshol"
+    "d\030f \001(\001\022)\n\tAR_Offset\030g \001(\0162\026.entity.Posi"
+    "OffsetFlag\022/\n\014CP_Condition\030\311\001 \001(\0162\030.enti"
+    "ty.CompareCondition\022\025\n\014CP_Threshold\030\312\001 \001"
+    "(\001\022\025\n\014SC_Threshold\030\255\002 \001(\001\022*\n\tHS_Offset\030\221"
+    "\003 \001(\0162\026.entity.PosiOffsetFlag\022\036\n\025HS_Fast"
+    "AngleThreshold\030\222\003 \001(\001\022\036\n\025HS_SlowAngleThr"
+    "eshold\030\223\003 \001(\001\022\025\n\014TS_BackValue\030\233\003 \001(\001\"V\n\r"
+    "TriggerStatus\022&\n\010Strategy\030\001 \002(\0162\024.entity"
+    ".StrategyType\022\014\n\004Name\030\002 \002(\t\022\017\n\007Enabled\030\003"
+    " \002(\010\"\370\001\n\rPortfolioItem\022\n\n\002ID\030\001 \002(\t\022\020\n\010Qu"
+    "antity\030\002 \002(\005\022\035\n\004Legs\030\003 \003(\0132\017.entity.LegI"
+    "tem\022\021\n\tMaxCancel\030\004 \002(\005\022\027\n\017MaxOpenPerStar"
+    "t\030\005 \002(\005\022\026\n\016TotalOpenLimit\030\006 \002(\005\022\025\n\rEndTi"
+    "mePoints\030\007 \003(\t\022&\n\010Strategy\030\010 \002(\0132\024.entit"
+    "y.StrategyItem\022\'\n\tHedgeFlag\030\t \002(\0162\024.trad"
+    "e.HedgeFlagType\"\275\t\n\023PortfolioUpdateItem\022"
+    "\n\n\002ID\030\001 \002(\t\022#\n\004Legs\030\002 \003(\0132\025.entity.LegUp"
+    "dateItem\022&\n\010Strategy\030\003 \002(\0162\024.entity.Stra"
+    "tegyType\022\017\n\007Running\030\004 \002(\010\022\'\n\010Triggers\030\005 "
+    "\003(\0132\025.entity.TriggerStatus\022\026\n\016TotalOpenT"
+    "imes\030\006 \002(\005\022\027\n\017TotalCloseTimes\030\007 \002(\005\022\027\n\017C"
+    "urrentPosition\030\010 \002(\005\022\023\n\013CancelTimes\030\t \002("
+    "\005\022\016\n\006Profit\030\n \002(\001\022\022\n\nSuspending\030\013 \002(\010\022\017\n"
+    "\007Message\030\014 \001(\t\022\017\n\007AR_Diff\030e \001(\001\022\023\n\013AR_Lo"
+    "ngDiff\030f \001(\001\022\024\n\014AR_ShortDiff\030g \001(\001\022\023\n\013AR"
+    "_LongSize\030h \001(\005\022\024\n\014AR_ShortSize\030i \001(\005\022\022\n"
+    "\nAR_BollTop\030j \001(\001\022\025\n\rAR_BollBottom\030k \001(\001"
+    "\022\020\n\007SC_Diff\030\311\001 \001(\001\022\022\n\tMU_Profit\030\323\001 \001(\001\022\024"
+    "\n\013MU_NearHigh\030\324\001 \001(\001\022\023\n\nMU_NearLow\030\325\001 \001("
+    "\001\022\024\n\013MU_Fallback\030\326\001 \001(\001\022\022\n\tMU_Bounce\030\327\001 "
+    "\001(\001\022\025\n\014HS_FastAngle\030\255\002 \001(\001\022\025\n\014HS_SlowAng"
+    "le\030\256\002 \001(\001\022\030\n\017HS_FastMacdHist\030\257\002 \001(\001\022\034\n\023H"
+    "S_FastMacdHistDiff\030\260\002 \001(\001\022\030\n\017HS_SlowMacd"
+    "Hist\030\261\002 \001(\001\022\034\n\023HS_SlowMacdHistDiff\030\262\002 \001("
+    "\001\0226\n\025HS_FastSlopeDirection\030\263\002 \001(\0162\026.enti"
+    "ty.SlopeDirection\0226\n\025HS_SlowSlopeDirecti"
+    "on\030\264\002 \001(\0162\026.entity.SlopeDirection\022\024\n\013WT_"
+    "FastLine\030\267\002 \001(\001\022\024\n\013WT_SlowLine\030\270\002 \001(\001\022\032\n"
+    "\021LR_WeightMidPoint\030\301\002 \001(\001\022\031\n\020LR_LinerReg"
+    "Angle\030\303\002 \001(\001\022\025\n\014AS_WilliamsR\030\313\002 \001(\001\022\022\n\tA"
+    "S_StopPx\030\314\002 \001(\001\022\026\n\rAS_DonchianHi\030\315\002 \001(\001\022"
+    "\026\n\rAS_DonchianLo\030\316\002 \001(\001\022\032\n\021RT_UpperBound"
+    "Open\030\325\002 \001(\001\022\032\n\021RT_LowerBoundOpen\030\326\002 \001(\001\022"
+    "\033\n\022RT_UpperBoundClose\030\327\002 \001(\001\022\033\n\022RT_Lower"
+    "BoundClose\030\330\002 \001(\001\022\026\n\rRT_LastCostPx\030\331\002 \001("
+    "\001\022\034\n\023RT_RecentStopLossPx\030\332\002 \001(\001\":\n\014Conne"
+    "ctParam\022\024\n\014QuoteAddress\030\001 \002(\t\022\024\n\014StreamF"
+    "older\030\002 \002(\t\"8\n\017OperationReturn\022\017\n\007Succes"
+    "s\030\001 \002(\010\022\024\n\014ErrorMessage\030\002 \002(\t\"7\n\017Account"
+    "Settings\022\021\n\tMaxSubmit\030\001 \002(\005\022\021\n\tMaxCancel"
+    "\030\002 \002(\005\"o\n\nLoginParam\022\020\n\010BrokerId\030\001 \002(\t\022\016"
+    "\n\006UserId\030\002 \002(\t\022\020\n\010Password\030\003 \002(\t\022-\n\014Acct"
+    "Settings\030\004 \001(\0132\027.entity.AccountSettings\""
+    " \n\rRegQuoteParam\022\017\n\007Symbols\030\001 \003(\t\"B\n\021Add"
+    "PortfolioParam\022-\n\016PortfolioItems\030\001 \003(\0132\025"
+    ".entity.PortfolioItem\"J\n\022PortfOpenPosiPa"
+    "ram\022\017\n\007PortfId\030\001 \002(\t\022\020\n\010Quantity\030\002 \001(\005\022\021"
+    "\n\tIsVirtual\030\003 \001(\010\"]\n\022ClosePositionParam\022"
+    "\017\n\007PortfId\030\001 \002(\t\022\021\n\tMLOrderId\030\002 \001(\t\022\021\n\tL"
+    "egOrdRef\030\003 \001(\t\022\020\n\010Quantity\030\004 \001(\005\"t\n\023LegO"
+    "rderUpdateParam\022\017\n\007PortfId\030\001 \002(\t\022\027\n\017Mult"
+    "iLegOrderId\030\002 \002(\t\022\023\n\013LegOrderRef\030\003 \002(\t\022\036"
+    "\n\010LegOrder\030\004 \002(\0132\014.trade.Order\"\260\002\n\031Arbit"
+    "rageStrategySettings\022\'\n\004Side\030\001 \002(\0162\031.ent"
+    "ity.PosiDirectionType\022/\n\rOpenCondition\030\002"
+    " \002(\0162\030.entity.CompareCondition\022\031\n\021OpenPo"
+    "siThreshold\030\003 \002(\001\0223\n\021StopGainCondition\030\004"
+    " \002(\0162\030.entity.CompareCondition\022\031\n\021StopGa"
+    "inThreshold\030\005 \002(\001\0223\n\021StopLossCondition\030\006"
+    " \002(\0162\030.entity.CompareCondition\022\031\n\021StopLo"
+    "ssThreshold\030\007 \002(\001\"\246\001\n\032ChangePosiStrategy"
+    "Settings\022\020\n\010CloseLeg\030\001 \002(\t\022/\n\014CloseLegSi"
+    "de\030\002 \002(\0162\031.entity.PosiDirectionType\0222\n\020T"
+    "riggerCondition\030\003 \002(\0162\030.entity.CompareCo"
+    "ndition\022\021\n\tThreshold\030\004 \002(\001\"\325\002\n\017ScalperSe"
+    "ttings\022\021\n\tThreshold\030\001 \002(\001\022\021\n\tPriceTick\030\002"
+    " \002(\001\022-\n\013CaseLE2Tick\030\003 \002(\0162\030.entity.Direc"
+    "tionDepends\022-\n\013CaseLE3Tick\030\004 \002(\0162\030.entit"
+    "y.DirectionDepends\022-\n\013CaseGE4Tick\030\005 \002(\0162"
+    "\030.entity.DirectionDepends\022.\n\014CaseNoChang"
+    "e\030\006 \002(\0162\030.entity.DirectionDepends\0226\n\020Sto"
+    "pLossStrategy\030\007 \002(\0162\034.entity.StopLossClo"
+    "seMethods\022\022\n\nRetryTimes\030\010 \002(\005\022\023\n\013OpenTim"
+    "eout\030\t \001(\005\"R\n\023ModifyStrategyParam\022\017\n\007Por"
+    "tfId\030\001 \002(\t\022\024\n\014StrategyName\030\002 \002(\t\022\024\n\014Stra"
+    "tegyData\030\003 \002(\014\"\227\001\n\032ModifyPortfolioSwitch"
+    "Param\022\017\n\007PortfId\030\001 \002(\t\022\020\n\010AutoOpen\030\002 \002(\010"
+    "\022\024\n\014AutoStopGain\030\003 \002(\010\022\024\n\014AutoStopLoss\030\004"
+    " \002(\010\022\024\n\014AutoTracking\030\005 \002(\010\022\024\n\014EnablePref"
+    "er\030\006 \002(\010\"\230\001\n\027ModifyPortfolioQtyParam\022\017\n\007"
+    "PortfId\030\001 \002(\t\022\022\n\nPerOpenQty\030\002 \002(\005\022\023\n\013Per"
+    "StartQty\030\003 \002(\005\022\026\n\016TotalOpenLimit\030\004 \002(\005\022\024"
+    "\n\014MaxCancelQty\030\005 \002(\005\022\025\n\rEndTimePoints\030\006 "
+    "\003(\t\"<\n\030ModifyRunningStatusParam\022\017\n\007Portf"
+    "Id\030\001 \002(\t\022\017\n\007Enabled\030\002 \002(\010\"F\n ModifyPortf"
+    "olioPreferredLegParam\022\017\n\007PortfId\030\001 \002(\t\022\021"
+    "\n\tLegSymbol\030\002 \002(\t\"j\n\020CancelOrderParam\022\020\n"
+    "\010OrderRef\030\001 \002(\t\022\022\n\nExchangeId\030\002 \002(\t\022\020\n\010O"
+    "rdSysId\030\003 \002(\t\022\016\n\006UserId\030\004 \002(\t\022\016\n\006Symbol\030"
+    "\005 \002(\t\"y\n\025ManualCloseOrderParam\022\016\n\006Symbol"
+    "\030\001 \002(\t\022,\n\tDirection\030\002 \002(\0162\031.trade.TradeD"
+    "irectionType\022\020\n\010OpenDate\030\003 \002(\t\022\020\n\010Quanti"
+    "ty\030\004 \002(\005\"\212\001\n\nSymbolInfo\022\022\n\nInstrument\030\001 "
+    "\002(\t\022\022\n\nExchangeID\030\002 \002(\t\022\026\n\016ExchangeInstI"
+    "D\030\003 \002(\t\022\021\n\tProductID\030\004 \002(\t\022\026\n\016VolumeMult"
+    "iple\030\005 \002(\005\022\021\n\tPriceTick\030\006 \002(\001*,\n\nServerT"
+    "ype\022\016\n\nSERV_QUOTE\020\000\022\016\n\nSERV_TRADE\020\001*\222\001\n\023"
+    "PortfolioSwitchType\022\023\n\017STRATEGY_SWITCH\020\000"
+    "\022\022\n\016TRIGGER_SWITCH\020\001\022\024\n\020ARBITRAGE_SWITCH"
+    "\020\002\022\024\n\020STOP_GAIN_SWITCH\020\003\022\024\n\020STOP_LOSS_SW"
+    "ITCH\020\004\022\020\n\014PAUSE_SWITCH\020\005*\353\001\n\014StrategyTyp"
+    "e\022\r\n\tARBITRAGE\020\000\022\023\n\017CHANGE_POSITION\020\001\022\013\n"
+    "\007SCALPER\020\002\022\016\n\nHIST_SLOPE\020\003\022\r\n\tWMA_TREND\020"
+    "\004\022\024\n\020LINER_REGRESSION\020\005\022\r\n\tASC_TREND\020\006\022\017"
+    "\n\013RANGE_TREND\020\007\022\n\n\006MANUAL\020\010\022\017\n\013QUICK_SCO"
+    "RE\020\t\022\020\n\014TREND_REVERT\020\n\022\024\n\020ARBITRAGE_MANU"
+    "AL\020\013\022\020\n\014DUAL_SCALPER\020\014*1\n\rStopPriceType\022"
+    "\r\n\tLOSS_STOP\020\000\022\021\n\rTRAILING_STOP\020\001*s\n\025Arb"
+    "itrageStopLossType\022\026\n\022STOP_LOSS_Disabled"
+    "\020\000\022\023\n\017STOP_LOSS_Fixed\020\001\022\022\n\016STOP_LOSS_Aut"
+    "o\020\002\022\031\n\025STOP_LOSS_Fixed_Price\020\003*@\n\016SlopeD"
+    "irection\022\020\n\014NO_DIRECTION\020\000\022\014\n\010GOING_UP\020\001"
+    "\022\016\n\nGOING_DOWN\020\002*o\n\020DirectionDepends\022\017\n\013"
+    "IGNORE_THIS\020\000\022\021\n\rON_SMALL_SIZE\020\001\022\017\n\013ON_B"
+    "IG_SIZE\020\002\022\023\n\017ON_SMALL_CHANGE\020\003\022\021\n\rON_BIG"
+    "_CHANGE\020\004*I\n\024StopLossCloseMethods\022\027\n\023BAS"
+    "ED_ON_NEXT_QUOTE\020\000\022\030\n\024BASED_ON_INPUT_LIM"
+    "IT\020\001", 8964);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "message.proto", &protobuf_RegisterTypes);
   LoginPuzzleResponse::default_instance_ = new LoginPuzzleResponse();
@@ -1572,6 +1576,7 @@ bool StrategyType_IsValid(int value) {
     case 9:
     case 10:
     case 11:
+    case 12:
       return true;
     default:
       return false;
@@ -7108,6 +7113,8 @@ const int StrategyItem::kSCCaseLE3TickFieldNumber;
 const int StrategyItem::kSCCaseGE4TickFieldNumber;
 const int StrategyItem::kSCCaseNoChangeFieldNumber;
 const int StrategyItem::kSCStopLossStrategyFieldNumber;
+const int StrategyItem::kDSPriceTickFieldNumber;
+const int StrategyItem::kDSDiffThresholdFieldNumber;
 const int StrategyItem::kHistSourcesFieldNumber;
 const int StrategyItem::kHSShortFieldNumber;
 const int StrategyItem::kHSLongFieldNumber;
@@ -7190,6 +7197,8 @@ void StrategyItem::SharedCtor() {
   sc_casege4tick_ = 0;
   sc_casenochange_ = 0;
   sc_stoplossstrategy_ = 0;
+  ds_pricetick_ = 0;
+  ds_diffthreshold_ = 0;
   hs_short_ = 0;
   hs_long_ = 0;
   hs_m_ = 0;
@@ -7303,42 +7312,44 @@ void StrategyItem::Clear() {
     sc_casege4tick_ = 0;
     sc_casenochange_ = 0;
     sc_stoplossstrategy_ = 0;
+    ds_pricetick_ = 0;
+    ds_diffthreshold_ = 0;
     hs_short_ = 0;
     hs_long_ = 0;
-    hs_m_ = 0;
-    hs_faststddiff_ = 0;
   }
   if (_has_bits_[40 / 32] & (0xffu << (40 % 32))) {
+    hs_m_ = 0;
+    hs_faststddiff_ = 0;
     hs_slowstddiff_ = 0;
     hs_fastperiod_ = 0;
     hs_slowperiod_ = 0;
     hs_fastshortemaseed_ = 0;
     hs_fastlongemaseed_ = 0;
     hs_fastsignalemaseed_ = 0;
-    hs_slowshortemaseed_ = 0;
-    hs_slowlongemaseed_ = 0;
   }
   if (_has_bits_[48 / 32] & (0xffu << (48 % 32))) {
+    hs_slowshortemaseed_ = 0;
+    hs_slowlongemaseed_ = 0;
     hs_slowsignalemaseed_ = 0;
     wt_wmaparam_ = 0;
     wt_man_ = 0;
     wt_period_ = 0;
     lr_period_ = 0;
     lr_number_ = 0;
-    lr_openthreshold_ = 0;
-    lr_closethreshold_ = 0;
   }
   if (_has_bits_[56 / 32] & (0xffu << (56 % 32))) {
+    lr_openthreshold_ = 0;
+    lr_closethreshold_ = 0;
     as_risk_ = 0;
     as_avergateperiod_ = 0;
     as_breakoutlength_ = 0;
     as_period_ = 0;
     rt_timeframe_ = 0;
     rt_openperiod_ = 0;
-    rt_closeperiod_ = 0;
-    rt_stoplossfactor_ = 0;
   }
   if (_has_bits_[64 / 32] & (0xffu << (64 % 32))) {
+    rt_closeperiod_ = 0;
+    rt_stoplossfactor_ = 0;
     rt_trendfactor_ = 0;
   }
   triggers_.Clear();
@@ -7990,6 +8001,38 @@ bool StrategyItem::MergePartialFromCodedStream(
           } else {
             mutable_unknown_fields()->AddVarint(306, value);
           }
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(2569)) goto parse_DS_PriceTick;
+        break;
+      }
+
+      // optional double DS_PriceTick = 321;
+      case 321: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_DS_PriceTick:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &ds_pricetick_)));
+          set_has_ds_pricetick();
+        } else {
+          goto handle_uninterpreted;
+        }
+        if (input->ExpectTag(2577)) goto parse_DS_DiffThreshold;
+        break;
+      }
+
+      // optional double DS_DiffThreshold = 322;
+      case 322: {
+        if (::google::protobuf::internal::WireFormatLite::GetTagWireType(tag) ==
+            ::google::protobuf::internal::WireFormatLite::WIRETYPE_FIXED64) {
+         parse_DS_DiffThreshold:
+          DO_((::google::protobuf::internal::WireFormatLite::ReadPrimitive<
+                   double, ::google::protobuf::internal::WireFormatLite::TYPE_DOUBLE>(
+                 input, &ds_diffthreshold_)));
+          set_has_ds_diffthreshold();
         } else {
           goto handle_uninterpreted;
         }
@@ -8691,6 +8734,16 @@ void StrategyItem::SerializeWithCachedSizes(
       306, this->sc_stoplossstrategy(), output);
   }
 
+  // optional double DS_PriceTick = 321;
+  if (has_ds_pricetick()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(321, this->ds_pricetick(), output);
+  }
+
+  // optional double DS_DiffThreshold = 322;
+  if (has_ds_diffthreshold()) {
+    ::google::protobuf::internal::WireFormatLite::WriteDouble(322, this->ds_diffthreshold(), output);
+  }
+
   // repeated .entity.HistSourceCfg HistSources = 401;
   for (int i = 0; i < this->histsources_size(); i++) {
     ::google::protobuf::internal::WireFormatLite::WriteMessageMaybeToArray(
@@ -9047,6 +9100,16 @@ void StrategyItem::SerializeWithCachedSizes(
   if (has_sc_stoplossstrategy()) {
     target = ::google::protobuf::internal::WireFormatLite::WriteEnumToArray(
       306, this->sc_stoplossstrategy(), target);
+  }
+
+  // optional double DS_PriceTick = 321;
+  if (has_ds_pricetick()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(321, this->ds_pricetick(), target);
+  }
+
+  // optional double DS_DiffThreshold = 322;
+  if (has_ds_diffthreshold()) {
+    target = ::google::protobuf::internal::WireFormatLite::WriteDoubleToArray(322, this->ds_diffthreshold(), target);
   }
 
   // repeated .entity.HistSourceCfg HistSources = 401;
@@ -9419,6 +9482,16 @@ int StrategyItem::ByteSize() const {
         ::google::protobuf::internal::WireFormatLite::EnumSize(this->sc_stoplossstrategy());
     }
 
+    // optional double DS_PriceTick = 321;
+    if (has_ds_pricetick()) {
+      total_size += 2 + 8;
+    }
+
+    // optional double DS_DiffThreshold = 322;
+    if (has_ds_diffthreshold()) {
+      total_size += 2 + 8;
+    }
+
     // optional int32 HS_Short = 501;
     if (has_hs_short()) {
       total_size += 2 +
@@ -9433,6 +9506,8 @@ int StrategyItem::ByteSize() const {
           this->hs_long());
     }
 
+  }
+  if (_has_bits_[40 / 32] & (0xffu << (40 % 32))) {
     // optional int32 HS_M = 503;
     if (has_hs_m()) {
       total_size += 2 +
@@ -9445,8 +9520,6 @@ int StrategyItem::ByteSize() const {
       total_size += 2 + 8;
     }
 
-  }
-  if (_has_bits_[40 / 32] & (0xffu << (40 % 32))) {
     // optional double HS_SlowStdDiff = 505;
     if (has_hs_slowstddiff()) {
       total_size += 2 + 8;
@@ -9481,6 +9554,8 @@ int StrategyItem::ByteSize() const {
       total_size += 2 + 8;
     }
 
+  }
+  if (_has_bits_[48 / 32] & (0xffu << (48 % 32))) {
     // optional double HS_SlowShortEMASeed = 511;
     if (has_hs_slowshortemaseed()) {
       total_size += 2 + 8;
@@ -9491,8 +9566,6 @@ int StrategyItem::ByteSize() const {
       total_size += 2 + 8;
     }
 
-  }
-  if (_has_bits_[48 / 32] & (0xffu << (48 % 32))) {
     // optional double HS_SlowSignalEMASeed = 513;
     if (has_hs_slowsignalemaseed()) {
       total_size += 2 + 8;
@@ -9533,6 +9606,8 @@ int StrategyItem::ByteSize() const {
           this->lr_number());
     }
 
+  }
+  if (_has_bits_[56 / 32] & (0xffu << (56 % 32))) {
     // optional double LR_OpenThreshold = 533;
     if (has_lr_openthreshold()) {
       total_size += 2 + 8;
@@ -9543,8 +9618,6 @@ int StrategyItem::ByteSize() const {
       total_size += 2 + 8;
     }
 
-  }
-  if (_has_bits_[56 / 32] & (0xffu << (56 % 32))) {
     // optional int32 AS_Risk = 541;
     if (has_as_risk()) {
       total_size += 2 +
@@ -9587,6 +9660,8 @@ int StrategyItem::ByteSize() const {
           this->rt_openperiod());
     }
 
+  }
+  if (_has_bits_[64 / 32] & (0xffu << (64 % 32))) {
     // optional int32 RT_ClosePeriod = 553;
     if (has_rt_closeperiod()) {
       total_size += 2 +
@@ -9599,8 +9674,6 @@ int StrategyItem::ByteSize() const {
       total_size += 2 + 8;
     }
 
-  }
-  if (_has_bits_[64 / 32] & (0xffu << (64 % 32))) {
     // optional double RT_TrendFactor = 555;
     if (has_rt_trendfactor()) {
       total_size += 2 + 8;
@@ -9761,20 +9834,26 @@ void StrategyItem::MergeFrom(const StrategyItem& from) {
     if (from.has_sc_stoplossstrategy()) {
       set_sc_stoplossstrategy(from.sc_stoplossstrategy());
     }
+    if (from.has_ds_pricetick()) {
+      set_ds_pricetick(from.ds_pricetick());
+    }
+    if (from.has_ds_diffthreshold()) {
+      set_ds_diffthreshold(from.ds_diffthreshold());
+    }
     if (from.has_hs_short()) {
       set_hs_short(from.hs_short());
     }
     if (from.has_hs_long()) {
       set_hs_long(from.hs_long());
     }
+  }
+  if (from._has_bits_[40 / 32] & (0xffu << (40 % 32))) {
     if (from.has_hs_m()) {
       set_hs_m(from.hs_m());
     }
     if (from.has_hs_faststddiff()) {
       set_hs_faststddiff(from.hs_faststddiff());
     }
-  }
-  if (from._has_bits_[40 / 32] & (0xffu << (40 % 32))) {
     if (from.has_hs_slowstddiff()) {
       set_hs_slowstddiff(from.hs_slowstddiff());
     }
@@ -9793,14 +9872,14 @@ void StrategyItem::MergeFrom(const StrategyItem& from) {
     if (from.has_hs_fastsignalemaseed()) {
       set_hs_fastsignalemaseed(from.hs_fastsignalemaseed());
     }
+  }
+  if (from._has_bits_[48 / 32] & (0xffu << (48 % 32))) {
     if (from.has_hs_slowshortemaseed()) {
       set_hs_slowshortemaseed(from.hs_slowshortemaseed());
     }
     if (from.has_hs_slowlongemaseed()) {
       set_hs_slowlongemaseed(from.hs_slowlongemaseed());
     }
-  }
-  if (from._has_bits_[48 / 32] & (0xffu << (48 % 32))) {
     if (from.has_hs_slowsignalemaseed()) {
       set_hs_slowsignalemaseed(from.hs_slowsignalemaseed());
     }
@@ -9819,14 +9898,14 @@ void StrategyItem::MergeFrom(const StrategyItem& from) {
     if (from.has_lr_number()) {
       set_lr_number(from.lr_number());
     }
+  }
+  if (from._has_bits_[56 / 32] & (0xffu << (56 % 32))) {
     if (from.has_lr_openthreshold()) {
       set_lr_openthreshold(from.lr_openthreshold());
     }
     if (from.has_lr_closethreshold()) {
       set_lr_closethreshold(from.lr_closethreshold());
     }
-  }
-  if (from._has_bits_[56 / 32] & (0xffu << (56 % 32))) {
     if (from.has_as_risk()) {
       set_as_risk(from.as_risk());
     }
@@ -9845,14 +9924,14 @@ void StrategyItem::MergeFrom(const StrategyItem& from) {
     if (from.has_rt_openperiod()) {
       set_rt_openperiod(from.rt_openperiod());
     }
+  }
+  if (from._has_bits_[64 / 32] & (0xffu << (64 % 32))) {
     if (from.has_rt_closeperiod()) {
       set_rt_closeperiod(from.rt_closeperiod());
     }
     if (from.has_rt_stoplossfactor()) {
       set_rt_stoplossfactor(from.rt_stoplossfactor());
     }
-  }
-  if (from._has_bits_[64 / 32] & (0xffu << (64 % 32))) {
     if (from.has_rt_trendfactor()) {
       set_rt_trendfactor(from.rt_trendfactor());
     }
@@ -9921,6 +10000,8 @@ void StrategyItem::Swap(StrategyItem* other) {
     std::swap(sc_casege4tick_, other->sc_casege4tick_);
     std::swap(sc_casenochange_, other->sc_casenochange_);
     std::swap(sc_stoplossstrategy_, other->sc_stoplossstrategy_);
+    std::swap(ds_pricetick_, other->ds_pricetick_);
+    std::swap(ds_diffthreshold_, other->ds_diffthreshold_);
     histsources_.Swap(&other->histsources_);
     std::swap(hs_short_, other->hs_short_);
     std::swap(hs_long_, other->hs_long_);

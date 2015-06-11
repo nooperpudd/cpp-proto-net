@@ -61,6 +61,9 @@ protected:
 	string				m_investorId;
 	CPortfolioManager	m_portfolioMgr;
 
+	bool m_tradeLogged;
+	bool m_quoteLogged;
+
 private:
 	string				m_userId;
 
@@ -71,9 +74,5 @@ private:
 	COrderProcessor		m_orderProcessor;
 
 	boost::mutex		m_mutConnection;
-	
-	bool m_tradeLogged;
-	bool m_quoteLogged;
-
 };
 

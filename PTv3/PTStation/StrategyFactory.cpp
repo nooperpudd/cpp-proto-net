@@ -11,6 +11,7 @@
 #include "ASCTrendStrategy.h"
 #include "RangeTrendStrategy.h"
 #include "ArbitrageManualMultiStrategy.h"
+#include "DualScalperStrategy.h"
 
 
 CStrategyFactory::CStrategyFactory(CPortfolio* pPortf, CAvatarClient* pAvatar)
@@ -59,6 +60,9 @@ CStrategy* CStrategyFactory::Create(const entity::StrategyItem& strategyItem)
 		break;
 	case entity::ARBITRAGE_MANUAL:
 		created = new CArbitrageManualMultiStrategy(m_avatar, m_portfolio);
+		break;
+	case entity::DUAL_SCALPER:
+		created = new CDualScalperStrategy();
 		break;
 	}
 

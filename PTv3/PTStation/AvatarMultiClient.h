@@ -1,7 +1,6 @@
 #pragma once
 
 #include "AvatarClient.h"
-#include "QuoteUdpAgent.h"
 #include "SimpleQuoteReceiver.h"
 
 typedef boost::shared_ptr<CTradeAgent> TradeAgentPtr;
@@ -24,9 +23,17 @@ protected:
 	void OnAddPortfolio(CPortfolio* pPortfolio);
 
 private:
+	void RegisterQuote(CPortfolio* pPortfolio);
+	void BindingOrderProcessor(CPortfolio* pPortfolio);
+	void FindOrderProcessor(const string& userId, COrderProcessor** pGotOrderProc);
 
-	boost::shared_ptr<CQuoteUdpMultiAgent> m_quoteAgent;
-	CSimpleQuoteReceiver m_simpleQuoteReceiver;
+	string m_quoteAddress;
+	string m_quoteBrokerId;
+	string m_quoteInvestorId;
+	string m_quoteUserId;
+	string m_quotePassword;
+
+	boost::unordered_map<string, SimpleQuoteReceiverPtr> m_quoteReceiverMap;
 
 	vector<TradeAgentPtr> m_tradeAgentPool;
 	boost::unordered_map<string, OrderProcessorPtr> m_orderProcessorPool;

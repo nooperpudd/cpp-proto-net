@@ -3,6 +3,7 @@
 #include "globalmembers.h"
 #include "QuoteFetcher.h"
 #include "QuoteRepositry.h"
+#include "SimpleQuoteReceiver.h"
 #include "AvatarClient.h"
 #include "charsetconvert.h"
 #include "SymbolTimeUtil.h"
@@ -63,6 +64,7 @@ int CalcSize(vector<LegPtr>& legs, DIFF_TYPE diffType)
 CPortfolio::CPortfolio(CAvatarClient* client, const entity::PortfolioItem& srcPortfolioItem)
 	: m_avatar(client)
 	, m_pQuoteRepo(NULL)
+	, m_pQuoteReceiver(NULL)
 	, m_serialOrderId(0)
 	, m_openTimes(0)
 	, m_totalOpenTimes(0)
@@ -126,6 +128,12 @@ void CPortfolio::Cleanup()
 		m_quoteFetcherVec.clear();
 	}
 
+	if (m_pQuoteReceiver != NULL)
+	{
+		m_pQuoteReceiver->Unsubscribe();
+		m_pQuoteReceiver = NULL;
+	}
+
 	if(m_strategy.get() != NULL)
 	{
 		m_strategy->Cleanup();
@@ -176,6 +184,19 @@ void CPortfolio::PrepareTriggerUpdate()
 		triggerStatus->set_name((*iter)->Name());
 		triggerStatus->set_enabled((*iter)->IsEnabled());
 	}
+}
+
+void CPortfolio::SubscribeQuotes(CSimpleQuoteReceiver* pQuoteReceiver)
+{
+	assert(pQuoteReceiver != NULL);
+	m_pQuoteReceiver = pQuoteReceiver;
+	vector<string> symbols;
+	BOOST_FOREACH(const LegPtr& leg, m_legs)
+	{
+		symbols.push_back(leg->Symbol());
+	}
+
+	m_pQuoteReceiver->Subscribe(symbols, boost::bind(&CPortfolio::OnQuoteRecevied, this, _1, _2));
 }
 
 void CPortfolio::SubscribeQuotes( CQuoteRepositry* pQuoteRepo )

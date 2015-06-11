@@ -125,6 +125,7 @@ copy /y ThostTraderApi\*.dll $(OutDir)</Command>
     <ClInclude Include="DiffRecordSet.h" />
     <ClInclude Include="DonchianDataSet.h" />
     <ClInclude Include="DoubleCompare.h" />
+    <ClInclude Include="DualScalperStrategy.h" />
     <ClInclude Include="entity\enum.pb.h" />
     <ClInclude Include="entity\message.pb.h" />
     <ClInclude Include="entity\packet.pb.h" />
@@ -140,6 +141,7 @@ copy /y ThostTraderApi\*.dll $(OutDir)</Command>
     <ClInclude Include="QuoteAgentFacade.h" />
     <ClInclude Include="QuoteTimestamp.h" />
     <ClInclude Include="QuoteUdpAgent.h" />
+    <ClInclude Include="QuoteUpdateFunc.h" />
     <ClInclude Include="RangeTrendStrategy.h" />
     <ClInclude Include="SimpleQuoteReceiver.h" />
     <ClInclude Include="StrategyExecutor.h" />
@@ -234,6 +236,7 @@ copy /y ThostTraderApi\*.dll $(OutDir)</Command>
     <ClCompile Include="DiffRecordSet.cpp" />
     <ClCompile Include="DonchianDataSet.cpp" />
     <ClCompile Include="DoubleCompare.cpp" />
+    <ClCompile Include="DualScalperStrategy.cpp" />
     <ClCompile Include="entity\enum.pb.cc">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">NotUsing</PrecompiledHeader>

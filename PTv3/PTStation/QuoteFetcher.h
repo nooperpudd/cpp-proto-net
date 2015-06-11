@@ -3,8 +3,7 @@
 #include "entity/quote.pb.h"
 
 #include <boost/atomic.hpp>
-
-typedef boost::function<void(boost::chrono::steady_clock::time_point&, entity::Quote*)> QuoteUpdateFunc;
+#include "QuoteUpdateFunc.h"
 
 class CQuoteStore;
 

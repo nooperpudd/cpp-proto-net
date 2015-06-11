@@ -1,14 +1,19 @@
 #pragma once
 
 #include "QuoteAgentCallback.h"
-
-class CQuoteUdpMultiAgent;
+#include "QuoteUdpAgent.h"
+#include "QuoteUpdateFunc.h"
 
 class CSimpleQuoteReceiver : public CQuoteAgentCallback
 {
 public:
 	CSimpleQuoteReceiver();
 	~CSimpleQuoteReceiver();
+
+	boost::tuple<bool, string> QuoteLogin(const string& address, const string& brokerId, const string& investorId, const string& userId, const string& password);
+
+	void Subscribe(vector<string>& symbols, QuoteUpdateFunc cbQuoteUpdate);
+	void Unsubscribe(){}
 
 	// CQuoteAgentCallback override virtual functions
 	virtual void OnSubscribeCompleted(){}
@@ -17,10 +22,12 @@ public:
 
 	virtual void OnConnected(bool reconnected);
 
-	void Init(CQuoteUdpMultiAgent* pQuoteAgent){ m_pQuoteAgent = pQuoteAgent; }
-
 private:
 
-	CQuoteUdpMultiAgent* m_pQuoteAgent;
+	CQuoteUdpMultiAgent m_quoteAgent;
+	QuoteUpdateFunc m_cbFunc;
+	entity::Quote m_quote;
 };
+
+typedef boost::shared_ptr<CSimpleQuoteReceiver> SimpleQuoteReceiverPtr;
 

@@ -255,6 +255,41 @@ namespace PortfolioTrading.Modules.Account
         }
         #endregion
 
+        #region MultiUsers
+        private bool _multiUsers;
+
+        public bool MultiUsers
+        {
+            get { return _multiUsers; }
+            set
+            {
+                if (_multiUsers != value)
+                {
+                    _multiUsers = value;
+                    RaisePropertyChanged("MultiUsers");
+                }
+            }
+        }
+        #endregion
+
+        #region AlternativeUserIds
+        private string _alternativeUserIds = string.Empty;
+
+        public string AlternativeUserIds
+        {
+            get { return _alternativeUserIds; }
+            set
+            {
+                if (_alternativeUserIds != value)
+                {
+                    _alternativeUserIds = value;
+                    RaisePropertyChanged("AlternativeUserIds");
+                }
+            }
+        }
+        #endregion
+        
+
         #endregion
 
         public RefDatItemsSource<PTEntity.HedgeFlagType, string> HedgeFlagItemsSource
@@ -576,6 +611,9 @@ namespace PortfolioTrading.Modules.Account
             ChangeStatus("连接中...", true);
 
             UIContext = SynchronizationContext.Current;
+            _client.MultiClient = acct.MultiUsers;
+            if(_client.MultiClient)
+                _client.AlternativeUserIds = acct.GetAlternativeUserIds();
 
             TradeStationConnector connector = new TradeStationConnector(_client, _clientHandler, UIContext,
                 () => new ServerLoginParam
@@ -647,6 +685,16 @@ namespace PortfolioTrading.Modules.Account
             }
         }
 
+        public string[] GetAlternativeUserIds()
+        {
+            string[] userIds = AlternativeUserIds.Split(',');
+            for (int i = 0; i < userIds.Length; ++i )
+            {
+                userIds[0] = userIds[0].Trim();
+            }
+            return userIds;
+        }
+
         public static AccountVM Load(XElement xmlElement)
         {
             AccountVM acct = new AccountVM();
@@ -679,6 +727,15 @@ namespace PortfolioTrading.Modules.Account
             if (attrHedgeFlag != null)
                 acct.HedgeFlag = (PTEntity.HedgeFlagType)Enum.Parse(typeof(PTEntity.HedgeFlagType), attrHedgeFlag.Value);
 
+            XAttribute attrMultiUsers = xmlElement.Attribute("multiUsers");
+            if (attrMultiUsers != null)
+                acct.MultiUsers = bool.Parse(attrMultiUsers.Value);
+
+            XAttribute attrUserIds = xmlElement.Attribute("alternativeUserIds");
+            if (attrUserIds != null)
+                acct.AlternativeUserIds = attrUserIds.Value;
+
+            
             foreach(var portfElem in xmlElement.Element("portfolios").Elements("portfolio"))
             {
                 PortfolioVM porfVm = PortfolioVM.Load(acct, portfElem);
@@ -698,6 +755,8 @@ namespace PortfolioTrading.Modules.Account
             elem.Add(new XAttribute("maxSubmit", _maxSubmit));
             elem.Add(new XAttribute("maxCancel", _maxCancel));
             elem.Add(new XAttribute("hedgeFlag", _hedgeFlag));
+            elem.Add(new XAttribute("multiUsers", _multiUsers));
+            elem.Add(new XAttribute("alternativeUserIds", _alternativeUserIds));
 
             XElement elemPortfs = new XElement("portfolios");
             lock (_acctPortfolios)
