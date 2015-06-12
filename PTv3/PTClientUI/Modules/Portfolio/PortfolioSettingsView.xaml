@@ -541,7 +541,92 @@
                         </Border>
                     </StackPanel>
                 </DataTemplate>
-                
+
+                <DataTemplate x:Key="dualScalperSettingTemplate">
+                    <StackPanel>
+                        <StackPanel.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="Margin" Value="2"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Padding" Value="2"/>
+                                <Setter Property="BorderBrush" Value="Green" />
+                                <Setter Property="CornerRadius" Value="2"/>
+                            </Style>
+                        </StackPanel.Resources>
+                        <Border DataContext="{Binding Settings}">
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Margin="6, 2" FontWeight="Bold">开仓条件</TextBlock>
+                                <StackPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <DockPanel >
+                                            <TextBlock Margin="4, 0" VerticalAlignment="Center">价差</TextBlock>
+                                            <TextBlock Margin="4, 0" Width="80" VerticalAlignment="Center">大于等于
+                                            </TextBlock>
+                                        </DockPanel>
+                                        <DockPanel Margin="4, 0">
+                                            <TextBlock DockPanel.Dock="Right" Margin="4, 2">点</TextBlock>
+                                            <igEditor:XamTextEditor Value="{Binding Threshold, FallbackValue=0.8, Mode=TwoWay}" ValueType="{x:Type sys:Double}"/>
+                                        </DockPanel>
+                                    </DockPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <TextBlock Margin="4, 0" VerticalAlignment="Center" Width="112">最小变动单位</TextBlock>
+                                        <DockPanel Margin="4, 0">
+                                            <TextBlock DockPanel.Dock="Right" Margin="4, 2">点</TextBlock>
+                                            <igEditor:XamTextEditor Value="{Binding PriceTick, FallbackValue=0.2, Mode=TwoWay}" ValueType="{x:Type sys:Double}"/>
+                                        </DockPanel>
+                                    </DockPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <TextBlock Margin="4, 0" VerticalAlignment="Center" Width="112">开仓挂单等待</TextBlock>
+                                        <DockPanel Margin="4, 0">
+                                            <TextBlock DockPanel.Dock="Right" Margin="4, 2">毫秒</TextBlock>
+                                            <igEditor:XamTextEditor Value="{Binding OpenTimeout, FallbackValue=200, Mode=TwoWay}" ValueType="{x:Type sys:Int32}"/>
+                                        </DockPanel>
+                                    </DockPanel>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <Border>
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Margin="6, 2" FontWeight="Bold">平仓策略</TextBlock>
+                                <StackPanel>
+                                    
+                                    <!--<DockPanel Margin="12, 0, 6, 2">
+                                        <DockPanel.Resources>
+                                            <DataTemplate x:Key="closeItemTemplate">
+                                                <TextBlock Text="{Binding DisplayName}"/>
+                                            </DataTemplate>
+                                        </DockPanel.Resources>
+                                        <TextBlock Margin="4, 2" VerticalAlignment="Center" Width="110">平仓失败后改价基于</TextBlock>
+
+                                        <ComboBox Margin="4, 2" ItemsSource="{Binding CloseStrategyItems}" 
+                                                ItemTemplate="{StaticResource closeItemTemplate}" SelectedValue="{Binding Settings.StopLossCloseMethod, Mode=TwoWay}"
+                                                DisplayMemberPath="DisplayName" SelectedValuePath="Value" />
+                                    </DockPanel>-->
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <TextBlock Margin="4, 2" VerticalAlignment="Center" Width="110">平仓追价次数</TextBlock>
+                                        <igEditor:XamTextEditor Margin="4, 2" Value="{Binding Settings.RetryTimes, FallbackValue=7, Mode=TwoWay}" ValueType="{x:Type sys:Int32}"/>
+                                    </DockPanel>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                        <Border>
+                            <DockPanel>
+                                <TextBlock DockPanel.Dock="Top" Margin="6, 2" FontWeight="Bold">用户名</TextBlock>
+                                <StackPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <TextBlock Margin="4, 2" VerticalAlignment="Center" Width="110">多头</TextBlock>
+                                        <TextBox Margin="4, 2" Text="{Binding Settings.LongSideUserId, Mode=TwoWay}"/>
+                                    </DockPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <TextBlock Margin="4, 2" VerticalAlignment="Center" Width="110">空头</TextBlock>
+                                        <TextBox Margin="4, 2" Text="{Binding Settings.ShortSideUserId, Mode=TwoWay}"/>
+                                    </DockPanel>
+                                </StackPanel>
+                            </DockPanel>
+                        </Border>
+                    </StackPanel>
+                </DataTemplate>
+
                 <DataTemplate x:Key="macdHistSlopeSettingTemplate">
                     <StackPanel>
                         <StackPanel.Resources>
@@ -827,6 +912,7 @@
                                     ArbitrageManualTemplate="{StaticResource arbitrageManualSettingTemplate}"
                                     ChangePositionTemplate="{StaticResource changePositionSettingTemplate}"
                                     ScalperTemplate="{StaticResource scalperSettingTemplate}"
+                                    DualScalperTemplate="{StaticResource dualScalperSettingTemplate}"
                                     MACDHistSlopeTemplate="{StaticResource macdHistSlopeSettingTemplate}"
                                     WMATrendTemplate="{StaticResource wmaTrendSettingTemplate}"
                                     LinerRegressionTemplate="{StaticResource linerRegAngleSettingTemplate}"

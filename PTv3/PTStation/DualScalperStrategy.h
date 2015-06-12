@@ -42,6 +42,8 @@ protected:
 private:
 
 	double m_diffThreshold;
-
+	double m_priceTick;
+	string m_longSideUserId;
+	string m_shortSideUserId;
 };
 

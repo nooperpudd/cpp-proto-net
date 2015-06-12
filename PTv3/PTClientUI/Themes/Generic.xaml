@@ -479,7 +479,48 @@
             
         </Grid>
     </DataTemplate>
-    
+
+    <DataTemplate x:Key="dualScalperTemplate">
+        <Grid VerticalAlignment="Stretch">
+            <Grid.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="BorderBrush" Value="Blue"/>
+                </Style>
+            </Grid.Resources>
+            <Border BorderThickness="0, 1, 1, 1"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="38"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" BorderThickness="0, 0, 1, 0">
+                    <TextBlock Margin="4" VerticalAlignment="Center">条件</TextBlock>
+                </Border>
+                <Border Grid.Column="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Width="60" Text="大于等于" VerticalAlignment="Center"/>
+                            <TextBlock Width="60" Text="{Binding StrategySetting.Threshold}" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <Grid Grid.Row="1">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock HorizontalAlignment="Center" Margin="4, 0" Grid.Column="0" Text="{Binding StrategySetting.LongSideUserId}" />
+                            <TextBlock HorizontalAlignment="Center" Margin="4, 0" Grid.Column="1" Text="{Binding StrategySetting.ShortSideUserId}" />
+                        </Grid>
+                    </Grid>
+                </Border>
+            </Grid>
+
+        </Grid>
+    </DataTemplate>
+
     <DataTemplate x:Key="macdHistSlopeTemplate">
         <Grid VerticalAlignment="Stretch">
             <Grid.Resources>
@@ -673,6 +714,7 @@
                                     ArbitrageManualTemplate="{StaticResource arbitrageManualTemplate}"
                                     ChangePositionTemplate="{StaticResource changePositionTemplate}"
                                     ScalperTemplate="{StaticResource scalperTemplate}"
+                                    DualScalperTemplate="{StaticResource dualScalperTemplate}"
                                     MACDHistSlopeTemplate="{StaticResource macdHistSlopeTemplate}"
                                     WMATrendTemplate="{StaticResource wmaTrendTemplate}"
                                     LinerRegressionTemplate="{StaticResource linerRegTemplate}"

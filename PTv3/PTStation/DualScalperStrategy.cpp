@@ -15,12 +15,22 @@ CDualScalperStrategy::~CDualScalperStrategy()
 
 void CDualScalperStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers)
 {
+	if (withTriggers)
+	{
+		logger.Debug("Applying Dual ScalperStrategy...");
+	}
 
+	CStrategy::Apply(strategyItem, withTriggers);
+
+	m_priceTick = strategyItem.ds_pricetick();
+	m_diffThreshold = strategyItem.ds_diffthreshold();
+	m_longSideUserId = strategyItem.ds_longsideuserid();
+	m_shortSideUserId = strategyItem.ds_shortsideuserid();
 }
 
 void CDualScalperStrategy::Apply(const entity::StrategyItem& strategyItem, bool withTriggers)
 {
-
+	Apply(strategyItem, false);
 }
 
 void CDualScalperStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp)

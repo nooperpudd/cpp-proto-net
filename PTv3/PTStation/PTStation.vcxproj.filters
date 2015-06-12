@@ -414,7 +414,7 @@
       <Filter>Header Files\utils</Filter>
     </ClInclude>
     <ClInclude Include="DualScalperStrategy.h">
-      <Filter>Header Files</Filter>
+      <Filter>Header Files\strategy</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -707,7 +707,7 @@
       <Filter>Source Files\quote</Filter>
     </ClCompile>
     <ClCompile Include="DualScalperStrategy.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Source Files\strategy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

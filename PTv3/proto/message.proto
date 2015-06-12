@@ -228,6 +228,8 @@ message StrategyItem
 	// Dual Scalper
 	optional double DS_PriceTick = 321;
 	optional double DS_DiffThreshold = 322;
+	optional string DS_LongSideUserId = 323;
+	optional string DS_ShortSideUserId = 324;
 	
 	// TechAnaly
 	repeated HistSourceCfg HistSources = 401;

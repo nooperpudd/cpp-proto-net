@@ -326,8 +326,20 @@ namespace PortfolioTrading.Modules.Account
                 if (idx >= 0 && idx < _acctPortfolios.Count)
                 {
                     _acctPortfolios.RemoveAt(idx);
-
-                    EventAggregator.GetEvent<PortfolioSelectedEvent>().Publish(null);
+                    // after removing portfolio
+                    if (idx < _acctPortfolios.Count)
+                    {
+                        var portf = _acctPortfolios[idx];
+                        EventAggregator.GetEvent<PortfolioSelectedEvent>().Publish(portf);
+                    }
+                    else if(_acctPortfolios.Count == 1)
+                    {
+                        EventAggregator.GetEvent<PortfolioSelectedEvent>().Publish(_acctPortfolios[0]);
+                    }
+                    else
+                    {
+                        EventAggregator.GetEvent<PortfolioSelectedEvent>().Publish(null);
+                    }
                 }
             }
         }
