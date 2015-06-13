@@ -69,6 +69,8 @@ void CLegOrderPlacer::Reset(bool afterCancel)
 		m_inputOrder.set_volumetotaloriginal(m_volumeOriginial);
 	}
 	
+	OnReset();
+
 	m_isPending = false;
 	m_bOrderReady = false;
 	m_isPartiallyFilled = false;
@@ -251,4 +253,22 @@ void CManualLegOrderPlacer::StartPending(const RtnOrderWrapperPtr& pendingOrder)
 	m_ordSysId = pendingOrder->OrderSysId();
 	m_userId = pendingOrder->UserId();
 	m_isPending = true;
+}
+
+bool CDualScalperLegOrderPlacer::IsLegPlacerEligibleRetry()
+{
+	return CanRetry();
+}
+
+void CDualScalperLegOrderPlacer::StartPending(const RtnOrderWrapperPtr& pendingOrder)
+{
+	m_exchId = pendingOrder->ExchangeId();
+	m_ordSysId = pendingOrder->OrderSysId(); 
+	m_userId = pendingOrder->UserId();
+	m_isPending = true;
+
+	if(IsOpen() || m_cancelOnTimeout)
+	{
+		m_pendingTimer.Run(boost::chrono::steady_clock::now() + boost::chrono::milliseconds(m_openTimeout));	
+	}
 }

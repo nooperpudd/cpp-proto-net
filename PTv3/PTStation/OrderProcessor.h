@@ -104,7 +104,7 @@ public:
 
 	const string& BrokerId();
 	const string& InvestorId();
-
+	const string& UserId();
 private:
 
 	static void PrintOrderStatus(trade::Order* order);

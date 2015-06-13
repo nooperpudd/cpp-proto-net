@@ -13,6 +13,8 @@ public:
 	bool IsOpened();
 	bool IsClosing();
 
+	double CostPrice();
+
 protected:
 	virtual void BuildTemplateOrder();
 	virtual void OnAddingLegOrderPlacer(CLegOrderPlacer* pLegOrderPlacer);

@@ -132,11 +132,11 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
 
         public DualScalperSetting()
         {
-            Threshold = 0;
+            Threshold = 0.8;
             PriceTick = 0.2;
             StopLossCloseMethod = PTEntity.StopLossCloseMethods.BASED_ON_NEXT_QUOTE;
             RetryTimes = 8;
-            OpenTimeout = 100;
+            OpenTimeout = 400;
         }
 
         public override string Name
@@ -202,6 +202,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         {
             PTEntity.DualScalperStrategyItem scalperStrategy = new PTEntity.DualScalperStrategyItem();
             scalperStrategy.PriceTick = PriceTick;
+            scalperStrategy.Threshold = Threshold;
             scalperStrategy.OpenTimeout = OpenTimeout;
             scalperStrategy.RetryTimes = RetryTimes;
             scalperStrategy.StopLossStrategy = StopLossCloseMethod;

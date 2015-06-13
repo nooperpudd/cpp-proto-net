@@ -33,6 +33,7 @@ StrategyUpdateItem^ CreateStrategyUpdate(StrategyType straType, entity::Portfoli
 			);
 		break;
 	case StrategyType::SCALPER:
+	case StrategyType::DUAL_SCALPER:
 		retStrategyUpdate = gcnew ScalperStrategyUpdateItem
 			(
 				pEntity->sc_diff()
