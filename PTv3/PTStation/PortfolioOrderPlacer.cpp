@@ -569,8 +569,9 @@ void CPortfolioOrderPlacer::Send(const char* openOrderId)
 		m_pPortf->NewOrderId(mlOrderId);
 		SetNewOrderId(mlOrderId, openOrderId);
 
-		LOG_INFO(logger, boost::str(boost::format("%s [%s-%s] Submit Order(%s - %s, OrderRef: %d, px:%.2f, vol: %d) [No. %d time(s)] in %d us after the last QUOTE")
+		LOG_INFO(logger, boost::str(boost::format("%s(%s) [%s-%s] Submit Order(%s - %s, OrderRef: %d, px:%.2f, vol: %d) [No. %d time(s)] in %d us after the last QUOTE")
 			% m_pOrderProcessor->InvestorId()
+			% m_pOrderProcessor->UserId()
 			% ((m_activeOrdPlacer->InputOrder().OffsetFlag()[0] == trade::OF_OPEN) ? "OPEN" : "CLOSE")
 			% ((m_activeOrdPlacer->InputOrder().Direction() == trade::BUY) ? "B" : "S")
 			% m_multiLegOrderTemplate->orderid() % m_activeOrdPlacer->Symbol() 
@@ -587,8 +588,9 @@ void CPortfolioOrderPlacer::Send(const char* openOrderId)
 	}
 	else
 	{
-		LOG_INFO(logger, boost::str(boost::format("%s [%s-%s] Submit Order(%s - %s, OrderRef: %d, px:%.2f, vol: %d) [No. %d time(s)] in %d us after the last QUOTE")
+		LOG_INFO(logger, boost::str(boost::format("%s(%s) [%s-%s] Submit Order(%s - %s, OrderRef: %d, px:%.2f, vol: %d) [No. %d time(s)] in %d us after the last QUOTE")
 			% m_pOrderProcessor->InvestorId()
+			% m_pOrderProcessor->UserId()
 			% ((m_activeOrdPlacer->InputOrder().OffsetFlag()[0] == trade::OF_OPEN) ? "OPEN" : "CLOSE")
 			% ((m_activeOrdPlacer->InputOrder().Direction() == trade::BUY) ? "B" : "S")
 			% m_multiLegOrderTemplate->orderid() % m_activeOrdPlacer->Symbol()

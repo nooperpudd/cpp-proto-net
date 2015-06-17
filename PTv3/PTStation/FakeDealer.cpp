@@ -1,5 +1,7 @@
 #include "StdAfx.h"
 #include "FakeDealer.h"
+#include <time.h>
+#include <stdlib.h>
 
 #ifndef WIN32
 #define strcpy_s strcpy
@@ -25,6 +27,14 @@ CFakeDealer::CFakeDealer(void)
 	//memset(&m_pendingInputOrder, 0, sizeof(m_pendingInputOrder));
 
 	m_msgPump.Init(boost::bind(&CFakeDealer::DispatchMsg, this, _1));
+
+	srand(time(NULL));
+}
+
+bool IfFillOrder()
+{
+	int num = rand() % 10 + 1;
+	return num >= 6;
 }
 
 CFakeDealer::~CFakeDealer(void)
@@ -76,20 +86,49 @@ int CFakeDealer::ReqOrderInsert( CThostFtdcInputOrderField *pInputOrder, int nRe
 		boost::thread thIns(boost::bind(
 			&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
 			);
-		*/
+		
 		// Fill and pending
-		if(times % 2 == 1)
+
+		if(times % 4 == 1)
+		{
+			boost::thread thIns(boost::bind(
+				&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
+				//&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
+				);
+		}
+		else if (times % 4 == 2)
+		{
+			boost::thread thIns(boost::bind(
+				&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
+				//&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
+				);
+		}
+		else if (times % 4 == 3)
 		{
 			boost::thread thIns(boost::bind(
 				//&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
 				&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
 				);
 		}
-		else
+		else if (times % 4 == 0)
+		{
+			boost::thread thIns(boost::bind(
+				//&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
+				&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
+				);
+		}
+		*/
+		
+		if (IfFillOrder())
 		{
 			boost::thread thIns(boost::bind(
 				&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-				//&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
+				);
+		}
+		else
+		{
+			boost::thread thIns(boost::bind(
+				&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
 				);
 		}
 		

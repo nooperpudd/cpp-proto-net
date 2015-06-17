@@ -18,6 +18,7 @@ CUdpQuoteListener::CUdpQuoteListener(unsigned int port, OnDataReceivedFunc on_da
 CUdpQuoteListener::~CUdpQuoteListener()
 {
 	socket_.close();
+	io_service_.stop();
 	running_thread_.join();
 	cout << "CUdpQuoteListener destructor done." << endl;
 }

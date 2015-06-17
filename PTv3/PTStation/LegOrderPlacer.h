@@ -52,7 +52,7 @@ public:
 
 	int SubmitTimes() { return m_submitTimes; }
 	int AddSubmitTimes() { return ++m_submitTimes; }
-	bool CanRetry();
+	virtual bool CanRetry();
 	bool ModifyPrice(entity::Quote* pQuote);
 	bool ModifyPriceBasedOnTick(entity::Quote* pQuote);
 	bool ModifyPriceBasedOnOpposite(entity::Quote* pQuote);
@@ -154,8 +154,10 @@ public:
 
 	virtual bool IsLegPlacerEligibleRetry();
 	virtual void StartPending(const RtnOrderWrapperPtr& pendingOrder);
+	bool CanRetry();
 
 	void SetCancelOnTimeout(bool val){ m_cancelOnTimeout = val; }
+	bool CancelOnTimeout(){ return m_cancelOnTimeout; }
 
 protected:
 	void OnReset(){ SetCancelOnTimeout(false); }

@@ -43,6 +43,10 @@ private:
 		{
 			cout << "socket is closing" << endl;
 		}
+		else
+		{
+			cout << "error happens " << error << endl;
+		}
 	}
 
 	OnDataReceivedFunc on_data_recv_;

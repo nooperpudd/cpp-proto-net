@@ -257,7 +257,7 @@ void CManualLegOrderPlacer::StartPending(const RtnOrderWrapperPtr& pendingOrder)
 
 bool CDualScalperLegOrderPlacer::IsLegPlacerEligibleRetry()
 {
-	return CanRetry();
+	return CLegOrderPlacer::CanRetry();
 }
 
 void CDualScalperLegOrderPlacer::StartPending(const RtnOrderWrapperPtr& pendingOrder)
@@ -269,6 +269,14 @@ void CDualScalperLegOrderPlacer::StartPending(const RtnOrderWrapperPtr& pendingO
 
 	if(IsOpen() || m_cancelOnTimeout)
 	{
-		m_pendingTimer.Run(boost::chrono::steady_clock::now() + boost::chrono::milliseconds(m_openTimeout));	
+		m_pendingTimer.Run(boost::chrono::steady_clock::now() + boost::chrono::milliseconds(m_openTimeout));
 	}
+}
+
+bool CDualScalperLegOrderPlacer::CanRetry()
+{
+	if (m_cancelOnTimeout)
+		return false;
+	else
+		return CLegOrderPlacer::CanRetry();
 }

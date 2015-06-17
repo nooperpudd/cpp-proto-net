@@ -168,6 +168,8 @@ namespace DualScapler// Concrete FSM implementation
 			_row < HoldLongPosition	, evtLongClosed		, BothEmpty		>,
 			_row < HoldShortPosition, evtLongOpened		, BothHeld		>,
 			_row < HoldShortPosition, evtShortClosed	, BothEmpty		>,
+			_row < BothHeld			, evtLongClosed		, HoldShortPosition		>,
+			_row < BothHeld			, evtShortClosed	, HoldLongPosition		>,
 			_row < AllOk			, evtErrorFound		, Error			>
 		> {};
 
@@ -417,7 +419,7 @@ void CDualScalperStrategy::OnLegFilled(int sendingIdx, const string& symbol, tra
 	{
 		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongOpened());
 	}
-	else if (offset == trade::OF_CLOSE && direction == trade::SELL && sendingIdx == 1)
+	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::SELL && sendingIdx == 1)
 	{
 		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongClosed());
 	}
@@ -425,7 +427,7 @@ void CDualScalperStrategy::OnLegFilled(int sendingIdx, const string& symbol, tra
 	{
 		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortOpened());
 	}
-	else if (offset == trade::OF_CLOSE && direction == trade::BUY && sendingIdx == 1)
+	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::BUY && sendingIdx == 1)
 	{
 		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortClosed());
 	}

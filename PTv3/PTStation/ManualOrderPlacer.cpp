@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "ManualOrderPlacer.h"
+#include "globalmembers.h"
 
 
 CManualOrderPlacer::CManualOrderPlacer()
