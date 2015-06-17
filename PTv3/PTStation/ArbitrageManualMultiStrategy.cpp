@@ -145,6 +145,24 @@ bool CArbitrageManualMultiStrategy::OnStart()
 	return start;
 }
 
+void CArbitrageManualMultiStrategy::OnStop()
+{
+	CMultiOpenStrategy::OnStop();
+	if (Offset() == entity::OPEN)
+	{
+		// empty executor pool
+		while (!m_executorsPool.empty())
+			m_executorsPool.pop();
+
+		// restore status of idle executors so that MaxPosition can be changed on next start
+		for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
+			iter != m_strategyExecutors.end(); ++iter)
+		{
+			m_executorsPool.push((*iter).get());
+		}
+	}
+}
+
 
 void CArbitrageManualStrategyExecutor::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc, PortfolioTradedEvent porfTradedEventHandler)
 {
