@@ -145,22 +145,25 @@ bool CArbitrageManualMultiStrategy::OnStart()
 	return start;
 }
 
-void CArbitrageManualMultiStrategy::OnStop()
+void CArbitrageManualMultiStrategy::CleanupOnStop()
 {
-	CMultiOpenStrategy::OnStop();
-	if (Offset() == entity::OPEN)
-	{
-		// empty executor pool
-		while (!m_executorsPool.empty())
-			m_executorsPool.pop();
+	// this way cleanup process can share mutex on CMultiOpenStrategy::OnStop
+	LOG_DEBUG(logger, "CArbitrageManualMultiStrategy is doing clean up OnStop");
 
-		// restore status of idle executors so that MaxPosition can be changed on next start
-		for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
-			iter != m_strategyExecutors.end(); ++iter)
-		{
-			m_executorsPool.push((*iter).get());
-		}
+	// empty executor pool
+	m_workingExecutors.clear();
+
+	while (!m_executorsPool.empty())
+		m_executorsPool.pop();
+
+	// restore status of idle executors so that MaxPosition can be changed on next start
+	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
+		iter != m_strategyExecutors.end(); ++iter)
+	{
+		m_executorsPool.push((*iter).get());
 	}
+
+	m_errorExecutors.clear();
 }
 
 
