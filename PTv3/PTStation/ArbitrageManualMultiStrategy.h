@@ -27,7 +27,7 @@ protected:
 	StrategyContext& GetContext(){ return m_context; }
 	void GetStrategyUpdate(entity::PortfolioUpdateItem* pPortfUpdateItem);
 	bool OnStart();
-	void OnStop();
+	void CleanupOnStop();
 private:
 	void VirtualOpenPosition();
 

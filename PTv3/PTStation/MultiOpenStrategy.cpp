@@ -482,6 +482,8 @@ void CMultiOpenStrategy::OnStop()
 	{
 		(*iter)->Cleanup();
 	}
+
+	CleanupOnStop();
 	LOG_DEBUG(logger, "CMultiOpenStrategy exit OnStop ...");
 }
 

@@ -53,7 +53,8 @@ protected:
 
 	CPortfolioOrderPlacer* CreateOrderPlacer();
 	virtual bool OnStart();
-	virtual void OnStop();
+	void OnStop();
+	virtual void CleanupOnStop(){}
 
 	virtual StrategyContext& GetContext() = 0;
 	virtual StrategyExecutorPtr CreateExecutor(int execId, int quantity) = 0;
