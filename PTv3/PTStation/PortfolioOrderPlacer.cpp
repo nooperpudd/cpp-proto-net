@@ -1047,12 +1047,19 @@ void CPortfolioOrderPlacer::GotoRetry(const RtnOrderWrapperPtr& pRtnOrder)
 	}
 	else
 	{
-		AfterLegDone();
-		LOG_INFO(logger, boost::str(boost::format("Retry times is used up. Order(%s) has been retried %d times")
-			% pRtnOrder->Symbol() % m_activeOrdPlacer->SubmitTimes()));
+		if (m_activeOrdPlacer->RetryUsedUp())
+		{
+			AfterLegDone();
+			LOG_INFO(logger, boost::str(boost::format("Retry times is used up. Order(%s) has been retried %d times")
+				% pRtnOrder->Symbol() % m_activeOrdPlacer->SubmitTimes()));
 
-		boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(
-			evtFilledCanceled("µ•Õ»:∆Ω≤÷ ß∞‹"));
+			boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(
+				evtFilledCanceled("µ•Õ»:∆Ω≤÷ ß∞‹"));
+		}
+		else
+		{
+			AfterLegDone();
+		}
 	}
 }
 

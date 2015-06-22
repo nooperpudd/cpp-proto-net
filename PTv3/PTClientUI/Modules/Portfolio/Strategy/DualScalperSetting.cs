@@ -77,6 +77,57 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         }
         #endregion
 
+        #region OpenOffset
+        private double _openOffset;
+
+        public double OpenOffset
+        {
+            get { return _openOffset; }
+            set
+            {
+                if (_openOffset != value)
+                {
+                    _openOffset = value;
+                    RaisePropertyChanged("OpenOffset");
+                }
+            }
+        }
+        #endregion
+
+        #region CloseOffset
+        private double _closeOffset;
+
+        public double CloseOffset
+        {
+            get { return _closeOffset; }
+            set
+            {
+                if (_closeOffset != value)
+                {
+                    _closeOffset = value;
+                    RaisePropertyChanged("CloseOffset");
+                }
+            }
+        }
+        #endregion
+
+        #region OppositeCloseThreshold
+        private double _oppositeCloseThreshold;
+
+        public double OppositeCloseThreshold
+        {
+            get { return _oppositeCloseThreshold; }
+            set
+            {
+                if (_oppositeCloseThreshold != value)
+                {
+                    _oppositeCloseThreshold = value;
+                    RaisePropertyChanged("OppositeCloseThreshold");
+                }
+            }
+        }
+        #endregion
+
         #region StopLossCloseMethod
         private PTEntity.StopLossCloseMethods _closeMethod;
 
@@ -93,7 +144,6 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             }
         }
         #endregion
-
 
         #region LongSideUserId
         private string _longSideUserId = string.Empty;
@@ -134,6 +184,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         {
             Threshold = 0.8;
             PriceTick = 0.2;
+            OpenOffset = 0.2;
+            CloseOffset = 0.2;
+            OppositeCloseThreshold = 0.4;
             StopLossCloseMethod = PTEntity.StopLossCloseMethods.BASED_ON_NEXT_QUOTE;
             RetryTimes = 8;
             OpenTimeout = 400;
@@ -149,6 +202,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             XElement elem = new XElement("scalperStrategySetting",
                 new XAttribute("threshold", Threshold),
                 new XAttribute("prickTick", PriceTick),
+                new XAttribute("openOffset", OpenOffset),
+                new XAttribute("closeOffset", CloseOffset),
+                new XAttribute("oppositeCloseThreshold", OppositeCloseThreshold),
                 new XAttribute("stopLossCloseStrategy", StopLossCloseMethod),
                 new XAttribute("retryTimes", RetryTimes),
                 new XAttribute("openTimeout", OpenTimeout),
@@ -170,6 +226,21 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             if (attr != null)
             {
                 PriceTick = double.Parse(attr.Value);
+            }
+            attr = elem.Attribute("openOffset");
+            if (attr != null)
+            {
+                OpenOffset = double.Parse(attr.Value);
+            }
+            attr = elem.Attribute("closeOffset");
+            if (attr != null)
+            {
+                CloseOffset = double.Parse(attr.Value);
+            }
+            attr = elem.Attribute("oppositeCloseThreshold");
+            if (attr != null)
+            {
+                OppositeCloseThreshold = double.Parse(attr.Value);
             }
             attr = elem.Attribute("stopLossCloseStrategy");
             if (attr != null)
@@ -203,6 +274,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             PTEntity.DualScalperStrategyItem scalperStrategy = new PTEntity.DualScalperStrategyItem();
             scalperStrategy.PriceTick = PriceTick;
             scalperStrategy.Threshold = Threshold;
+            scalperStrategy.OpenOffset = OpenOffset;
+            scalperStrategy.CloseOffset = CloseOffset;
+            scalperStrategy.OppositeCloseThreshold = OppositeCloseThreshold;
             scalperStrategy.OpenTimeout = OpenTimeout;
             scalperStrategy.RetryTimes = RetryTimes;
             scalperStrategy.StopLossStrategy = StopLossCloseMethod;
@@ -217,6 +291,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             DualScalperSetting strategySettings = (DualScalperSetting)settings;
             Threshold = strategySettings.Threshold;
             PriceTick = strategySettings.PriceTick;
+            OpenOffset = strategySettings.OpenOffset;
+            CloseOffset = strategySettings.CloseOffset;
+            OppositeCloseThreshold = strategySettings.OppositeCloseThreshold;
             StopLossCloseMethod = strategySettings.StopLossCloseMethod;
             RetryTimes = strategySettings.RetryTimes;
             OpenTimeout = strategySettings.OpenTimeout;

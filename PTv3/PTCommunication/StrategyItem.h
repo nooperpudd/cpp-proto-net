@@ -615,9 +615,48 @@ public:
 		}
 	}
 
+	property double OpenOffset
+	{
+		double get()
+		{
+			return _openOffset;
+		}
+		void set(double val)
+		{
+			_openOffset = val;
+		}
+	}
+
+	property double CloseOffset
+	{
+		double get()
+		{
+			return _closeOffset;
+		}
+		void set(double val)
+		{
+			_closeOffset = val;
+		}
+	}
+
+	property double OppositeCloseThreshold
+	{
+		double get()
+		{
+			return _oppositeCloseThreshold;
+		}
+		void set(double val)
+		{
+			_oppositeCloseThreshold = val;
+		}
+	}
+
 private:
 	double _threshold;
 	double _priceTick;
+	double _openOffset;
+	double _closeOffset;
+	double _oppositeCloseThreshold;
 	String ^_longSideUserId;
 	String ^_shortSideUserId;
 	StopLossCloseMethods _stopLossStrategy;

@@ -218,9 +218,9 @@ void CDualScalperStrategy::Apply(const entity::StrategyItem& strategyItem, CPort
 
 	m_priceTick = strategyItem.ds_pricetick();
 	m_diffThreshold = strategyItem.ds_diffthreshold();
-	m_openOffset = 0.2;
-	m_closeOffset = 0.2;
-	m_oppositeCloseThreshold = 0.4;
+	m_openOffset = strategyItem.ds_openoffset();
+	m_closeOffset = strategyItem.ds_closeoffset();
+	m_oppositeCloseThreshold = strategyItem.ds_oppositeclosethreshold();
 	m_longSideUserId = strategyItem.ds_longsideuserid();
 	AddUserId(m_longSideUserId);
 	m_shortSideUserId = strategyItem.ds_shortsideuserid();

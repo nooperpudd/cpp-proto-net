@@ -230,6 +230,9 @@ message StrategyItem
 	optional double DS_DiffThreshold = 322;
 	optional string DS_LongSideUserId = 323;
 	optional string DS_ShortSideUserId = 324;
+	optional double DS_OpenOffset = 325;
+	optional double DS_CloseOffset = 326;
+	optional double DS_OppositeCloseThreshold = 327;
 	
 	// TechAnaly
 	repeated HistSourceCfg HistSources = 401;

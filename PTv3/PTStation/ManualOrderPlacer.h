@@ -34,6 +34,7 @@ public:
 
 protected:
 	virtual CLegOrderPlacer* CreateLegOrderPlacer(int openTimeout, int maxRetryTimes);
+	trade::SubmitReason SubmitReason(){ return trade::SR_Scalpe; }
 
 private:
 	string m_userId;

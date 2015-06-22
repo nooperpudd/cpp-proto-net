@@ -67,9 +67,8 @@ void CLegOrderPlacer::Reset(bool afterCancel)
 	{
 		m_submitTimes = 0;
 		m_inputOrder.set_volumetotaloriginal(m_volumeOriginial);
+		OnReset();
 	}
-	
-	OnReset();
 
 	m_isPending = false;
 	m_bOrderReady = false;
@@ -234,6 +233,11 @@ bool CLegOrderPlacer::IsLegPlacerEligibleRetry()
 
 bool CLegOrderPlacer::CanRetry()
 {
+	return RetryUsedUp();
+}
+
+bool CLegOrderPlacer::RetryUsedUp()
+{
 	return m_submitTimes <= m_maxRetry;
 }
 
@@ -280,3 +284,12 @@ bool CDualScalperLegOrderPlacer::CanRetry()
 	else
 		return CLegOrderPlacer::CanRetry();
 }
+
+bool CDualScalperLegOrderPlacer::RetryUsedUp()
+{
+	if (m_cancelOnTimeout)
+		return false;
+	else
+		return CLegOrderPlacer::RetryUsedUp();
+}
+

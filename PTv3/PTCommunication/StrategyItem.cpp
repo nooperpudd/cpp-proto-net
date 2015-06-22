@@ -128,6 +128,9 @@ void DualScalperStrategyItem::To(entity::StrategyItem* pNativeStrategyItem)
 	{
 		pNativeStrategyItem->set_ds_pricetick(_priceTick);
 		pNativeStrategyItem->set_ds_diffthreshold(_threshold);
+		pNativeStrategyItem->set_ds_openoffset(_openOffset);
+		pNativeStrategyItem->set_ds_closeoffset(_closeOffset);
+		pNativeStrategyItem->set_ds_oppositeclosethreshold(_oppositeCloseThreshold);
 		longUserIdPointer = (IntPtr)Marshal::StringToHGlobalAnsi(_longSideUserId);
 		shortUserIdPointer = (IntPtr)Marshal::StringToHGlobalAnsi(_shortSideUserId);
 		pNativeStrategyItem->set_ds_longsideuserid((char*)longUserIdPointer.ToPointer());
