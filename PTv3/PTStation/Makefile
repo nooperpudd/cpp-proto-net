@@ -25,16 +25,16 @@ ENTITY_OBJS = $(patsubst %, $(OBJ_DIR)/%.pb.o, $(_ENTITY_FILES))
 
 _FS_OBJS = stdafx \
 		\
-		AvatarClient AvatarFactory ClientProtocol ProtobufPacket ProtobufProtocol \
-		RequestedServices TradingServer TradingServerProtocol \
+		AvatarClient AvatarFactory AvatarMultiClient ClientProtocol ProtobufPacket \
+		ProtobufProtocol RequestedServices TradingServer TradingServerProtocol \
 		\
 		QuoteAgent QuoteAgentFacade QuoteFetcher QuoteRepositry QuoteStore \
-		QuoteUdpAgent ShmQuoteFeed ShmQuoteSubscribe UdpQuoteListener \
+		QuoteUdpAgent ShmQuoteFeed ShmQuoteSubscribe SimpleQuoteReceiver UdpQuoteListener \
 		\
 		ArbitrageManualMultiStrategy ArbitrageMultiStrategy ArbitrageStrategy ArbitrageTrigger ASCTrendStrategy \
-		ASCTrendTrigger ChangePositionStrategy ChangePositionTrigger HistSlopeStrategy HistSlopeTrigger \
-		LinerRegressionStrategy ManualStrategy RangeTrendStrategy ScalperStrategy ScalperTrigger \
-		StrategyOrderCommand TrailingStopTrigger WMATrendStrategy WMATrendTrigger \
+		ASCTrendTrigger ChangePositionStrategy ChangePositionTrigger DualScalperStrategy HistSlopeStrategy \
+		HistSlopeTrigger LinerRegressionStrategy ManualStrategy RangeTrendStrategy ScalperStrategy \
+		ScalperTrigger StrategyOrderCommand TrailingStopTrigger WMATrendStrategy WMATrendTrigger \
 		\
 		ATRDataSet BollDataSet DiffRecordSet DonchianDataSet HistDataReader \
 		HistDataWriter LinerRegressionDataSet MACDDataSet MultiOpenStrategy OHLCRecordSet \
