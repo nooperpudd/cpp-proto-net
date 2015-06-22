@@ -380,6 +380,21 @@
     <ClInclude Include="StrategyFactory.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ArbitrageManualMultiStrategy.h">
+      <Filter>Header Files\strategy</Filter>
+    </ClInclude>
+    <ClInclude Include="AvatarMultiClient.h">
+      <Filter>Header Files\connection</Filter>
+    </ClInclude>
+    <ClInclude Include="SimpleQuoteReceiver.h">
+      <Filter>Header Files\quote</Filter>
+    </ClInclude>
+    <ClInclude Include="QuoteUpdateFunc.h">
+      <Filter>Header Files\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="DualScalperStrategy.h">
+      <Filter>Header Files\strategy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -660,6 +675,18 @@
     </ClCompile>
     <ClCompile Include="StrategyFactory.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ArbitrageManualMultiStrategy.cpp">
+      <Filter>Source Files\strategy</Filter>
+    </ClCompile>
+    <ClCompile Include="AvatarMultiClient.cpp">
+      <Filter>Source Files\connection</Filter>
+    </ClCompile>
+    <ClCompile Include="SimpleQuoteReceiver.cpp">
+      <Filter>Source Files\quote</Filter>
+    </ClCompile>
+    <ClCompile Include="DualScalperStrategy.cpp">
+      <Filter>Source Files\strategy</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
