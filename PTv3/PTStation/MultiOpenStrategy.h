@@ -36,6 +36,7 @@ public:
 
 	void Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
 	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc);
+	virtual void ReinitOrderPlacer(COrderProcessor* pOrderProc);
 
 	virtual void Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 	virtual void CalculateContext(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp) = 0;

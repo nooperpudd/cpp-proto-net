@@ -60,6 +60,7 @@ public:
 
 	CPortfolioOrderPlacer* OrderPlacer() { return m_orderPlacer.get(); }
 	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc);
+	virtual void ReinitOrderPlacer(COrderProcessor* pOrderProc);
 
 protected:
 

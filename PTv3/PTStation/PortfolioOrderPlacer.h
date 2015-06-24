@@ -41,6 +41,13 @@ public:
 		m_pOrderProcessor = pOrderProc;
 	}
 
+	// The first order processor given in Initialize is not correct for AvatarMultiClient
+	// Thus this method gets chance to update correct one
+	void UpdateOrderProcessor(COrderProcessor* pOrderProc)
+	{
+		m_pOrderProcessor = pOrderProc;
+	}
+
 	// Prepare multileg order template and input orders for sending
 	virtual bool Prepare();
 

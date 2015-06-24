@@ -50,6 +50,7 @@ public:
 	bool IsForceClosing(){ return m_forceClosing.load(boost::memory_order_acquire); };
 
 	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc, PortfolioTradedEvent porfTradedEventHandler) = 0;
+	void UpdateOrderProcessor(COrderProcessor* pOrderProc);
 
 	virtual void OnWorking(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp){}
 	virtual void OnFilled(int volumeTraded);

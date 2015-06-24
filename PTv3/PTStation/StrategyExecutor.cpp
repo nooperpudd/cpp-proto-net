@@ -319,3 +319,9 @@ void CStrategyExecutor::VirtualFill()
 {
 	boost::static_pointer_cast<strategy::ExecutorFsm>(m_fsm)->process_event(strategy::evtVirtualFilled());
 }
+
+void CStrategyExecutor::UpdateOrderProcessor(COrderProcessor* pOrderProc)
+{
+	if (m_orderPlacer.get() != NULL)
+		m_orderPlacer->UpdateOrderProcessor(pOrderProc);
+}

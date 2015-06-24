@@ -227,3 +227,9 @@ void CStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc)
 		m_orderPlacer->Initialize(pPortf, pOrderProc);
 
 }
+
+void CStrategy::ReinitOrderPlacer(COrderProcessor* pOrderProc)
+{
+	if (m_orderPlacer.get() != NULL)
+		m_orderPlacer->UpdateOrderProcessor(pOrderProc);
+}

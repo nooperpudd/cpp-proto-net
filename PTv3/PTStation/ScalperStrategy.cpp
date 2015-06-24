@@ -62,42 +62,47 @@ void CScalperStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, boos
 {
 	m_diff = pQuote->ask() - pQuote->bid();
 	m_ask = pQuote->ask();
-	m_askSize = pQuote->ask_size();
+	m_askSize = 1;// pQuote->ask_size();
 	m_bid = pQuote->bid();
-	m_bidSize = pQuote->bid_size();
+	m_bidSize = 1;// pQuote->bid_size();
 
-	if(m_askSize > 0 && m_bidSize > 0 && IsRunning() && !IsSuspending())
+	if(m_askSize > 0 && m_bidSize > 0)
 	{
 		CPortfolioOrderPlacer* pOrderPlacer = pPortfolio->OrderPlacer();
-		if(!(pOrderPlacer->IsWorking()))
+
+		if (IsRunning() && !IsSuspending())
 		{
-			if (m_triggers[0]->Test(m_diff))
+			if (!(pOrderPlacer->IsWorking()))
 			{
-				// open position
-				entity::PosiDirectionType direction = GetTradeDirection();
-#ifdef LOG_FOR_TRADE
-				logger.Info(boost::str(boost::format("[%s] Ask: %.2f => %.2f, Bid: %.2f => %.2f, Ask size VS Bid size: %d vs %d")
-					% (direction > entity::NET ? (direction == entity::LONG ? "LONG" : "SHORT") : "IGNORE")
-					% m_prevAsk % m_ask % m_prevBid % m_bid % m_askSize % m_bidSize));
-#endif
-				if (direction > entity::NET)
+				if (m_triggers[0]->Test(m_diff))
 				{
-					double lmtPrice[2];
-					if (direction == entity::LONG)
+					// open position
+					entity::PosiDirectionType direction = GetTradeDirection();
+#ifdef LOG_FOR_TRADE
+					logger.Info(boost::str(boost::format("[%s] Ask: %.2f => %.2f, Bid: %.2f => %.2f, Ask size VS Bid size: %d vs %d")
+						% (direction > entity::NET ? (direction == entity::LONG ? "LONG" : "SHORT") : "IGNORE")
+						% m_prevAsk % m_ask % m_prevBid % m_bid % m_askSize % m_bidSize));
+#endif
+					if (direction > entity::NET)
 					{
-						lmtPrice[0] = m_bid + m_priceTick;
-						lmtPrice[1] = m_ask - m_priceTick;
+						double lmtPrice[2];
+						if (direction == entity::LONG)
+						{
+							lmtPrice[0] = m_bid + m_priceTick;
+							lmtPrice[1] = m_ask - m_priceTick;
+						}
+						else // Sell
+						{
+							lmtPrice[0] = m_ask - m_priceTick;
+							lmtPrice[1] = m_bid + m_priceTick;
+						}
+						pOrderPlacer->Run(direction, lmtPrice, 2, timestamp);
 					}
-					else // Sell
-					{
-						lmtPrice[0] = m_ask - m_priceTick;
-						lmtPrice[1] = m_bid + m_priceTick;
-					}
-					pOrderPlacer->Run(direction, lmtPrice, 2, timestamp);
 				}
 			}
 		}
-		else
+		
+		if (pOrderPlacer->IsWorking())
 		{
 			pOrderPlacer->OnQuoteReceived(timestamp, pQuote);
 		}

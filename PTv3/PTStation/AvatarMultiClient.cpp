@@ -104,6 +104,12 @@ void CAvatarMultiClient::BindingOrderProcessor(CPortfolio* pPortfolio)
 			multiRouteStrategy->BindRoutes(pPortfolio, 
 			boost::bind(&CAvatarMultiClient::FindOrderProcessor, this, _1, _2));
 	}
+	else
+	{
+		COrderProcessor* pOrderProc = NULL;
+		FindOrderProcessor("", &pOrderProc);
+		pPortfolio->Strategy()->ReinitOrderPlacer(pOrderProc);
+	}
 }
 
 void CAvatarMultiClient::FindOrderProcessor(const string& userId, COrderProcessor** pGotOrderProc)

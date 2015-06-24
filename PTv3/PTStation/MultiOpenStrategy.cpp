@@ -284,6 +284,15 @@ void CMultiOpenStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pO
 	}
 }
 
+void CMultiOpenStrategy::ReinitOrderPlacer(COrderProcessor* pOrderProc)
+{
+	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
+		iter != m_strategyExecutors.end(); ++iter)
+	{
+		(*iter)->UpdateOrderProcessor(pOrderProc);
+	}
+}
+
 bool CMultiOpenStrategy::GetReadyExecutor(CStrategyExecutor** pOutExector)
 {
 	bool hasElem = !m_executorsPool.empty();
