@@ -125,15 +125,3 @@ void CPortfolioTrendOrderPlacer::OnLegOrderFilled(int sendingIdx, const string& 
 {
 	m_pPortf->NotifyLegFilled(sendingIdx, symbol, offset, direction, price, volume);
 }
-
-double CPortfolioTrendOrderPlacer::CostPrice()
-{
-	if (m_multiLegOrderTemplate->legs_size() > 0)
-	{
-		// set limit price
-		trade::Order* pOrd = m_multiLegOrderTemplate->mutable_legs(0);
-		return pOrd->limitprice();
-	}
-
-	return 0;
-}

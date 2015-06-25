@@ -120,28 +120,6 @@ void ScalperStrategyItem::To( entity::StrategyItem* pNativeStrategyItem )
 	StrategyItem::To(pNativeStrategyItem);
 }
 
-void DualScalperStrategyItem::To(entity::StrategyItem* pNativeStrategyItem)
-{
-	IntPtr longUserIdPointer;
-	IntPtr shortUserIdPointer;
-	try
-	{
-		pNativeStrategyItem->set_ds_pricetick(_priceTick);
-		pNativeStrategyItem->set_ds_diffthreshold(_threshold);
-		longUserIdPointer = (IntPtr)Marshal::StringToHGlobalAnsi(_longSideUserId);
-		shortUserIdPointer = (IntPtr)Marshal::StringToHGlobalAnsi(_shortSideUserId);
-		pNativeStrategyItem->set_ds_longsideuserid((char*)longUserIdPointer.ToPointer());
-		pNativeStrategyItem->set_ds_shortsideuserid((char*)shortUserIdPointer.ToPointer());
-
-		StrategyItem::To(pNativeStrategyItem);
-	}
-	finally
-	{
-		Marshal::FreeHGlobal(longUserIdPointer);
-		Marshal::FreeHGlobal(shortUserIdPointer);
-	}
-}
-
 void MACDSlopeStrategyItem::To( entity::StrategyItem* pNativeStrategyItem )
 {
 	IntPtr symbolPtr;

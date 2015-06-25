@@ -28,7 +28,6 @@ CNatvieClient::CNatvieClient(PTCommunication::IClientRequestHandler ^reqHandler)
 	registerHandler(HeartbeatResponseID, new HeartbeatResponseHandler(this));
 
 	m_clr = reqHandler;
-	m_multiClient = false;
 }
 
 
@@ -89,7 +88,6 @@ bool CNatvieClient::tryLogin(const string& sessionId)
 	request.getData().set_session_id(sessionId);
 	request.getData().set_previous_session_id("");
 	request.getData().set_pseudo(m_pseudo);
-	request.getData().set_multi_client(m_multiClient);
 
 	return sendRequest(&request) > 0;
 }
@@ -114,13 +112,6 @@ bool CNatvieClient::ServerLogin(entity::ServerType svrType, const char* address,
 	request.getData().set_investorid(investorId);
 	request.getData().set_userid(userId);
 	request.getData().set_password(password);
-	if (m_multiClient)
-	{
-		for (vector<string>::iterator iter = m_userIds.begin(); iter != m_userIds.end(); ++iter)
-		{
-			request.getData().add_alternativeuserids(*iter);
-		}
-	}
 
 	return sendRequest(&request) > 0;
 }

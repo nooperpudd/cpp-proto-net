@@ -63,21 +63,6 @@
                     </ComboBox.ItemTemplate>
                 </ComboBox>
             </DockPanel>
-            <DockPanel>
-                <CheckBox Name="chkMultiUser" DockPanel.Dock="Top" Margin="4" IsChecked="{Binding MultiUsers}">多用户支持</CheckBox>
-                <TextBox Margin="4" TextWrapping="WrapWithOverflow" Text="{Binding AlternativeUserIds, Mode=TwoWay}">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox">
-                            <Setter Property="IsEnabled" Value="False"/>
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding IsChecked, ElementName=chkMultiUser}" Value="True">
-                                    <Setter Property="IsEnabled" Value="True"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
-            </DockPanel>
         </StackPanel>
     </DockPanel>
 </Window>

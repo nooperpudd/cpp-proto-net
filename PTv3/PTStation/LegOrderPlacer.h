@@ -83,7 +83,6 @@ public:
 	virtual bool IsLegPlacerEligibleRetry();
 
 protected:
-	virtual void OnReset(){}
 
 	CInputOrder m_inputOrder;
 	CPortfolioOrderPlacer* m_portfOrderPlacer;
@@ -139,29 +138,6 @@ public:
 
 	virtual bool IsLegPlacerEligibleRetry();
 	virtual void StartPending(const RtnOrderWrapperPtr& pendingOrder);
-};
-
-class CDualScalperLegOrderPlacer : public CLegOrderPlacer
-{
-public:
-	CDualScalperLegOrderPlacer(CPortfolioOrderPlacer* portfOrdPlacer, int openTimeout, int maxRetry)
-		: CLegOrderPlacer(portfOrdPlacer, openTimeout, maxRetry)
-	{
-		m_cancelOnTimeout = false;
-		m_modifyPriceWay = BASED_ON_OPPOSITE;
-	}
-	~CDualScalperLegOrderPlacer(void){}
-
-	virtual bool IsLegPlacerEligibleRetry();
-	virtual void StartPending(const RtnOrderWrapperPtr& pendingOrder);
-
-	void SetCancelOnTimeout(bool val){ m_cancelOnTimeout = val; }
-
-protected:
-	void OnReset(){ SetCancelOnTimeout(false); }
-
-private:
-	bool m_cancelOnTimeout;
 };
 
 typedef boost::shared_ptr<CLegOrderPlacer> LegOrderPlacerPtr;

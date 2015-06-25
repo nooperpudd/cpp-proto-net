@@ -24,20 +24,17 @@ class CAvatarClient : public LogicalConnection
 {
 public:
 	CAvatarClient(const string& sessionId);
-	virtual ~CAvatarClient(void);
+	~CAvatarClient(void);
 
-	virtual bool MultiClient() { return false; }
 	virtual const char* getKey(){ return m_sessionId.c_str(); }
 
 	const string& Pseudo() const { return m_investorId; }
 	void Pseudo(const string& val) { m_investorId = val; }
 
-	virtual boost::tuple<bool, string> TradeLogin(const string& address, const string& brokerId, const string& investorId, vector<string>& userIds, const string& password);
-	virtual void TradeLogout();
-	virtual boost::tuple<bool, string> QuoteLogin(const string& address, const string& brokerId, const string& investorId, const string& userId, const string& password);
-	virtual void QuoteLogout();
-
-	const boost::gregorian::date& TradingDay(){ return m_tradeAgent.TradingDay(); }
+	boost::tuple<bool, string> TradeLogin(const string& address, const string& brokerId, const string& investorId, const string& userId, const string& password);
+	void TradeLogout();
+	boost::tuple<bool, string> QuoteLogin(const string& address, const string& brokerId, const string& investorId, const string& userId, const string& password);
+	void QuoteLogout();
 
 	CPortfolioManager& PortfolioManager(){ return m_portfolioMgr; }
 	COrderProcessor& OrderProcessor(){ return m_orderProcessor; }
@@ -49,30 +46,29 @@ public:
 	void PublishTradeUpdate(trade::Trade* pTrade);
 	void PublishPositionDetail(trade::PositionDetailInfo* pPosiDetailInfo);
 
+	const boost::gregorian::date& TradingDay(){ return m_tradeAgent.TradingDay(); }
+
 	bool m_destroyed;
 
-protected:
+private:
 
 	void UnderlyingPushPacket(OutgoingPacket* pPacket);
-	void HandleAddingPortfolio(CPortfolio* pPortfolio);
-	virtual void OnAddPortfolio(CPortfolio* pPortfolio);
 
 	string				m_sessionId;
 	string				m_investorId;
-	CPortfolioManager	m_portfolioMgr;
-
-	bool m_tradeLogged;
-	bool m_quoteLogged;
-
-private:
 	string				m_userId;
 
 	CTechDataRepo		m_dataRepo;
 	CTradeAgent			m_tradeAgent;
 	CQuoteRepositry		m_quoteRepositry;
 	CQuoteAgentFacade	m_quoteAgent;
+	CPortfolioManager	m_portfolioMgr;
 	COrderProcessor		m_orderProcessor;
 
 	boost::mutex		m_mutConnection;
+	
+	bool m_tradeLogged;
+	bool m_quoteLogged;
+
 };
 

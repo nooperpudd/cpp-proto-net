@@ -61,10 +61,6 @@ namespace PortfolioTrading.Modules.Portfolio
             {
                 viewModel = ServiceLocator.Current.GetInstance<ScalperSettingVM>();
             }
-            else if (portfVm.StrategySetting.Name == StrategySetting.DualScalperStrategyName)
-            {
-                viewModel = ServiceLocator.Current.GetInstance<DualScalperSettingVM>();
-            }
             else if (portfVm.StrategySetting.Name == StrategySetting.ManualStrategyName)
             {
                 viewModel = ServiceLocator.Current.GetInstance<ManualStrategySettingVM>();

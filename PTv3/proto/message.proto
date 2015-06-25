@@ -19,8 +19,7 @@ message LoginRequest
 	required bool is_new = 1;
 	required string session_id = 2;
 	required string previous_session_id = 3;
-	required bool multi_client = 4;
-	optional string pseudo = 5;
+	optional string pseudo = 4;
 }
 
 message LoginResponse
@@ -48,8 +47,7 @@ message ServerLoginRequest
 	required string BrokerId = 3;
 	required string InvestorId = 4;
 	required string UserId = 5;
-	required string Password = 6;
-	repeated string AlternativeUserIds = 7;
+	required string Password = 6; 
 }
 
 message ServerLoginResponse
@@ -154,7 +152,6 @@ enum StrategyType
 	QUICK_SCORE = 9;
 	TREND_REVERT = 10;
 	ARBITRAGE_MANUAL = 11;
-	DUAL_SCALPER = 12;
 }
 
 enum StopPriceType
@@ -224,13 +221,7 @@ message StrategyItem
 	optional DirectionDepends SC_CaseGE4Tick = 304;
 	optional DirectionDepends SC_CaseNoChange = 305;
 	optional StopLossCloseMethods SC_StopLossStrategy = 306;
-	
-	// Dual Scalper
-	optional double DS_PriceTick = 321;
-	optional double DS_DiffThreshold = 322;
-	optional string DS_LongSideUserId = 323;
-	optional string DS_ShortSideUserId = 324;
-	
+
 	// TechAnaly
 	repeated HistSourceCfg HistSources = 401;
 

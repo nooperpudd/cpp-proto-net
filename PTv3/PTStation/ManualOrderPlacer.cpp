@@ -23,19 +23,3 @@ CLegOrderPlacer* CManualOrderPlacer::CreateLegOrderPlacer(int openTimeout, int m
 {
 	return new CManualLegOrderPlacer(this, openTimeout, maxRetryTimes);
 }
-
-CLegOrderPlacer* CDualScalperOrderPlacer::CreateLegOrderPlacer(int openTimeout, int maxRetryTimes)
-{
-	return new CDualScalperLegOrderPlacer(this, openTimeout, maxRetryTimes);
-}
-
-void CDualScalperOrderPlacer::CloseOrder(double closePrice, bool cancelOnTimeout)
-{
-	if (m_legPlacers.size() > 1)
-	{
-		CDualScalperLegOrderPlacer* legOrderPlacer = dynamic_cast<CDualScalperLegOrderPlacer*>(m_legPlacers[1].get());
-		if (legOrderPlacer != NULL)
-			legOrderPlacer->SetCancelOnTimeout(cancelOnTimeout);
-	}
-	CPortfolioTrendOrderPlacer::CloseOrder(closePrice);
-}

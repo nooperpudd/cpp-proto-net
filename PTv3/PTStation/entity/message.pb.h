@@ -132,12 +132,11 @@ enum StrategyType {
   MANUAL = 8,
   QUICK_SCORE = 9,
   TREND_REVERT = 10,
-  ARBITRAGE_MANUAL = 11,
-  DUAL_SCALPER = 12
+  ARBITRAGE_MANUAL = 11
 };
 bool StrategyType_IsValid(int value);
 const StrategyType StrategyType_MIN = ARBITRAGE;
-const StrategyType StrategyType_MAX = DUAL_SCALPER;
+const StrategyType StrategyType_MAX = ARBITRAGE_MANUAL;
 const int StrategyType_ARRAYSIZE = StrategyType_MAX + 1;
 
 const ::google::protobuf::EnumDescriptor* StrategyType_descriptor();
@@ -425,17 +424,10 @@ class LoginRequest : public ::google::protobuf::Message {
   inline ::std::string* release_previous_session_id();
   inline void set_allocated_previous_session_id(::std::string* previous_session_id);
 
-  // required bool multi_client = 4;
-  inline bool has_multi_client() const;
-  inline void clear_multi_client();
-  static const int kMultiClientFieldNumber = 4;
-  inline bool multi_client() const;
-  inline void set_multi_client(bool value);
-
-  // optional string pseudo = 5;
+  // optional string pseudo = 4;
   inline bool has_pseudo() const;
   inline void clear_pseudo();
-  static const int kPseudoFieldNumber = 5;
+  static const int kPseudoFieldNumber = 4;
   inline const ::std::string& pseudo() const;
   inline void set_pseudo(const ::std::string& value);
   inline void set_pseudo(const char* value);
@@ -452,8 +444,6 @@ class LoginRequest : public ::google::protobuf::Message {
   inline void clear_has_session_id();
   inline void set_has_previous_session_id();
   inline void clear_has_previous_session_id();
-  inline void set_has_multi_client();
-  inline void clear_has_multi_client();
   inline void set_has_pseudo();
   inline void clear_has_pseudo();
 
@@ -463,10 +453,9 @@ class LoginRequest : public ::google::protobuf::Message {
   ::std::string* previous_session_id_;
   ::std::string* pseudo_;
   bool is_new_;
-  bool multi_client_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
 
   friend void  protobuf_AddDesc_message_2eproto();
   friend void protobuf_AssignDesc_message_2eproto();
@@ -894,22 +883,6 @@ class ServerLoginRequest : public ::google::protobuf::Message {
   inline ::std::string* release_password();
   inline void set_allocated_password(::std::string* password);
 
-  // repeated string AlternativeUserIds = 7;
-  inline int alternativeuserids_size() const;
-  inline void clear_alternativeuserids();
-  static const int kAlternativeUserIdsFieldNumber = 7;
-  inline const ::std::string& alternativeuserids(int index) const;
-  inline ::std::string* mutable_alternativeuserids(int index);
-  inline void set_alternativeuserids(int index, const ::std::string& value);
-  inline void set_alternativeuserids(int index, const char* value);
-  inline void set_alternativeuserids(int index, const char* value, size_t size);
-  inline ::std::string* add_alternativeuserids();
-  inline void add_alternativeuserids(const ::std::string& value);
-  inline void add_alternativeuserids(const char* value);
-  inline void add_alternativeuserids(const char* value, size_t size);
-  inline const ::google::protobuf::RepeatedPtrField< ::std::string>& alternativeuserids() const;
-  inline ::google::protobuf::RepeatedPtrField< ::std::string>* mutable_alternativeuserids();
-
   // @@protoc_insertion_point(class_scope:entity.ServerLoginRequest)
  private:
   inline void set_has_type();
@@ -932,11 +905,10 @@ class ServerLoginRequest : public ::google::protobuf::Message {
   ::std::string* investorid_;
   ::std::string* userid_;
   ::std::string* password_;
-  ::google::protobuf::RepeatedPtrField< ::std::string> alternativeuserids_;
   int type_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(7 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
 
   friend void  protobuf_AddDesc_message_2eproto();
   friend void protobuf_AssignDesc_message_2eproto();
@@ -2416,44 +2388,6 @@ class StrategyItem : public ::google::protobuf::Message {
   inline ::entity::StopLossCloseMethods sc_stoplossstrategy() const;
   inline void set_sc_stoplossstrategy(::entity::StopLossCloseMethods value);
 
-  // optional double DS_PriceTick = 321;
-  inline bool has_ds_pricetick() const;
-  inline void clear_ds_pricetick();
-  static const int kDSPriceTickFieldNumber = 321;
-  inline double ds_pricetick() const;
-  inline void set_ds_pricetick(double value);
-
-  // optional double DS_DiffThreshold = 322;
-  inline bool has_ds_diffthreshold() const;
-  inline void clear_ds_diffthreshold();
-  static const int kDSDiffThresholdFieldNumber = 322;
-  inline double ds_diffthreshold() const;
-  inline void set_ds_diffthreshold(double value);
-
-  // optional string DS_LongSideUserId = 323;
-  inline bool has_ds_longsideuserid() const;
-  inline void clear_ds_longsideuserid();
-  static const int kDSLongSideUserIdFieldNumber = 323;
-  inline const ::std::string& ds_longsideuserid() const;
-  inline void set_ds_longsideuserid(const ::std::string& value);
-  inline void set_ds_longsideuserid(const char* value);
-  inline void set_ds_longsideuserid(const char* value, size_t size);
-  inline ::std::string* mutable_ds_longsideuserid();
-  inline ::std::string* release_ds_longsideuserid();
-  inline void set_allocated_ds_longsideuserid(::std::string* ds_longsideuserid);
-
-  // optional string DS_ShortSideUserId = 324;
-  inline bool has_ds_shortsideuserid() const;
-  inline void clear_ds_shortsideuserid();
-  static const int kDSShortSideUserIdFieldNumber = 324;
-  inline const ::std::string& ds_shortsideuserid() const;
-  inline void set_ds_shortsideuserid(const ::std::string& value);
-  inline void set_ds_shortsideuserid(const char* value);
-  inline void set_ds_shortsideuserid(const char* value, size_t size);
-  inline ::std::string* mutable_ds_shortsideuserid();
-  inline ::std::string* release_ds_shortsideuserid();
-  inline void set_allocated_ds_shortsideuserid(::std::string* ds_shortsideuserid);
-
   // repeated .entity.HistSourceCfg HistSources = 401;
   inline int histsources_size() const;
   inline void clear_histsources();
@@ -2739,14 +2673,6 @@ class StrategyItem : public ::google::protobuf::Message {
   inline void clear_has_sc_casenochange();
   inline void set_has_sc_stoplossstrategy();
   inline void clear_has_sc_stoplossstrategy();
-  inline void set_has_ds_pricetick();
-  inline void clear_has_ds_pricetick();
-  inline void set_has_ds_diffthreshold();
-  inline void clear_has_ds_diffthreshold();
-  inline void set_has_ds_longsideuserid();
-  inline void clear_has_ds_longsideuserid();
-  inline void set_has_ds_shortsideuserid();
-  inline void clear_has_ds_shortsideuserid();
   inline void set_has_hs_short();
   inline void clear_has_hs_short();
   inline void set_has_hs_long();
@@ -2842,12 +2768,8 @@ class StrategyItem : public ::google::protobuf::Message {
   int sc_casele3tick_;
   int sc_casege4tick_;
   int sc_casenochange_;
-  double ds_pricetick_;
-  double ds_diffthreshold_;
-  ::std::string* ds_longsideuserid_;
   int sc_stoplossstrategy_;
   ::google::protobuf::int32 hs_short_;
-  ::std::string* ds_shortsideuserid_;
   ::google::protobuf::RepeatedPtrField< ::entity::HistSourceCfg > histsources_;
   ::google::protobuf::int32 hs_long_;
   ::google::protobuf::int32 hs_m_;
@@ -2879,7 +2801,7 @@ class StrategyItem : public ::google::protobuf::Message {
   double rt_trendfactor_;
 
   mutable int _cached_size_;
-  ::google::protobuf::uint32 _has_bits_[(69 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(65 + 31) / 32];
 
   friend void  protobuf_AddDesc_message_2eproto();
   friend void protobuf_AssignDesc_message_2eproto();
@@ -6578,37 +6500,15 @@ inline void LoginRequest::set_allocated_previous_session_id(::std::string* previ
   }
 }
 
-// required bool multi_client = 4;
-inline bool LoginRequest::has_multi_client() const {
+// optional string pseudo = 4;
+inline bool LoginRequest::has_pseudo() const {
   return (_has_bits_[0] & 0x00000008u) != 0;
 }
-inline void LoginRequest::set_has_multi_client() {
+inline void LoginRequest::set_has_pseudo() {
   _has_bits_[0] |= 0x00000008u;
 }
-inline void LoginRequest::clear_has_multi_client() {
-  _has_bits_[0] &= ~0x00000008u;
-}
-inline void LoginRequest::clear_multi_client() {
-  multi_client_ = false;
-  clear_has_multi_client();
-}
-inline bool LoginRequest::multi_client() const {
-  return multi_client_;
-}
-inline void LoginRequest::set_multi_client(bool value) {
-  set_has_multi_client();
-  multi_client_ = value;
-}
-
-// optional string pseudo = 5;
-inline bool LoginRequest::has_pseudo() const {
-  return (_has_bits_[0] & 0x00000010u) != 0;
-}
-inline void LoginRequest::set_has_pseudo() {
-  _has_bits_[0] |= 0x00000010u;
-}
 inline void LoginRequest::clear_has_pseudo() {
-  _has_bits_[0] &= ~0x00000010u;
+  _has_bits_[0] &= ~0x00000008u;
 }
 inline void LoginRequest::clear_pseudo() {
   if (pseudo_ != &::google::protobuf::internal::kEmptyString) {
@@ -7381,50 +7281,6 @@ inline void ServerLoginRequest::set_allocated_password(::std::string* password) 
     clear_has_password();
     password_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
   }
-}
-
-// repeated string AlternativeUserIds = 7;
-inline int ServerLoginRequest::alternativeuserids_size() const {
-  return alternativeuserids_.size();
-}
-inline void ServerLoginRequest::clear_alternativeuserids() {
-  alternativeuserids_.Clear();
-}
-inline const ::std::string& ServerLoginRequest::alternativeuserids(int index) const {
-  return alternativeuserids_.Get(index);
-}
-inline ::std::string* ServerLoginRequest::mutable_alternativeuserids(int index) {
-  return alternativeuserids_.Mutable(index);
-}
-inline void ServerLoginRequest::set_alternativeuserids(int index, const ::std::string& value) {
-  alternativeuserids_.Mutable(index)->assign(value);
-}
-inline void ServerLoginRequest::set_alternativeuserids(int index, const char* value) {
-  alternativeuserids_.Mutable(index)->assign(value);
-}
-inline void ServerLoginRequest::set_alternativeuserids(int index, const char* value, size_t size) {
-  alternativeuserids_.Mutable(index)->assign(
-    reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* ServerLoginRequest::add_alternativeuserids() {
-  return alternativeuserids_.Add();
-}
-inline void ServerLoginRequest::add_alternativeuserids(const ::std::string& value) {
-  alternativeuserids_.Add()->assign(value);
-}
-inline void ServerLoginRequest::add_alternativeuserids(const char* value) {
-  alternativeuserids_.Add()->assign(value);
-}
-inline void ServerLoginRequest::add_alternativeuserids(const char* value, size_t size) {
-  alternativeuserids_.Add()->assign(reinterpret_cast<const char*>(value), size);
-}
-inline const ::google::protobuf::RepeatedPtrField< ::std::string>&
-ServerLoginRequest::alternativeuserids() const {
-  return alternativeuserids_;
-}
-inline ::google::protobuf::RepeatedPtrField< ::std::string>*
-ServerLoginRequest::mutable_alternativeuserids() {
-  return &alternativeuserids_;
 }
 
 // -------------------------------------------------------------------
@@ -9697,190 +9553,6 @@ inline void StrategyItem::set_sc_stoplossstrategy(::entity::StopLossCloseMethods
   sc_stoplossstrategy_ = value;
 }
 
-// optional double DS_PriceTick = 321;
-inline bool StrategyItem::has_ds_pricetick() const {
-  return (_has_bits_[1] & 0x00000008u) != 0;
-}
-inline void StrategyItem::set_has_ds_pricetick() {
-  _has_bits_[1] |= 0x00000008u;
-}
-inline void StrategyItem::clear_has_ds_pricetick() {
-  _has_bits_[1] &= ~0x00000008u;
-}
-inline void StrategyItem::clear_ds_pricetick() {
-  ds_pricetick_ = 0;
-  clear_has_ds_pricetick();
-}
-inline double StrategyItem::ds_pricetick() const {
-  return ds_pricetick_;
-}
-inline void StrategyItem::set_ds_pricetick(double value) {
-  set_has_ds_pricetick();
-  ds_pricetick_ = value;
-}
-
-// optional double DS_DiffThreshold = 322;
-inline bool StrategyItem::has_ds_diffthreshold() const {
-  return (_has_bits_[1] & 0x00000010u) != 0;
-}
-inline void StrategyItem::set_has_ds_diffthreshold() {
-  _has_bits_[1] |= 0x00000010u;
-}
-inline void StrategyItem::clear_has_ds_diffthreshold() {
-  _has_bits_[1] &= ~0x00000010u;
-}
-inline void StrategyItem::clear_ds_diffthreshold() {
-  ds_diffthreshold_ = 0;
-  clear_has_ds_diffthreshold();
-}
-inline double StrategyItem::ds_diffthreshold() const {
-  return ds_diffthreshold_;
-}
-inline void StrategyItem::set_ds_diffthreshold(double value) {
-  set_has_ds_diffthreshold();
-  ds_diffthreshold_ = value;
-}
-
-// optional string DS_LongSideUserId = 323;
-inline bool StrategyItem::has_ds_longsideuserid() const {
-  return (_has_bits_[1] & 0x00000020u) != 0;
-}
-inline void StrategyItem::set_has_ds_longsideuserid() {
-  _has_bits_[1] |= 0x00000020u;
-}
-inline void StrategyItem::clear_has_ds_longsideuserid() {
-  _has_bits_[1] &= ~0x00000020u;
-}
-inline void StrategyItem::clear_ds_longsideuserid() {
-  if (ds_longsideuserid_ != &::google::protobuf::internal::kEmptyString) {
-    ds_longsideuserid_->clear();
-  }
-  clear_has_ds_longsideuserid();
-}
-inline const ::std::string& StrategyItem::ds_longsideuserid() const {
-  return *ds_longsideuserid_;
-}
-inline void StrategyItem::set_ds_longsideuserid(const ::std::string& value) {
-  set_has_ds_longsideuserid();
-  if (ds_longsideuserid_ == &::google::protobuf::internal::kEmptyString) {
-    ds_longsideuserid_ = new ::std::string;
-  }
-  ds_longsideuserid_->assign(value);
-}
-inline void StrategyItem::set_ds_longsideuserid(const char* value) {
-  set_has_ds_longsideuserid();
-  if (ds_longsideuserid_ == &::google::protobuf::internal::kEmptyString) {
-    ds_longsideuserid_ = new ::std::string;
-  }
-  ds_longsideuserid_->assign(value);
-}
-inline void StrategyItem::set_ds_longsideuserid(const char* value, size_t size) {
-  set_has_ds_longsideuserid();
-  if (ds_longsideuserid_ == &::google::protobuf::internal::kEmptyString) {
-    ds_longsideuserid_ = new ::std::string;
-  }
-  ds_longsideuserid_->assign(reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* StrategyItem::mutable_ds_longsideuserid() {
-  set_has_ds_longsideuserid();
-  if (ds_longsideuserid_ == &::google::protobuf::internal::kEmptyString) {
-    ds_longsideuserid_ = new ::std::string;
-  }
-  return ds_longsideuserid_;
-}
-inline ::std::string* StrategyItem::release_ds_longsideuserid() {
-  clear_has_ds_longsideuserid();
-  if (ds_longsideuserid_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = ds_longsideuserid_;
-    ds_longsideuserid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
-}
-inline void StrategyItem::set_allocated_ds_longsideuserid(::std::string* ds_longsideuserid) {
-  if (ds_longsideuserid_ != &::google::protobuf::internal::kEmptyString) {
-    delete ds_longsideuserid_;
-  }
-  if (ds_longsideuserid) {
-    set_has_ds_longsideuserid();
-    ds_longsideuserid_ = ds_longsideuserid;
-  } else {
-    clear_has_ds_longsideuserid();
-    ds_longsideuserid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  }
-}
-
-// optional string DS_ShortSideUserId = 324;
-inline bool StrategyItem::has_ds_shortsideuserid() const {
-  return (_has_bits_[1] & 0x00000040u) != 0;
-}
-inline void StrategyItem::set_has_ds_shortsideuserid() {
-  _has_bits_[1] |= 0x00000040u;
-}
-inline void StrategyItem::clear_has_ds_shortsideuserid() {
-  _has_bits_[1] &= ~0x00000040u;
-}
-inline void StrategyItem::clear_ds_shortsideuserid() {
-  if (ds_shortsideuserid_ != &::google::protobuf::internal::kEmptyString) {
-    ds_shortsideuserid_->clear();
-  }
-  clear_has_ds_shortsideuserid();
-}
-inline const ::std::string& StrategyItem::ds_shortsideuserid() const {
-  return *ds_shortsideuserid_;
-}
-inline void StrategyItem::set_ds_shortsideuserid(const ::std::string& value) {
-  set_has_ds_shortsideuserid();
-  if (ds_shortsideuserid_ == &::google::protobuf::internal::kEmptyString) {
-    ds_shortsideuserid_ = new ::std::string;
-  }
-  ds_shortsideuserid_->assign(value);
-}
-inline void StrategyItem::set_ds_shortsideuserid(const char* value) {
-  set_has_ds_shortsideuserid();
-  if (ds_shortsideuserid_ == &::google::protobuf::internal::kEmptyString) {
-    ds_shortsideuserid_ = new ::std::string;
-  }
-  ds_shortsideuserid_->assign(value);
-}
-inline void StrategyItem::set_ds_shortsideuserid(const char* value, size_t size) {
-  set_has_ds_shortsideuserid();
-  if (ds_shortsideuserid_ == &::google::protobuf::internal::kEmptyString) {
-    ds_shortsideuserid_ = new ::std::string;
-  }
-  ds_shortsideuserid_->assign(reinterpret_cast<const char*>(value), size);
-}
-inline ::std::string* StrategyItem::mutable_ds_shortsideuserid() {
-  set_has_ds_shortsideuserid();
-  if (ds_shortsideuserid_ == &::google::protobuf::internal::kEmptyString) {
-    ds_shortsideuserid_ = new ::std::string;
-  }
-  return ds_shortsideuserid_;
-}
-inline ::std::string* StrategyItem::release_ds_shortsideuserid() {
-  clear_has_ds_shortsideuserid();
-  if (ds_shortsideuserid_ == &::google::protobuf::internal::kEmptyString) {
-    return NULL;
-  } else {
-    ::std::string* temp = ds_shortsideuserid_;
-    ds_shortsideuserid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-    return temp;
-  }
-}
-inline void StrategyItem::set_allocated_ds_shortsideuserid(::std::string* ds_shortsideuserid) {
-  if (ds_shortsideuserid_ != &::google::protobuf::internal::kEmptyString) {
-    delete ds_shortsideuserid_;
-  }
-  if (ds_shortsideuserid) {
-    set_has_ds_shortsideuserid();
-    ds_shortsideuserid_ = ds_shortsideuserid;
-  } else {
-    clear_has_ds_shortsideuserid();
-    ds_shortsideuserid_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
-  }
-}
-
 // repeated .entity.HistSourceCfg HistSources = 401;
 inline int StrategyItem::histsources_size() const {
   return histsources_.size();
@@ -9908,13 +9580,13 @@ StrategyItem::mutable_histsources() {
 
 // optional int32 HS_Short = 501;
 inline bool StrategyItem::has_hs_short() const {
-  return (_has_bits_[1] & 0x00000100u) != 0;
+  return (_has_bits_[1] & 0x00000010u) != 0;
 }
 inline void StrategyItem::set_has_hs_short() {
-  _has_bits_[1] |= 0x00000100u;
+  _has_bits_[1] |= 0x00000010u;
 }
 inline void StrategyItem::clear_has_hs_short() {
-  _has_bits_[1] &= ~0x00000100u;
+  _has_bits_[1] &= ~0x00000010u;
 }
 inline void StrategyItem::clear_hs_short() {
   hs_short_ = 0;
@@ -9930,13 +9602,13 @@ inline void StrategyItem::set_hs_short(::google::protobuf::int32 value) {
 
 // optional int32 HS_Long = 502;
 inline bool StrategyItem::has_hs_long() const {
-  return (_has_bits_[1] & 0x00000200u) != 0;
+  return (_has_bits_[1] & 0x00000020u) != 0;
 }
 inline void StrategyItem::set_has_hs_long() {
-  _has_bits_[1] |= 0x00000200u;
+  _has_bits_[1] |= 0x00000020u;
 }
 inline void StrategyItem::clear_has_hs_long() {
-  _has_bits_[1] &= ~0x00000200u;
+  _has_bits_[1] &= ~0x00000020u;
 }
 inline void StrategyItem::clear_hs_long() {
   hs_long_ = 0;
@@ -9952,13 +9624,13 @@ inline void StrategyItem::set_hs_long(::google::protobuf::int32 value) {
 
 // optional int32 HS_M = 503;
 inline bool StrategyItem::has_hs_m() const {
-  return (_has_bits_[1] & 0x00000400u) != 0;
+  return (_has_bits_[1] & 0x00000040u) != 0;
 }
 inline void StrategyItem::set_has_hs_m() {
-  _has_bits_[1] |= 0x00000400u;
+  _has_bits_[1] |= 0x00000040u;
 }
 inline void StrategyItem::clear_has_hs_m() {
-  _has_bits_[1] &= ~0x00000400u;
+  _has_bits_[1] &= ~0x00000040u;
 }
 inline void StrategyItem::clear_hs_m() {
   hs_m_ = 0;
@@ -9974,13 +9646,13 @@ inline void StrategyItem::set_hs_m(::google::protobuf::int32 value) {
 
 // optional double HS_FastStdDiff = 504;
 inline bool StrategyItem::has_hs_faststddiff() const {
-  return (_has_bits_[1] & 0x00000800u) != 0;
+  return (_has_bits_[1] & 0x00000080u) != 0;
 }
 inline void StrategyItem::set_has_hs_faststddiff() {
-  _has_bits_[1] |= 0x00000800u;
+  _has_bits_[1] |= 0x00000080u;
 }
 inline void StrategyItem::clear_has_hs_faststddiff() {
-  _has_bits_[1] &= ~0x00000800u;
+  _has_bits_[1] &= ~0x00000080u;
 }
 inline void StrategyItem::clear_hs_faststddiff() {
   hs_faststddiff_ = 0;
@@ -9996,13 +9668,13 @@ inline void StrategyItem::set_hs_faststddiff(double value) {
 
 // optional double HS_SlowStdDiff = 505;
 inline bool StrategyItem::has_hs_slowstddiff() const {
-  return (_has_bits_[1] & 0x00001000u) != 0;
+  return (_has_bits_[1] & 0x00000100u) != 0;
 }
 inline void StrategyItem::set_has_hs_slowstddiff() {
-  _has_bits_[1] |= 0x00001000u;
+  _has_bits_[1] |= 0x00000100u;
 }
 inline void StrategyItem::clear_has_hs_slowstddiff() {
-  _has_bits_[1] &= ~0x00001000u;
+  _has_bits_[1] &= ~0x00000100u;
 }
 inline void StrategyItem::clear_hs_slowstddiff() {
   hs_slowstddiff_ = 0;
@@ -10018,13 +9690,13 @@ inline void StrategyItem::set_hs_slowstddiff(double value) {
 
 // optional int32 HS_FastPeriod = 506;
 inline bool StrategyItem::has_hs_fastperiod() const {
-  return (_has_bits_[1] & 0x00002000u) != 0;
+  return (_has_bits_[1] & 0x00000200u) != 0;
 }
 inline void StrategyItem::set_has_hs_fastperiod() {
-  _has_bits_[1] |= 0x00002000u;
+  _has_bits_[1] |= 0x00000200u;
 }
 inline void StrategyItem::clear_has_hs_fastperiod() {
-  _has_bits_[1] &= ~0x00002000u;
+  _has_bits_[1] &= ~0x00000200u;
 }
 inline void StrategyItem::clear_hs_fastperiod() {
   hs_fastperiod_ = 0;
@@ -10040,13 +9712,13 @@ inline void StrategyItem::set_hs_fastperiod(::google::protobuf::int32 value) {
 
 // optional int32 HS_SlowPeriod = 507;
 inline bool StrategyItem::has_hs_slowperiod() const {
-  return (_has_bits_[1] & 0x00004000u) != 0;
+  return (_has_bits_[1] & 0x00000400u) != 0;
 }
 inline void StrategyItem::set_has_hs_slowperiod() {
-  _has_bits_[1] |= 0x00004000u;
+  _has_bits_[1] |= 0x00000400u;
 }
 inline void StrategyItem::clear_has_hs_slowperiod() {
-  _has_bits_[1] &= ~0x00004000u;
+  _has_bits_[1] &= ~0x00000400u;
 }
 inline void StrategyItem::clear_hs_slowperiod() {
   hs_slowperiod_ = 0;
@@ -10062,13 +9734,13 @@ inline void StrategyItem::set_hs_slowperiod(::google::protobuf::int32 value) {
 
 // optional double HS_FastShortEMASeed = 508;
 inline bool StrategyItem::has_hs_fastshortemaseed() const {
-  return (_has_bits_[1] & 0x00008000u) != 0;
+  return (_has_bits_[1] & 0x00000800u) != 0;
 }
 inline void StrategyItem::set_has_hs_fastshortemaseed() {
-  _has_bits_[1] |= 0x00008000u;
+  _has_bits_[1] |= 0x00000800u;
 }
 inline void StrategyItem::clear_has_hs_fastshortemaseed() {
-  _has_bits_[1] &= ~0x00008000u;
+  _has_bits_[1] &= ~0x00000800u;
 }
 inline void StrategyItem::clear_hs_fastshortemaseed() {
   hs_fastshortemaseed_ = 0;
@@ -10084,13 +9756,13 @@ inline void StrategyItem::set_hs_fastshortemaseed(double value) {
 
 // optional double HS_FastLongEMASeed = 509;
 inline bool StrategyItem::has_hs_fastlongemaseed() const {
-  return (_has_bits_[1] & 0x00010000u) != 0;
+  return (_has_bits_[1] & 0x00001000u) != 0;
 }
 inline void StrategyItem::set_has_hs_fastlongemaseed() {
-  _has_bits_[1] |= 0x00010000u;
+  _has_bits_[1] |= 0x00001000u;
 }
 inline void StrategyItem::clear_has_hs_fastlongemaseed() {
-  _has_bits_[1] &= ~0x00010000u;
+  _has_bits_[1] &= ~0x00001000u;
 }
 inline void StrategyItem::clear_hs_fastlongemaseed() {
   hs_fastlongemaseed_ = 0;
@@ -10106,13 +9778,13 @@ inline void StrategyItem::set_hs_fastlongemaseed(double value) {
 
 // optional double HS_FastSignalEMASeed = 510;
 inline bool StrategyItem::has_hs_fastsignalemaseed() const {
-  return (_has_bits_[1] & 0x00020000u) != 0;
+  return (_has_bits_[1] & 0x00002000u) != 0;
 }
 inline void StrategyItem::set_has_hs_fastsignalemaseed() {
-  _has_bits_[1] |= 0x00020000u;
+  _has_bits_[1] |= 0x00002000u;
 }
 inline void StrategyItem::clear_has_hs_fastsignalemaseed() {
-  _has_bits_[1] &= ~0x00020000u;
+  _has_bits_[1] &= ~0x00002000u;
 }
 inline void StrategyItem::clear_hs_fastsignalemaseed() {
   hs_fastsignalemaseed_ = 0;
@@ -10128,13 +9800,13 @@ inline void StrategyItem::set_hs_fastsignalemaseed(double value) {
 
 // optional double HS_SlowShortEMASeed = 511;
 inline bool StrategyItem::has_hs_slowshortemaseed() const {
-  return (_has_bits_[1] & 0x00040000u) != 0;
+  return (_has_bits_[1] & 0x00004000u) != 0;
 }
 inline void StrategyItem::set_has_hs_slowshortemaseed() {
-  _has_bits_[1] |= 0x00040000u;
+  _has_bits_[1] |= 0x00004000u;
 }
 inline void StrategyItem::clear_has_hs_slowshortemaseed() {
-  _has_bits_[1] &= ~0x00040000u;
+  _has_bits_[1] &= ~0x00004000u;
 }
 inline void StrategyItem::clear_hs_slowshortemaseed() {
   hs_slowshortemaseed_ = 0;
@@ -10150,13 +9822,13 @@ inline void StrategyItem::set_hs_slowshortemaseed(double value) {
 
 // optional double HS_SlowLongEMASeed = 512;
 inline bool StrategyItem::has_hs_slowlongemaseed() const {
-  return (_has_bits_[1] & 0x00080000u) != 0;
+  return (_has_bits_[1] & 0x00008000u) != 0;
 }
 inline void StrategyItem::set_has_hs_slowlongemaseed() {
-  _has_bits_[1] |= 0x00080000u;
+  _has_bits_[1] |= 0x00008000u;
 }
 inline void StrategyItem::clear_has_hs_slowlongemaseed() {
-  _has_bits_[1] &= ~0x00080000u;
+  _has_bits_[1] &= ~0x00008000u;
 }
 inline void StrategyItem::clear_hs_slowlongemaseed() {
   hs_slowlongemaseed_ = 0;
@@ -10172,13 +9844,13 @@ inline void StrategyItem::set_hs_slowlongemaseed(double value) {
 
 // optional double HS_SlowSignalEMASeed = 513;
 inline bool StrategyItem::has_hs_slowsignalemaseed() const {
-  return (_has_bits_[1] & 0x00100000u) != 0;
+  return (_has_bits_[1] & 0x00010000u) != 0;
 }
 inline void StrategyItem::set_has_hs_slowsignalemaseed() {
-  _has_bits_[1] |= 0x00100000u;
+  _has_bits_[1] |= 0x00010000u;
 }
 inline void StrategyItem::clear_has_hs_slowsignalemaseed() {
-  _has_bits_[1] &= ~0x00100000u;
+  _has_bits_[1] &= ~0x00010000u;
 }
 inline void StrategyItem::clear_hs_slowsignalemaseed() {
   hs_slowsignalemaseed_ = 0;
@@ -10194,13 +9866,13 @@ inline void StrategyItem::set_hs_slowsignalemaseed(double value) {
 
 // optional int32 WT_WmaParam = 521;
 inline bool StrategyItem::has_wt_wmaparam() const {
-  return (_has_bits_[1] & 0x00200000u) != 0;
+  return (_has_bits_[1] & 0x00020000u) != 0;
 }
 inline void StrategyItem::set_has_wt_wmaparam() {
-  _has_bits_[1] |= 0x00200000u;
+  _has_bits_[1] |= 0x00020000u;
 }
 inline void StrategyItem::clear_has_wt_wmaparam() {
-  _has_bits_[1] &= ~0x00200000u;
+  _has_bits_[1] &= ~0x00020000u;
 }
 inline void StrategyItem::clear_wt_wmaparam() {
   wt_wmaparam_ = 0;
@@ -10216,13 +9888,13 @@ inline void StrategyItem::set_wt_wmaparam(::google::protobuf::int32 value) {
 
 // optional int32 WT_MaN = 522;
 inline bool StrategyItem::has_wt_man() const {
-  return (_has_bits_[1] & 0x00400000u) != 0;
+  return (_has_bits_[1] & 0x00040000u) != 0;
 }
 inline void StrategyItem::set_has_wt_man() {
-  _has_bits_[1] |= 0x00400000u;
+  _has_bits_[1] |= 0x00040000u;
 }
 inline void StrategyItem::clear_has_wt_man() {
-  _has_bits_[1] &= ~0x00400000u;
+  _has_bits_[1] &= ~0x00040000u;
 }
 inline void StrategyItem::clear_wt_man() {
   wt_man_ = 0;
@@ -10238,13 +9910,13 @@ inline void StrategyItem::set_wt_man(::google::protobuf::int32 value) {
 
 // optional int32 WT_Period = 523;
 inline bool StrategyItem::has_wt_period() const {
-  return (_has_bits_[1] & 0x00800000u) != 0;
+  return (_has_bits_[1] & 0x00080000u) != 0;
 }
 inline void StrategyItem::set_has_wt_period() {
-  _has_bits_[1] |= 0x00800000u;
+  _has_bits_[1] |= 0x00080000u;
 }
 inline void StrategyItem::clear_has_wt_period() {
-  _has_bits_[1] &= ~0x00800000u;
+  _has_bits_[1] &= ~0x00080000u;
 }
 inline void StrategyItem::clear_wt_period() {
   wt_period_ = 0;
@@ -10260,13 +9932,13 @@ inline void StrategyItem::set_wt_period(::google::protobuf::int32 value) {
 
 // optional int32 LR_Period = 531;
 inline bool StrategyItem::has_lr_period() const {
-  return (_has_bits_[1] & 0x01000000u) != 0;
+  return (_has_bits_[1] & 0x00100000u) != 0;
 }
 inline void StrategyItem::set_has_lr_period() {
-  _has_bits_[1] |= 0x01000000u;
+  _has_bits_[1] |= 0x00100000u;
 }
 inline void StrategyItem::clear_has_lr_period() {
-  _has_bits_[1] &= ~0x01000000u;
+  _has_bits_[1] &= ~0x00100000u;
 }
 inline void StrategyItem::clear_lr_period() {
   lr_period_ = 0;
@@ -10282,13 +9954,13 @@ inline void StrategyItem::set_lr_period(::google::protobuf::int32 value) {
 
 // optional int32 LR_Number = 532;
 inline bool StrategyItem::has_lr_number() const {
-  return (_has_bits_[1] & 0x02000000u) != 0;
+  return (_has_bits_[1] & 0x00200000u) != 0;
 }
 inline void StrategyItem::set_has_lr_number() {
-  _has_bits_[1] |= 0x02000000u;
+  _has_bits_[1] |= 0x00200000u;
 }
 inline void StrategyItem::clear_has_lr_number() {
-  _has_bits_[1] &= ~0x02000000u;
+  _has_bits_[1] &= ~0x00200000u;
 }
 inline void StrategyItem::clear_lr_number() {
   lr_number_ = 0;
@@ -10304,13 +9976,13 @@ inline void StrategyItem::set_lr_number(::google::protobuf::int32 value) {
 
 // optional double LR_OpenThreshold = 533;
 inline bool StrategyItem::has_lr_openthreshold() const {
-  return (_has_bits_[1] & 0x04000000u) != 0;
+  return (_has_bits_[1] & 0x00400000u) != 0;
 }
 inline void StrategyItem::set_has_lr_openthreshold() {
-  _has_bits_[1] |= 0x04000000u;
+  _has_bits_[1] |= 0x00400000u;
 }
 inline void StrategyItem::clear_has_lr_openthreshold() {
-  _has_bits_[1] &= ~0x04000000u;
+  _has_bits_[1] &= ~0x00400000u;
 }
 inline void StrategyItem::clear_lr_openthreshold() {
   lr_openthreshold_ = 0;
@@ -10326,13 +9998,13 @@ inline void StrategyItem::set_lr_openthreshold(double value) {
 
 // optional double LR_CloseThreshold = 534;
 inline bool StrategyItem::has_lr_closethreshold() const {
-  return (_has_bits_[1] & 0x08000000u) != 0;
+  return (_has_bits_[1] & 0x00800000u) != 0;
 }
 inline void StrategyItem::set_has_lr_closethreshold() {
-  _has_bits_[1] |= 0x08000000u;
+  _has_bits_[1] |= 0x00800000u;
 }
 inline void StrategyItem::clear_has_lr_closethreshold() {
-  _has_bits_[1] &= ~0x08000000u;
+  _has_bits_[1] &= ~0x00800000u;
 }
 inline void StrategyItem::clear_lr_closethreshold() {
   lr_closethreshold_ = 0;
@@ -10348,13 +10020,13 @@ inline void StrategyItem::set_lr_closethreshold(double value) {
 
 // optional int32 AS_Risk = 541;
 inline bool StrategyItem::has_as_risk() const {
-  return (_has_bits_[1] & 0x10000000u) != 0;
+  return (_has_bits_[1] & 0x01000000u) != 0;
 }
 inline void StrategyItem::set_has_as_risk() {
-  _has_bits_[1] |= 0x10000000u;
+  _has_bits_[1] |= 0x01000000u;
 }
 inline void StrategyItem::clear_has_as_risk() {
-  _has_bits_[1] &= ~0x10000000u;
+  _has_bits_[1] &= ~0x01000000u;
 }
 inline void StrategyItem::clear_as_risk() {
   as_risk_ = 0;
@@ -10370,13 +10042,13 @@ inline void StrategyItem::set_as_risk(::google::protobuf::int32 value) {
 
 // optional int32 AS_AvergatePeriod = 542;
 inline bool StrategyItem::has_as_avergateperiod() const {
-  return (_has_bits_[1] & 0x20000000u) != 0;
+  return (_has_bits_[1] & 0x02000000u) != 0;
 }
 inline void StrategyItem::set_has_as_avergateperiod() {
-  _has_bits_[1] |= 0x20000000u;
+  _has_bits_[1] |= 0x02000000u;
 }
 inline void StrategyItem::clear_has_as_avergateperiod() {
-  _has_bits_[1] &= ~0x20000000u;
+  _has_bits_[1] &= ~0x02000000u;
 }
 inline void StrategyItem::clear_as_avergateperiod() {
   as_avergateperiod_ = 0;
@@ -10392,13 +10064,13 @@ inline void StrategyItem::set_as_avergateperiod(::google::protobuf::int32 value)
 
 // optional int32 AS_BreakOutLength = 543;
 inline bool StrategyItem::has_as_breakoutlength() const {
-  return (_has_bits_[1] & 0x40000000u) != 0;
+  return (_has_bits_[1] & 0x04000000u) != 0;
 }
 inline void StrategyItem::set_has_as_breakoutlength() {
-  _has_bits_[1] |= 0x40000000u;
+  _has_bits_[1] |= 0x04000000u;
 }
 inline void StrategyItem::clear_has_as_breakoutlength() {
-  _has_bits_[1] &= ~0x40000000u;
+  _has_bits_[1] &= ~0x04000000u;
 }
 inline void StrategyItem::clear_as_breakoutlength() {
   as_breakoutlength_ = 0;
@@ -10414,13 +10086,13 @@ inline void StrategyItem::set_as_breakoutlength(::google::protobuf::int32 value)
 
 // optional int32 AS_Period = 544;
 inline bool StrategyItem::has_as_period() const {
-  return (_has_bits_[1] & 0x80000000u) != 0;
+  return (_has_bits_[1] & 0x08000000u) != 0;
 }
 inline void StrategyItem::set_has_as_period() {
-  _has_bits_[1] |= 0x80000000u;
+  _has_bits_[1] |= 0x08000000u;
 }
 inline void StrategyItem::clear_has_as_period() {
-  _has_bits_[1] &= ~0x80000000u;
+  _has_bits_[1] &= ~0x08000000u;
 }
 inline void StrategyItem::clear_as_period() {
   as_period_ = 0;
@@ -10436,13 +10108,13 @@ inline void StrategyItem::set_as_period(::google::protobuf::int32 value) {
 
 // optional int32 RT_TimeFrame = 551;
 inline bool StrategyItem::has_rt_timeframe() const {
-  return (_has_bits_[2] & 0x00000001u) != 0;
+  return (_has_bits_[1] & 0x10000000u) != 0;
 }
 inline void StrategyItem::set_has_rt_timeframe() {
-  _has_bits_[2] |= 0x00000001u;
+  _has_bits_[1] |= 0x10000000u;
 }
 inline void StrategyItem::clear_has_rt_timeframe() {
-  _has_bits_[2] &= ~0x00000001u;
+  _has_bits_[1] &= ~0x10000000u;
 }
 inline void StrategyItem::clear_rt_timeframe() {
   rt_timeframe_ = 0;
@@ -10458,13 +10130,13 @@ inline void StrategyItem::set_rt_timeframe(::google::protobuf::int32 value) {
 
 // optional int32 RT_OpenPeriod = 552;
 inline bool StrategyItem::has_rt_openperiod() const {
-  return (_has_bits_[2] & 0x00000002u) != 0;
+  return (_has_bits_[1] & 0x20000000u) != 0;
 }
 inline void StrategyItem::set_has_rt_openperiod() {
-  _has_bits_[2] |= 0x00000002u;
+  _has_bits_[1] |= 0x20000000u;
 }
 inline void StrategyItem::clear_has_rt_openperiod() {
-  _has_bits_[2] &= ~0x00000002u;
+  _has_bits_[1] &= ~0x20000000u;
 }
 inline void StrategyItem::clear_rt_openperiod() {
   rt_openperiod_ = 0;
@@ -10480,13 +10152,13 @@ inline void StrategyItem::set_rt_openperiod(::google::protobuf::int32 value) {
 
 // optional int32 RT_ClosePeriod = 553;
 inline bool StrategyItem::has_rt_closeperiod() const {
-  return (_has_bits_[2] & 0x00000004u) != 0;
+  return (_has_bits_[1] & 0x40000000u) != 0;
 }
 inline void StrategyItem::set_has_rt_closeperiod() {
-  _has_bits_[2] |= 0x00000004u;
+  _has_bits_[1] |= 0x40000000u;
 }
 inline void StrategyItem::clear_has_rt_closeperiod() {
-  _has_bits_[2] &= ~0x00000004u;
+  _has_bits_[1] &= ~0x40000000u;
 }
 inline void StrategyItem::clear_rt_closeperiod() {
   rt_closeperiod_ = 0;
@@ -10502,13 +10174,13 @@ inline void StrategyItem::set_rt_closeperiod(::google::protobuf::int32 value) {
 
 // optional double RT_StopLossFactor = 554;
 inline bool StrategyItem::has_rt_stoplossfactor() const {
-  return (_has_bits_[2] & 0x00000008u) != 0;
+  return (_has_bits_[1] & 0x80000000u) != 0;
 }
 inline void StrategyItem::set_has_rt_stoplossfactor() {
-  _has_bits_[2] |= 0x00000008u;
+  _has_bits_[1] |= 0x80000000u;
 }
 inline void StrategyItem::clear_has_rt_stoplossfactor() {
-  _has_bits_[2] &= ~0x00000008u;
+  _has_bits_[1] &= ~0x80000000u;
 }
 inline void StrategyItem::clear_rt_stoplossfactor() {
   rt_stoplossfactor_ = 0;
@@ -10524,13 +10196,13 @@ inline void StrategyItem::set_rt_stoplossfactor(double value) {
 
 // optional double RT_TrendFactor = 555;
 inline bool StrategyItem::has_rt_trendfactor() const {
-  return (_has_bits_[2] & 0x00000010u) != 0;
+  return (_has_bits_[2] & 0x00000001u) != 0;
 }
 inline void StrategyItem::set_has_rt_trendfactor() {
-  _has_bits_[2] |= 0x00000010u;
+  _has_bits_[2] |= 0x00000001u;
 }
 inline void StrategyItem::clear_has_rt_trendfactor() {
-  _has_bits_[2] &= ~0x00000010u;
+  _has_bits_[2] &= ~0x00000001u;
 }
 inline void StrategyItem::clear_rt_trendfactor() {
   rt_trendfactor_ = 0;

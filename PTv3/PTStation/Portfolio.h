@@ -34,7 +34,6 @@ double CalcDiff(vector<LegPtr>& legs, DIFF_TYPE diffType);
 int CalcSize(vector<LegPtr>& legs, DIFF_TYPE diffType);
 
 class CQuoteRepositry;
-class CSimpleQuoteReceiver;
 class CQuoteFetcher;
 class CAvatarClient;
 class COrderProcessor;
@@ -91,7 +90,6 @@ public:
 
 	// for quote
 	void SubscribeQuotes(CQuoteRepositry* pQuoteRepo);
-	void SubscribeQuotes(CSimpleQuoteReceiver* pQuoteReceiver);
 	// Need to be done before remove from manager
 	void Cleanup();
 
@@ -139,7 +137,6 @@ private:
 	// for quote subscription
 	CQuoteRepositry* m_pQuoteRepo;
 	vector<CQuoteFetcher*> m_quoteFetcherVec;
-	CSimpleQuoteReceiver* m_pQuoteReceiver;
 
 	// limits
 	int m_maxOpenPerStart;

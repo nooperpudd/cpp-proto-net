@@ -14,7 +14,6 @@ namespace PortfolioTrading.Controls
         public DataTemplate ArbitrageManualTemplate { get; set; }
         public DataTemplate ChangePositionTemplate { get; set; }
         public DataTemplate ScalperTemplate { get; set; }
-        public DataTemplate DualScalperTemplate { get; set; }
         public DataTemplate MACDHistSlopeTemplate { get; set; }
         public DataTemplate WMATrendTemplate { get; set; }
         public DataTemplate LinerRegressionTemplate { get; set; }
@@ -32,8 +31,6 @@ namespace PortfolioTrading.Controls
                 return ChangePositionTemplate;
             else if (item is ScalperSettingVM)
                 return ScalperTemplate;
-            else if (item is DualScalperSettingVM)
-                return DualScalperTemplate;
             else if (item is MACDHistSlopeSettingsVM)
                 return MACDHistSlopeTemplate;
             else if (item is WMATrendSettingsVM)

@@ -13,7 +13,6 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         public const string ArbitrageManualStrategyName = "ArbitrageManualStrategy";
         public const string ChangePositionStrategyName = "ChangePosition";
         public const string ScalperStrategyName = "Scalper";
-        public const string DualScalperStrategyName = "DualScalper";
         public const string MACDHistSlopeStrategyName = "MACDHistSlope";
         public const string WMATrendStrategyName = "WMATrend";
         public const string LinerRegressionStrategyName = "LinerRegression";
@@ -46,8 +45,6 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
                     return "移仓";
                 case ScalperStrategyName:
                     return "高频";
-                case DualScalperStrategyName:
-                    return "双向高频";
                 case MACDHistSlopeStrategyName:
                     return "MACD角度";
                 case WMATrendStrategyName:
@@ -89,9 +86,6 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
                     break;
                 case ScalperStrategyName:
                     setting = new ScalperSetting();
-                    break;
-                case DualScalperStrategyName:
-                    setting = new DualScalperSetting();
                     break;
                 case MACDHistSlopeStrategyName:
                     setting = new MACDHistSlopeStrategySetting();

@@ -293,52 +293,6 @@
                     </DockPanel>
                 </StackPanel>
             </igWindows:TabItemEx>
-            <igWindows:TabItemEx Header="双向高频" Name="tabDualScalper" Width="60" Tag="DualScalper">
-                <StackPanel Margin="4">
-                    <StackPanel.Resources>
-                        <Style TargetType="TextBlock">
-                            <Setter Property="Margin" Value="2"/>
-                            <Setter Property="VerticalAlignment" Value="Center" />
-                        </Style>
-                    </StackPanel.Resources>
-                    <DockPanel Margin="10, 4, 10, 8">
-                        <DockPanel>
-                            <TextBlock Width="80">品种</TextBlock>
-                            <TextBox Text="{Binding Symbol1}" Margin="0, 0, 4, 0"></TextBox>
-                        </DockPanel>
-                    </DockPanel>
-                    <DockPanel Margin="10, 4, 10, 8">
-                        <DockPanel>
-                            <TextBlock Width="80">最小变动价位</TextBlock>
-                            <Button DockPanel.Dock="Right" Margin="4, 2" Click="btnQuerySymbol_Click">查询</Button>
-                            <xctk:DecimalUpDown Value="{Binding PriceTick, Mode=TwoWay}" ShowButtonSpinner="False"/>
-                        </DockPanel>
-                    </DockPanel>
-                    <DockPanel Margin="10, 4, 10, 8">
-                        <DockPanel>
-                            <TextBlock Width="80">开仓价差</TextBlock>
-                            <xctk:DecimalUpDown Value="{Binding Threshold, Mode=TwoWay}" Increment="{Binding PriceTick}"/>
-                        </DockPanel>
-                    </DockPanel>
-                    <DockPanel Margin="10, 4, 10, 8">
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition />
-                                <ColumnDefinition />
-                            </Grid.ColumnDefinitions>
-                            <DockPanel Grid.Column="0">
-                                <TextBlock Width="60">多头用户</TextBlock>
-                                <TextBox Text="{Binding LongSideUserId, Mode=TwoWay}"/>
-                            </DockPanel>
-                            <DockPanel Grid.Column="1">
-                                <TextBlock Width="60" Margin="10, 0, 0, 0">空头用户</TextBlock>
-                                <TextBox Text="{Binding ShortSideUserId, Mode=TwoWay}"/>
-                            </DockPanel>
-                        </Grid>
-                        
-                   </DockPanel>
-                </StackPanel>
-            </igWindows:TabItemEx>
             <igWindows:TabItemEx Header="手动" Name="tabManual" Width="60" Tag="Manual">
                 <StackPanel Margin="4">
                     <StackPanel.Resources>

@@ -53,31 +53,6 @@ namespace PTCommunication {
 			}
 		}
 
-		property bool MultiClient
-		{
-			bool get()
-			{
-				return _nativeClient->MultiClient();
-			}
-			void set(bool val)
-			{
-				_nativeClient->SetMultiClient(val);
-			}
-		}
-
-		property array<String^> ^AlternativeUserIds
-		{
-			array<String^> ^get()
-			{
-				return _userIds;
-			}
-			void set(array<String^> ^userIds)
-			{
-				_userIds = userIds;
-				SetUserIds(userIds);
-			}
-		}
-
 		void Disconnect();
 
 		void SetPseudo(String ^pseudo);
@@ -153,8 +128,6 @@ namespace PTCommunication {
 
 	private:
 		void SendHeartbeat(Object ^obj);
-		void SetUserIds(array<String^> ^userIds);
 
-		array<String^> ^_userIds;
 	};
 }

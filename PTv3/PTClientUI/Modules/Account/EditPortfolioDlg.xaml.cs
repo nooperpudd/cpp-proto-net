@@ -218,17 +218,6 @@ namespace PortfolioTrading.Modules.Account
                     setting.Threshold = this.Threshold;
                 }
             }
-            else if(StrategyName == StrategySetting.DualScalperStrategyName)
-            {
-                if(!string.IsNullOrEmpty(Symbol1))
-                {
-                    DualScalperSetting setting = (DualScalperSetting)portf.StrategySetting;
-                    setting.PriceTick = this.PriceTick;
-                    setting.Threshold = this.Threshold;
-                    setting.LongSideUserId = this.LongSideUserId;
-                    setting.ShortSideUserId = this.ShortSideUserId;
-                }
-            }
             else if (StrategyName == StrategySetting.MACDHistSlopeStrategyName)
             {
                 if (!string.IsNullOrEmpty(Symbol1))
@@ -665,7 +654,7 @@ namespace PortfolioTrading.Modules.Account
         #endregion
 
         #region Threshold
-        private double _threshold = 0.8;
+        private double _threshold;
 
         public double Threshold
         {
@@ -1095,44 +1084,6 @@ namespace PortfolioTrading.Modules.Account
 
         #endregion
         
-        #endregion
-
-        #region Dual Scalper
-
-        #region LongSideUserId
-        private string _longSideUserId;
-
-        public string LongSideUserId
-        {
-            get { return _longSideUserId; }
-            set
-            {
-                if (_longSideUserId != value)
-                {
-                    _longSideUserId = value;
-                    RaisePropertyChanged("LongSideUserId");
-                }
-            }
-        }
-        #endregion
-
-        #region ShortSideUserId
-        private string _shortSideUserId;
-
-        public string ShortSideUserId
-        {
-            get { return _shortSideUserId; }
-            set
-            {
-                if (_shortSideUserId != value)
-                {
-                    _shortSideUserId = value;
-                    RaisePropertyChanged("ShortSideUserId");
-                }
-            }
-        }
-        #endregion
-
         #endregion
     }
 

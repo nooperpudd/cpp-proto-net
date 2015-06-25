@@ -16,7 +16,7 @@ CAvatarClient::CAvatarClient(const string& sessionId)
 	m_quoteRepositry.Init(&m_quoteAgent);
 	m_quoteAgent.SetCallbackHanlder(&m_quoteRepositry);
 
-	m_portfolioMgr.SetOnAddPortfolioHandler(boost::bind(&CAvatarClient::HandleAddingPortfolio, this, _1));
+	m_portfolioMgr.SetQuoteRepository(&m_quoteRepositry);
 	m_orderProcessor.Initialize(this, &m_tradeAgent);
 }
 
@@ -37,13 +37,13 @@ CAvatarClient::~CAvatarClient(void)
 	}
 }
 
-boost::tuple<bool, string> CAvatarClient::TradeLogin(const string& address, const string& brokerId, const string& investorId, vector<string>& userIds, const string& password)
+boost::tuple<bool, string> CAvatarClient::TradeLogin(const string& address, const string& brokerId, const string& investorId, const string& userId, const string& password)
 {
 	if(m_tradeLogged)
 		return boost::make_tuple(false, "Trade already Logged in");
 	m_investorId = investorId;
-	m_userId = userIds[0];
-	return m_tradeAgent.Login(address, brokerId, investorId, m_userId, password);
+	m_userId = userId;
+	return m_tradeAgent.Login(address, brokerId, investorId, userId, password);
 }
 
 void CAvatarClient::TradeLogout()
@@ -117,16 +117,5 @@ void CAvatarClient::UnderlyingPushPacket(OutgoingPacket* pPacket)
 			logger.Warning(boost::str(boost::format("Error sending packet for Avatar %s") % m_investorId));
 		}
 	}
-}
-
-void CAvatarClient::HandleAddingPortfolio(CPortfolio* pPortfolio)
-{
-	OnAddPortfolio(pPortfolio);
-}
-
-void CAvatarClient::OnAddPortfolio(CPortfolio* pPortfolio)
-{
-	if (pPortfolio != NULL)
-		pPortfolio->SubscribeQuotes(&m_quoteRepositry);
 }
 

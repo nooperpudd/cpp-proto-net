@@ -49,11 +49,6 @@ public:
 	void Logout();
 	void setPseudo(const char* pseudo){ m_pseudo = pseudo; }
 	bool IsDisconnected(){ return getStatus() == Disconnected; }
-
-	void SetAlternativeUserIds(vector<string>& userIds){ m_userIds = userIds; }
-	void SetMultiClient(bool multiple){ m_multiClient = multiple; }
-	bool MultiClient(){ return m_multiClient; }
-
 protected:
 	virtual void onConnected();
 	virtual void onConnectionClosed();
@@ -65,8 +60,5 @@ private:
 
 	string m_sessionId;
 	string m_pseudo;
-
-	bool m_multiClient;
-	vector<string> m_userIds;
 };
 

@@ -368,11 +368,6 @@ const string& COrderProcessor::InvestorId()
 	return m_pTradeAgent->InvestorId();
 }
 
-const string& COrderProcessor::UserId()
-{
-	return m_pTradeAgent->UserId();
-}
-
 void COrderProcessor::AddOrderPlacer( CPortfolioOrderPlacer* pOrdPlacer )
 {
 	boost::lock_guard<boost::recursive_mutex> lock(m_ordPlacersMapMutex);
