@@ -68,12 +68,10 @@
       <Server>
         <Name>国泰飞马</Name>
         <Trading>
-          <item>10.13.1.202:27001</item>
-          <item>10.13.2.202:27001</item>
+          <item>10.71.97.205:57005</item>
         </Trading>
         <MarketData>
-          <item>10.13.1.202:27101</item>
-          <item>10.13.2.202:27101</item>
+          <item>10.71.97.205:57105</item>
           <item>udp://255.255.255.255:41115</item>
         </MarketData>
       </Server>

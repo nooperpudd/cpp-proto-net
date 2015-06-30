@@ -111,7 +111,7 @@ namespace PortfolioTrading.Modules.Account
             _trade_stations.Add(new ServerAddress { Name = "交易服务42", Address = ConfigurationHelper.GetAppSettingValue("42", "180.166.182.12:62248") });
             _trade_stations.Add(new ServerAddress { Name = "交易服务47", Address = ConfigurationHelper.GetAppSettingValue("47", "180.166.182.12:62249") });
             _trade_stations.Add(new ServerAddress { Name = "交易服务61(万兆)", Address = ConfigurationHelper.GetAppSettingValue("61", "180.166.182.12:62263") });
-            _trade_stations.Add(new ServerAddress { Name = "国泰君安张江", Address = ConfigurationHelper.GetAppSettingValue("gtja-fm", "180.166.9.91:20205") });
+            _trade_stations.Add(new ServerAddress { Name = "国泰君安移动", Address = ConfigurationHelper.GetAppSettingValue("gtja-fm", "117.184.124.21:20010") });
             _trade_stations.Add(new ServerAddress { Name = "广发飞马", Address = ConfigurationHelper.GetAppSettingValue("gf-fm", "124.74.248.198:30009") });
             _trade_stations.Add(new ServerAddress { Name = "中信众信", Address = ConfigurationHelper.GetAppSettingValue("zeusing", "172.31.78.79:16181") });
 
