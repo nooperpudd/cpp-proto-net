@@ -21,22 +21,32 @@ boost::tuple<bool, string> CAvatarMultiClient::TradeLogin(const string& address,
 
 	bool loginSucc = true;
 	string errMsg;
+	int orderProcIndex = 0;
 	for (vector<string>::iterator iter = userIds.begin(); iter != userIds.end(); ++iter)
 	{
-		TradeAgentPtr tradeAgent(new CTradeAgent);
-		OrderProcessorPtr orderProc(new COrderProcessor);
-		orderProc->Initialize(this, tradeAgent.get());
-		boost::tuple<bool, string> res = tradeAgent->Login(address, brokerId, investorId, (*iter), password);
-		loginSucc = boost::get<0>(res);
-		if (loginSucc)
+		const string& userId = (*iter);
+		if (!userId.empty())
 		{
-			m_tradeAgentPool.push_back(tradeAgent);
-			m_orderProcessorPool.insert(std::make_pair((*iter), orderProc));
-		}
-		else
-		{
-			errMsg = boost::str(boost::format("UserId %s Failed to log in due to %s") % (*iter) % boost::get<1>(res));
-			break;
+			TradeAgentPtr tradeAgent(new CTradeAgent);
+#ifdef USE_FEMAS_API
+			tradeAgent->SetIndex(orderProcIndex);
+#endif			
+			OrderProcessorPtr orderProc(new COrderProcessor(orderProcIndex));
+			orderProcIndex++;
+			orderProc->Initialize(this, tradeAgent.get());
+			boost::tuple<bool, string> res = tradeAgent->Login(address, brokerId, investorId, userId, password);
+			loginSucc = boost::get<0>(res);
+			if (loginSucc)
+			{
+				m_tradeAgentPool.push_back(tradeAgent);
+				m_orderProcessorPool.insert(std::make_pair(userId, orderProc));
+			}
+			else
+			{
+				errMsg = boost::str(boost::format("UserId %s Failed to log in due to %s") % userId % boost::get<1>(res));
+				break;
+			}
+			
 		}
 	}
 

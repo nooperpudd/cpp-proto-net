@@ -62,6 +62,7 @@ CSymbolInfoRepositry symbolInfoRepo;
 
 CTradeAgent::CTradeAgent(void)
 	: m_pUserApi(NULL)
+	, m_index(0)
 	, m_isConnected(false)
 	, m_isLogged(false)
 	, m_isConfirmed(false)

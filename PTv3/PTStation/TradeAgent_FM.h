@@ -43,6 +43,12 @@ public:
 	const string& InvestorId(){ return m_investorId; }
 	const string& UserId() { return m_userId; }
 	const boost::gregorian::date& TradingDay(){ return m_tradingDay; }
+	void SetIndex(int idx)
+	{ 
+		m_index = idx; 
+		m_orderRefPrefix = boost::str(boost::format("%02d") % m_index);
+	}
+	int Index(){ return m_index; }
 
 	//////////////////////////////////////////////////////////////////////////
 	// Response trading related api
@@ -99,14 +105,14 @@ private:
 	bool IsMyOrder(CUstpFtdcOrderField *pOrder)
 	{ 
 		if (pOrder != NULL)
-			return m_userId.compare(pOrder->UserID) == 0;
+			return m_orderRefPrefix.compare(0, 2, pOrder->UserOrderLocalID, 2) == 0;
 
 		return false;
 	}
 	bool IsMyTrade(CUstpFtdcTradeField *pTrade)
 	{
 		if (pTrade != NULL)
-			return m_userId.compare(pTrade->UserID) == 0;
+			return m_orderRefPrefix.compare(0, 2, pTrade->UserOrderLocalID, 2) == 0;
 
 		return false;
 	}
@@ -115,6 +121,7 @@ private:
 	string m_investorId;
 	string m_userId;
 	string m_password;
+	string m_orderRefPrefix;
 
 	// 请求编号
 	boost::atomic<int> m_iRequestID;
@@ -124,7 +131,7 @@ private:
 	//TThostFtdcSessionIDType	SESSION_ID;	//会话编号
 	int m_maxOrderRef;					//报单引用
 	boost::gregorian::date m_tradingDay;
-	
+	int m_index;
 	bool m_isConnected;
 	bool m_isLogged;
 	bool m_isConfirmed;

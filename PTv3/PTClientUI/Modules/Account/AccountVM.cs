@@ -704,7 +704,7 @@ namespace PortfolioTrading.Modules.Account
             {
                 userIds[0] = userIds[0].Trim();
             }
-            return userIds;
+            return userIds.SkipWhile(u => string.IsNullOrWhiteSpace(u)).ToArray();
         }
 
         public static AccountVM Load(XElement xmlElement)

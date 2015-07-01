@@ -58,7 +58,8 @@ void PrintOrderAction(trade::InputOrderAction* orderAction)
 	}
 }
 
-COrderProcessor::COrderProcessor(void):
+COrderProcessor::COrderProcessor(int index) :
+m_index(index),
 m_pTradeAgent(NULL),
 m_pClientAgent(NULL),
 m_maxOrderRef(0),
@@ -224,7 +225,11 @@ bool COrderProcessor::SubmitAndUnlock(CInputOrder* pInputOrder)
 
 int COrderProcessor::GenerateOrderRef( string& outOrdRef )
 {
+#ifdef USE_FEMAS_API
+	sprintf_s(m_orderRefBuf, "%02d%010d", m_index, m_maxOrderRef);
+#else
 	sprintf_s(m_orderRefBuf, ORDER_REF_FORMAT, m_maxOrderRef);
+#endif	
 	outOrdRef = m_orderRefBuf;
 	int currOrdRef = m_maxOrderRef++;
 	return currOrdRef;

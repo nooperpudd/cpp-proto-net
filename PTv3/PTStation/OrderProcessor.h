@@ -30,7 +30,7 @@ using namespace std;
 class COrderProcessor : public CTradeAgentCallback
 {
 public:
-	COrderProcessor(void);
+	COrderProcessor(int index = 0);
 	~COrderProcessor(void);
 
 	void Initialize(CAvatarClient* pClientAgent, CTradeAgent* pTradeAgent);
@@ -105,6 +105,8 @@ public:
 	const string& BrokerId();
 	const string& InvestorId();
 	const string& UserId();
+
+	int Index(){ return m_index; }
 private:
 
 	static void PrintOrderStatus(trade::Order* order);
@@ -116,6 +118,7 @@ private:
 	boost::unordered_map<string, CPortfolioOrderPlacer*> m_workingOrderPlacers;
 	boost::recursive_mutex m_ordPlacersMapMutex;
 
+	int m_index;
 	char m_orderRefBuf[13];
 	int m_maxOrderRef;
 	boost::mutex m_mutOrdRefIncr;
