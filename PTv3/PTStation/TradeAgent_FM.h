@@ -98,8 +98,17 @@ private:
 	int RequestIDIncrement() { return ++m_iRequestID; }
 	bool IsMyOrder(CUstpFtdcOrderField *pOrder)
 	{ 
-		//return pOrder->FrontID == FRONT_ID && pOrder->SessionID == SESSION_ID;
-		return true;
+		if (pOrder != NULL)
+			return m_userId.compare(pOrder->UserID) == 0;
+
+		return false;
+	}
+	bool IsMyTrade(CUstpFtdcTradeField *pTrade)
+	{
+		if (pTrade != NULL)
+			return m_userId.compare(pTrade->UserID) == 0;
+
+		return false;
 	}
 
 	string m_brokerId;

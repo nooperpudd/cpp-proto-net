@@ -443,7 +443,7 @@ void CTradeAgent::OnRtnOrder(CUstpFtdcOrderField *pOrder)
 		return;
 
 	ostringstream oss;
-	oss << "--->>> " << m_investorId <<" OnRtnOrder (OrdRef:"  << pOrder->UserOrderLocalID << ") Status:" << pOrder->OrderStatus;
+	oss << "--->>> " << m_investorId << "(" << m_userId << ") OnRtnOrder (OrdRef:" << pOrder->UserOrderLocalID << ") Status:" << pOrder->OrderStatus;
 	logger.Info(oss.str());
 
 	RtnOrderWrapperPtr orderWrapper(new CRtnOrderWrapper(pOrder));
@@ -454,8 +454,11 @@ void CTradeAgent::OnRtnOrder(CUstpFtdcOrderField *pOrder)
 
 void CTradeAgent::OnRtnTrade(CUstpFtdcTradeField *pTrade)
 {
+	if (!IsMyTrade(pTrade))
+		return;
+
 	ostringstream oss;
-	oss << "--->>> " << m_investorId << " OnRtnTrade (OrdRef:" << pTrade->UserOrderLocalID << ") TradeId:" << pTrade->TradeID;
+	oss << "--->>> " << m_investorId << "(" << m_userId << ") OnRtnTrade (OrdRef:" << pTrade->UserOrderLocalID << ") TradeId:" << pTrade->TradeID;
 	oss << " " << pTrade->InstrumentID;
 	oss << " " << pTrade->TradeTime;
 	oss << " @" << pTrade->TradePrice;
