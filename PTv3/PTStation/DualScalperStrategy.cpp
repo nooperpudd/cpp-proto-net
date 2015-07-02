@@ -326,18 +326,15 @@ void CDualScalperStrategy::OpenPosition(entity::Quote* pQuote, boost::chrono::st
 	double buyPx = pQuote->bid() + m_openOffset;
 	double sellPx = pQuote->ask() - m_openOffset;
 
-	double longLmtPrice[2] = { buyPx, 0.0 };
-	double shortLmtPrice[2] = { sellPx, 0.0 };
-
 	if (pQuote->bid_size() <= pQuote->ask_size())
 	{
-		m_longOrderPlacer->Run(entity::LONG, longLmtPrice, 2, timestamp);
-		m_shortOrderPlacer->Run(entity::SHORT, shortLmtPrice, 2, timestamp);
+		m_longOrderPlacer->AsyncRun(entity::LONG, buyPx, timestamp);
+		m_shortOrderPlacer->AsyncRun(entity::SHORT, sellPx, timestamp);
 	}
 	else
 	{
-		m_shortOrderPlacer->Run(entity::SHORT, shortLmtPrice, 2, timestamp);
-		m_longOrderPlacer->Run(entity::LONG, longLmtPrice, 2, timestamp);
+		m_shortOrderPlacer->AsyncRun(entity::SHORT, sellPx, timestamp);
+		m_longOrderPlacer->AsyncRun(entity::LONG, buyPx, timestamp);
 	}
 
 	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Open position @ B:%.2f - S:%.2f (%s)")
@@ -467,6 +464,7 @@ void CMultiRouteStrategy::BindRoutes(CPortfolio* pPortfolio, OnBindingRouteHandl
 			const string& ordProcUserId = pOrderProcessor->UserId();
 			LOG_DEBUG(logger, boost::str(boost::format("Portfolio(%s) initialize an OrderPlacer with OrderProcessor(%s)") 
 				% pPortfolio->ID() % ordProcUserId));
+			pOrderProcessor->AddRef();
 		}
 	}
 

@@ -118,7 +118,10 @@ void CAvatarMultiClient::BindingOrderProcessor(CPortfolio* pPortfolio)
 	{
 		COrderProcessor* pOrderProc = NULL;
 		FindOrderProcessor("", &pOrderProc);
+		assert(pOrderProc != NULL);
 		pPortfolio->Strategy()->ReinitOrderPlacer(pOrderProc);
+		if (pOrderProc != NULL)
+			pOrderProc->AddRef();
 	}
 }
 
@@ -127,8 +130,21 @@ void CAvatarMultiClient::FindOrderProcessor(const string& userId, COrderProcesso
 	boost::unordered_map<string, OrderProcessorPtr>::iterator iter = m_orderProcessorPool.find(userId);
 	if (iter == m_orderProcessorPool.end())
 	{
-		// in case not find desired order processor, return the first one
+		// in case not find desired order processor, return the one that was least used
 		iter = m_orderProcessorPool.begin();
+		for (boost::unordered_map<string, OrderProcessorPtr>::iterator loopIter = iter;
+			loopIter != m_orderProcessorPool.end(); ++loopIter)
+		{
+			if (loopIter->second->RefCount() == 0)
+			{
+				iter = loopIter;
+				break;
+			}
+			else if (loopIter->second->RefCount() < iter->second->RefCount())
+			{
+				iter = loopIter;
+			}
+		}
 	}
 
 	if (iter != m_orderProcessorPool.end())

@@ -1100,7 +1100,7 @@ namespace PortfolioTrading.Modules.Account
         #region Dual Scalper
 
         #region LongSideUserId
-        private string _longSideUserId;
+        private string _longSideUserId = string.Empty;
 
         public string LongSideUserId
         {
@@ -1117,7 +1117,7 @@ namespace PortfolioTrading.Modules.Account
         #endregion
 
         #region ShortSideUserId
-        private string _shortSideUserId;
+        private string _shortSideUserId = string.Empty;
 
         public string ShortSideUserId
         {

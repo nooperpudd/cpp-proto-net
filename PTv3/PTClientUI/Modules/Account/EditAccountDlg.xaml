@@ -65,7 +65,7 @@
             </DockPanel>
             <DockPanel>
                 <CheckBox Name="chkMultiUser" DockPanel.Dock="Top" Margin="4" IsChecked="{Binding MultiUsers}">多用户支持</CheckBox>
-                <TextBox Margin="4" TextWrapping="WrapWithOverflow" Text="{Binding AlternativeUserIds, Mode=TwoWay}">
+                <TextBox Margin="4" TextWrapping="Wrap" Text="{Binding AlternativeUserIds, Mode=TwoWay}">
                     <TextBox.Style>
                         <Style TargetType="TextBox">
                             <Setter Property="IsEnabled" Value="False"/>

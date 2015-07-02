@@ -107,6 +107,9 @@ public:
 	const string& UserId();
 
 	int Index(){ return m_index; }
+	int RefCount(){ return m_refCount; }
+	void AddRef(){ ++m_refCount; }
+	void ReleaseRef() { --m_refCount; }
 private:
 
 	static void PrintOrderStatus(trade::Order* order);
@@ -119,6 +122,7 @@ private:
 	boost::recursive_mutex m_ordPlacersMapMutex;
 
 	int m_index;
+	int m_refCount;
 	char m_orderRefBuf[13];
 	int m_maxOrderRef;
 	boost::mutex m_mutOrdRefIncr;
