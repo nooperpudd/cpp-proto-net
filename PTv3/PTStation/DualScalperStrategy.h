@@ -45,6 +45,8 @@ public:
 	virtual void Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
 	virtual void Apply(const entity::StrategyItem& strategyItem, bool withTriggers);
 
+	virtual void Stop();
+
 	virtual void Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 	virtual void GetStrategyUpdate(entity::PortfolioUpdateItem* pPortfUpdateItem);
 
@@ -91,5 +93,7 @@ private:
 	boost::shared_ptr<void> m_fsm;
 	boost::atomic<DualScalperState> m_currentState;
 	boost::mutex m_mutFsm;
+
+	bool m_stopping;
 };
 

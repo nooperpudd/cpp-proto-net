@@ -198,6 +198,7 @@ CDualScalperStrategy::CDualScalperStrategy()
 	, m_oppositeCloseThreshold(1)
 	, m_longOrderPlacer(NULL)
 	, m_shortOrderPlacer(NULL)
+	, m_stopping(false)
 {
 	m_fsm = boost::shared_ptr<void>(new DualScapler::DualScaplerFsm(this));
 }
@@ -246,18 +247,34 @@ void CDualScalperStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, b
 		{
 			DualScalperState state = State();
 
-			// if price diff meets condition
-			if (DoubleGreaterEqual(m_diff, m_diffThreshold))
+			if (m_stopping)
 			{
 				if (state == DUAL_SCALPER_BOTH_EMPTY)
 				{
-					// 1. Try to open
-					OpenPosition(pQuote, timestamp);
+					// 1. Truly Stop Strategy
+					CStrategy::Stop();
 				}
 				else if (state == DUAL_SCALPER_BOTH_HELD)
 				{
 					// 2. Try to close
 					ClosePosition(pQuote, timestamp);
+				}
+			}
+			else
+			{
+				// if price diff meets condition
+				if (DoubleGreaterEqual(m_diff, m_diffThreshold))
+				{
+					if (state == DUAL_SCALPER_BOTH_EMPTY)
+					{
+						// 1. Try to open
+						OpenPosition(pQuote, timestamp);
+					}
+					else if (state == DUAL_SCALPER_BOTH_HELD)
+					{
+						// 2. Try to close
+						ClosePosition(pQuote, timestamp);
+					}
 				}
 			}
 
@@ -441,7 +458,15 @@ bool CDualScalperStrategy::OnStart()
 
 void CDualScalperStrategy::OnStop()
 {
+	LOG_DEBUG(logger, "DualScapler - Truly Stopped");
 	boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->stop();
+	m_stopping = false;
+}
+
+void CDualScalperStrategy::Stop()
+{
+	LOG_DEBUG(logger, "DualScapler - Stopping");
+	m_stopping = true;
 }
 
 void CMultiRouteStrategy::BindRoutes(CPortfolio* pPortfolio, OnBindingRouteHandler onBindingRouteHandler)
