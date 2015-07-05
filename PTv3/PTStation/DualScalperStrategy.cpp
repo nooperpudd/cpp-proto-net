@@ -357,8 +357,9 @@ void CDualScalperStrategy::OpenPosition(entity::Quote* pQuote, boost::chrono::st
 		m_longOrderPlacer->Run(entity::LONG, longLmtPrice, 2, timestamp);
 	}
 
-	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Open position @ B:%.2f - S:%.2f (%s)")
-		% buyPx % sellPx % pQuote->update_time()));
+	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Open position @ B:%.2f - S:%.2f (A:%.2f, B:%.2f, %s %d)")
+		% buyPx % sellPx 
+		% pQuote->ask() % pQuote->bid() % pQuote->update_time() % pQuote->update_millisec()));
 }
 
 void CDualScalperStrategy::ClosePosition(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
@@ -377,8 +378,9 @@ void CDualScalperStrategy::ClosePosition(entity::Quote* pQuote, boost::chrono::s
 		m_longOrderPlacer->CloseOrder(sellPx, true);
 	}
 
-	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Close position @ B:%.2f - S:%.2f (%s)")
-		% buyPx % sellPx % pQuote->update_time()));
+	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Close position @ B:%.2f - S:%.2f ((A:%.2f, B:%.2f, %s %d))")
+		% buyPx % sellPx 
+		% pQuote->ask() % pQuote->bid() % pQuote->update_time() % pQuote->update_millisec()));
 }
 
 void CDualScalperStrategy::LongStopLoss(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
@@ -401,8 +403,8 @@ void CDualScalperStrategy::LongStopLoss(entity::Quote* pQuote, boost::chrono::st
 	}
 	
 	m_longOrderPlacer->CloseOrder(stopLossPx, false);
-	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Long stop loss @ %.2f (%s)") 
-		% stopLossPx % pQuote->update_time()));
+	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Long stop loss @ %.2f (A:%.2f, B:%.2f, %s %d)") 
+		% stopLossPx % pQuote->ask() % pQuote->bid() % pQuote->update_time() % pQuote->update_millisec()));
 }
 
 void CDualScalperStrategy::ShortStopLoss(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
@@ -424,8 +426,8 @@ void CDualScalperStrategy::ShortStopLoss(entity::Quote* pQuote, boost::chrono::s
 	}
 
 	m_shortOrderPlacer->CloseOrder(stopLossPx, false);
-	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Long stop loss @ %.2f (%s)")
-		% stopLossPx % pQuote->update_time()));
+	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Short stop loss @ %.2f (A:%.2f, B:%.2f, %s %d)")
+		% stopLossPx % pQuote->ask() % pQuote->bid() % pQuote->update_time() % pQuote->update_millisec()));
 }
 
 void CDualScalperStrategy::OnLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
@@ -460,6 +462,11 @@ void CDualScalperStrategy::OnStop()
 {
 	LOG_DEBUG(logger, "DualScapler - Truly Stopped");
 	boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->stop();
+	if (m_longOrderPlacer != NULL)
+		m_longOrderPlacer->Cleanup();
+	if (m_shortOrderPlacer != NULL)
+		m_shortOrderPlacer->Cleanup();
+
 	m_stopping = false;
 }
 

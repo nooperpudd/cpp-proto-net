@@ -19,6 +19,7 @@ CUdpQuoteListener::~CUdpQuoteListener()
 {
 	socket_.close();
 	io_service_.stop();
-	running_thread_.join();
+	if (boost::this_thread::get_id() != running_thread_.get_id())
+		running_thread_.join();
 	cout << "CUdpQuoteListener destructor done." << endl;
 }

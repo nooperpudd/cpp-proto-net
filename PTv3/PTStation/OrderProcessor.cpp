@@ -201,7 +201,9 @@ int COrderProcessor::LockForSubmit( string& outOrdRef )
 	{
 		retOrderRef = GenerateOrderRef(outOrdRef);
 		m_bIsSubmitting = true;
+#ifdef LOG_FOR_TRADE
 		LOG_INFO(logger, "///--->>> Before submit and LOCK");
+#endif
 	}
 	else
 		logger.Warning("LOCK for submit order TIME OUT!");
@@ -219,7 +221,9 @@ bool COrderProcessor::SubmitAndUnlock(CInputOrder* pInputOrder)
 	
 	m_bIsSubmitting = false;
 	m_condSubmit.notify_all();
+#ifdef LOG_FOR_TRADE
 	LOG_INFO(logger, "///--->>> After submit and unlock");
+#endif
 	return succ;
 }
 
