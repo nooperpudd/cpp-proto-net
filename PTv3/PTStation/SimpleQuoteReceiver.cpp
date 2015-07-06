@@ -7,9 +7,16 @@
 void SetQuoteFields(entity::Quote* outQuote, CThostFtdcDepthMarketDataField* marketData)
 {
 	outQuote->set_symbol(marketData->InstrumentID);
-	outQuote->set_trading_day(marketData->TradingDay);
-
 	outQuote->set_last(marketData->LastPrice);
+	outQuote->set_update_time(marketData->UpdateTime);
+	outQuote->set_update_millisec(marketData->UpdateMillisec);
+	outQuote->set_bid(marketData->BidPrice1);
+	outQuote->set_bid_size(marketData->BidVolume1);
+	outQuote->set_ask(marketData->AskPrice1);
+	outQuote->set_ask_size(marketData->AskVolume1);
+
+/* Ignore unnecessary fields in Quote to increase speed	
+	outQuote->set_trading_day(marketData->TradingDay);
 	outQuote->set_prev_settlement_price(marketData->PreSettlementPrice);
 	outQuote->set_prev_close(marketData->PreClosePrice);
 	outQuote->set_prev_open_interest(marketData->PreOpenInterest);
@@ -25,8 +32,11 @@ void SetQuoteFields(entity::Quote* outQuote, CThostFtdcDepthMarketDataField* mar
 	outQuote->set_lower_limit_price(marketData->LowerLimitPrice);
 	outQuote->set_prev_delta(marketData->PreDelta);
 	outQuote->set_curr_delta(marketData->CurrDelta);
+	outQuote->set_exchange_id(marketData->ExchangeID);
+	outQuote->set_exchange_symbol_id(marketData->ExchangeInstID);
+	outQuote->set_average_price(marketData->AveragePrice);
+*/
 
-	outQuote->set_update_time(marketData->UpdateTime);
 #ifdef QUOTE_TIME_EMU
 
 	boost::chrono::seconds tp = ParseTimeString(marketData->UpdateTime);
@@ -44,12 +54,6 @@ void SetQuoteFields(entity::Quote* outQuote, CThostFtdcDepthMarketDataField* mar
 
 #endif // QUOTE_TIME_EMU
 
-	outQuote->set_update_millisec(marketData->UpdateMillisec);
-
-	outQuote->set_bid(marketData->BidPrice1);
-	outQuote->set_bid_size(marketData->BidVolume1);
-	outQuote->set_ask(marketData->AskPrice1);
-	outQuote->set_ask_size(marketData->AskVolume1);
 	/*
 	outQuote->set_bid_2(marketData->BidPrice2);
 	outQuote->set_bid_size_2(marketData->BidVolume2);
@@ -68,9 +72,6 @@ void SetQuoteFields(entity::Quote* outQuote, CThostFtdcDepthMarketDataField* mar
 	outQuote->set_ask_5(marketData->AskPrice5);
 	outQuote->set_ask_size_5(marketData->AskVolume5);
 	*/
-	outQuote->set_exchange_id(marketData->ExchangeID);
-	outQuote->set_exchange_symbol_id(marketData->ExchangeInstID);
-	outQuote->set_average_price(marketData->AveragePrice);
 }
 
 
