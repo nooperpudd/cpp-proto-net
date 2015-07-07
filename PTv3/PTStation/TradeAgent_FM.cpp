@@ -575,6 +575,12 @@ void CTradeAgent::OnRspOrderAction(CUstpFtdcOrderActionField *pOrderAction, CUst
 		string orderRef = pOrderAction->UserOrderLocalID;
 		string errorMsg = pRspInfo->ErrorMsg;
 
+		if (pRspInfo->ErrorID == 28)
+		{
+			logger.Warning(boost::str(boost::format("Order(ref:%s) get filled though being cancelled, Ignore this Cancel Error")
+				% orderRef));
+			return;
+		}
 		m_orderProcessor->OnRspOrderAction(false, orderRef, pRspInfo->ErrorID, errorMsg);
 	}
 }

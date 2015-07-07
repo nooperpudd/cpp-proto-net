@@ -348,12 +348,14 @@ void CDualScalperStrategy::OpenPosition(entity::Quote* pQuote, boost::chrono::st
 
 	if (pQuote->bid_size() <= pQuote->ask_size())
 	{
-		m_longOrderPlacer->Run(entity::LONG, longLmtPrice, 2, timestamp);
+		//m_shortOrderPlacer->AsyncRun(entity::SHORT, sellPx, timestamp);
+		m_longOrderPlacer->AsyncRun(entity::LONG, buyPx, timestamp);
 		m_shortOrderPlacer->Run(entity::SHORT, shortLmtPrice, 2, timestamp);
 	}
 	else
 	{
-		m_shortOrderPlacer->Run(entity::SHORT, shortLmtPrice, 2, timestamp);
+		//m_longOrderPlacer->AsyncRun(entity::LONG, buyPx, timestamp);
+		m_shortOrderPlacer->AsyncRun(entity::SHORT, sellPx, timestamp);
 		m_longOrderPlacer->Run(entity::LONG, longLmtPrice, 2, timestamp);
 	}
 

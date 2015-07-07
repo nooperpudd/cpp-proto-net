@@ -24,7 +24,7 @@ public:
 
 private:
 
-	CQuoteUdpMultiAgent m_quoteAgent;
+	CQuoteUdpSingleAgent m_quoteAgent;
 	QuoteUpdateFunc m_cbFunc;
 	entity::Quote m_quote;
 };

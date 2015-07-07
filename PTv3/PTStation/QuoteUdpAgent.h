@@ -48,7 +48,7 @@ class CQuoteUdpMultiAgent : public CQuoteAgentBase
 {
 public:
 	CQuoteUdpMultiAgent(CQuoteAgentCallback* pCallback);
-	~CQuoteUdpMultiAgent();
+	virtual ~CQuoteUdpMultiAgent();
 
 	boost::tuple<bool, string> Login(const string& frontAddr, const string& brokerId, const string& investorId, const string& userId, const string& password);
 	void Logout();
@@ -70,11 +70,25 @@ public:
 		return true;
 	}
 
-	void OnQuoteReceived(int nPort, CThostFtdcDepthMarketDataField* marketData, longlong timestamp);
+	virtual void OnQuoteReceived(int nPort, CThostFtdcDepthMarketDataField* pDepthMarketData, longlong timestamp);
 
 private:
 	QuoteUdpAgentVector m_childAgents;
 
 	QuoteTimestampMap m_lastQuoteTimestamp;
 	boost::mutex m_mutex;
+};
+
+class CQuoteUdpSingleAgent : public CQuoteUdpMultiAgent
+{
+public:
+	CQuoteUdpSingleAgent(CQuoteAgentCallback* pCallback)
+		: CQuoteUdpMultiAgent(pCallback)
+	{}
+	~CQuoteUdpSingleAgent(){}
+
+	void OnQuoteReceived(int nPort, CThostFtdcDepthMarketDataField* pDepthMarketData, longlong timestamp)
+	{
+		m_pCallback->OnQuoteReceived(pDepthMarketData, timestamp);
+	}
 };
