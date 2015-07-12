@@ -39,6 +39,7 @@ public:
 	bool IsRunning(){ return m_running.load(boost::memory_order_acquire); }
 	virtual void Start();
 	virtual void Stop();
+	virtual void AlreadyStarted(){}
 	bool IsSuspending() { return m_suspending.load(boost::memory_order_acquire); }
 	virtual void Pause() { m_suspending.store(true, boost::memory_order_release); }
 	virtual void Resume(){ m_suspending.store(false, boost::memory_order_release); }

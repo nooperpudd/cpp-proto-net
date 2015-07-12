@@ -1022,6 +1022,21 @@ void CPortfolioOrderPlacer::CleanupProc()
 	}
 }
 
+void CPortfolioOrderPlacer::ForceCleanup()
+{
+	int retryTimes = 0;
+	m_isWorking.store(false, boost::memory_order_release);
+
+	m_activeOrdPlacer = NULL;
+	m_multiLegOrderTemplate.reset();
+	m_legPlacers.clear();
+	{
+		boost::unique_lock<boost::mutex> l(m_mutCleaning);
+		m_isReady = false;
+		m_condCleanDone.notify_one();
+	}
+}
+
 bool CPortfolioOrderPlacer::IfPortfolioCanceled()
 {
 	assert(m_activeOrdPlacer != NULL);

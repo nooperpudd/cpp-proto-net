@@ -18,6 +18,11 @@ CPortfolioTrendOrderPlacer::~CPortfolioTrendOrderPlacer(void)
 {
 }
 
+int CPortfolioTrendOrderPlacer::GetQuantity()
+{
+	return m_pPortf->Quantity();
+}
+
 void CPortfolioTrendOrderPlacer::BuildTemplateOrder()
 {
 	static trade::OffsetFlagType OFFSET_FLAGS[2] = 
@@ -25,7 +30,7 @@ void CPortfolioTrendOrderPlacer::BuildTemplateOrder()
 
 	boost::shared_ptr<trade::MultiLegOrder> pMultiLegOrder(new trade::MultiLegOrder);
 
-	pMultiLegOrder->set_quantity(m_pPortf->Quantity());
+	pMultiLegOrder->set_quantity(GetQuantity());
 	pMultiLegOrder->set_portfolioid(m_pPortf->ID());
 	pMultiLegOrder->set_offset(trade::ML_OF_OTHER);
 	pMultiLegOrder->set_haswarn(false);

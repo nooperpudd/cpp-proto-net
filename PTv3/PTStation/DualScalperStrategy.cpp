@@ -222,6 +222,12 @@ void CDualScalperStrategy::Apply(const entity::StrategyItem& strategyItem, CPort
 	m_openOffset = strategyItem.ds_openoffset();
 	m_closeOffset = strategyItem.ds_closeoffset();
 	m_oppositeCloseThreshold = strategyItem.ds_oppositeclosethreshold();
+
+	logger.Debug(
+		boost::str(boost::format("Portfolio(%s) DualScalper: PxTick = %.2f, Threshold = %.2f, OpenOffset = %.2f, CloseOffset = %.2f")
+		% pPortfolio->ID() % m_priceTick % m_diffThreshold % m_openOffset % m_closeOffset
+		));
+
 	m_longSideUserId = strategyItem.ds_longsideuserid();
 	AddUserId(m_longSideUserId);
 	m_shortSideUserId = strategyItem.ds_shortsideuserid();
@@ -456,7 +462,20 @@ void CDualScalperStrategy::OnLegFilled(int sendingIdx, const string& symbol, tra
 
 bool CDualScalperStrategy::OnStart()
 {
+	m_stopping = false;
+
+	if (IsRunning())
+	{
+		return false;
+	}
+
+	if (m_longOrderPlacer != NULL)
+		m_longOrderPlacer->Prepare();
+	if (m_shortOrderPlacer != NULL)
+		m_shortOrderPlacer->Prepare();
+
 	boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->start();
+
 	return true;
 }
 
@@ -476,6 +495,11 @@ void CDualScalperStrategy::Stop()
 {
 	LOG_DEBUG(logger, "DualScapler - Stopping");
 	m_stopping = true;
+}
+
+void CDualScalperStrategy::AlreadyStarted()
+{
+	m_stopping = false;
 }
 
 void CMultiRouteStrategy::BindRoutes(CPortfolio* pPortfolio, OnBindingRouteHandler onBindingRouteHandler)

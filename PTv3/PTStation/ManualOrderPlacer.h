@@ -40,6 +40,8 @@ public:
 			posiDirection, lmtPx, trigQuoteTimestamp));
 	}
 
+	void Cleanup();
+
 protected:
 	void Run2(entity::PosiDirectionType posiDirection, double lmtPx,
 		boost::chrono::steady_clock::time_point trigQuoteTimestamp)
@@ -50,7 +52,7 @@ protected:
 
 	virtual CLegOrderPlacer* CreateLegOrderPlacer(int openTimeout, int maxRetryTimes);
 	trade::SubmitReason SubmitReason(){ return trade::SR_Scalpe; }
-
+	int GetQuantity(){ return 1; }	// DualScalper strategy only support 1 so far
 private:
 	string m_userId;
 	CThreadWorker m_threadWorker;

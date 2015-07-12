@@ -114,6 +114,8 @@ READ_TICK_STATUS CTickDataReader::Read(boost::chrono::steady_clock::time_point e
 			mktDataField.LastPrice = last;
 			mktDataField.AskPrice1 = ask;
 			mktDataField.BidPrice1 = bid;
+			mktDataField.AskVolume1 = 1;
+			mktDataField.BidVolume1 = 1;
 
 			string act, exp;
 			GetStringFromTimepoint(expected, &exp);

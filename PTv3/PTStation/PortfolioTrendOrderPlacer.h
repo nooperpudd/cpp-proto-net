@@ -21,6 +21,7 @@ protected:
 	virtual void OnLegOrderSent(int orderPlacerIdx);
 	virtual void OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume);
 	virtual void OnPortfolioDone();
+	virtual int GetQuantity();
 
 	virtual trade::SubmitReason SubmitReason(){ return trade::SR_Trend; }
 

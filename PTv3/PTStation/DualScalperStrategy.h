@@ -46,6 +46,7 @@ public:
 	virtual void Apply(const entity::StrategyItem& strategyItem, bool withTriggers);
 
 	virtual void Stop();
+	virtual void AlreadyStarted();
 
 	virtual void Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 	virtual void GetStrategyUpdate(entity::PortfolioUpdateItem* pPortfUpdateItem);

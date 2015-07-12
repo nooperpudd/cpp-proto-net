@@ -288,6 +288,7 @@ void CPortfolio::StartStrategy(int lastOrderId)
 	logger.Info(boost::str(boost::format("[%s] Portfolio (%s) START strategy >>>") % InvestorId() % ID()));
 	if(m_strategy->IsRunning())
 	{
+		m_strategy->AlreadyStarted();
 		logger.Warning(boost::str(boost::format("[%s] Portfolio (%s) Already Started !") % InvestorId() % ID()));
 		return;
 	}

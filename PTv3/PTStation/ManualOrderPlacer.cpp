@@ -40,3 +40,8 @@ void CDualScalperOrderPlacer::CloseOrder(double closePrice, bool cancelOnTimeout
 	}
 	CPortfolioTrendOrderPlacer::CloseOrder(closePrice);
 }
+
+void CDualScalperOrderPlacer::Cleanup()
+{
+	ForceCleanup();
+}

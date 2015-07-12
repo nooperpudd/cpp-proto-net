@@ -144,6 +144,7 @@ protected:
 	void PushIndividualLegOrder(const string& portfId, const string& mlOrderId, trade::Order* legOrd);
 
 	void CleanupProc();
+	void ForceCleanup();
 	bool IsReadyForPrepare(){ return !m_isReady; }
 
 	bool SendNextOnFilled(){ return m_sendNextOnFilled; }
