@@ -289,8 +289,12 @@ void CTradeAgent::OnRspUserLogin(CUstpFtdcRspUserLoginField *pRspUserLogin, CUst
 #endif
 		if (pRspUserLogin->MaxOrderLocalID == NULL || strcmp(pRspUserLogin->MaxOrderLocalID, "") == 0)
 			m_maxOrderRef = 1;
-		else 
-			m_maxOrderRef = atoi(pRspUserLogin->MaxOrderLocalID) + 1;
+		else
+		{
+			int len = strlen(pRspUserLogin->MaxOrderLocalID);
+			char* maxOrderRef = len > 2 ? pRspUserLogin->MaxOrderLocalID + 2 : pRspUserLogin->MaxOrderLocalID;
+			m_maxOrderRef = atoi(maxOrderRef) + 1;
+		}
 
 		string ds(pRspUserLogin->TradingDay);
 		m_tradingDay = boost::gregorian::from_undelimited_string(ds);
