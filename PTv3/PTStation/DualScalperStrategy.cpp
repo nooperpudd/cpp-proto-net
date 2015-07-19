@@ -26,7 +26,17 @@ namespace DualScapler// Concrete FSM implementation
 	struct evtShortOpened {};
 	struct evtLongClosed {};
 	struct evtShortClosed {};
-	struct evtErrorFound {};
+	struct evtErrorFound 
+	{
+	public:
+		evtErrorFound() : m_portfolio(NULL)
+		{}
+		evtErrorFound(CPortfolio* pPortf, const string& errorInfo)
+			: m_portfolio(pPortf), m_errorInfo(errorInfo)
+		{}
+		CPortfolio* m_portfolio;
+		string m_errorInfo;
+	};
 
 	struct DualScaplerFront_ : public msm::front::state_machine_def < DualScaplerFront_ >
 	{
@@ -120,6 +130,7 @@ namespace DualScapler// Concrete FSM implementation
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 				fsm.Strategy->SetState(DUAL_SCALPER_ERROR);
+				fsm.Strategy->OnStrategyError(evt.m_portfolio, evt.m_errorInfo);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
@@ -135,27 +146,7 @@ namespace DualScapler// Concrete FSM implementation
 		{
 			//m_pPlacer->Send();
 		}
-		/*
-		void on_cancel_success(evtCancelSuccess const& evt)
-		{
-		m_pPlacer->OnOrderCanceled(evt.m_pOrd);
-		}
 
-		// guards
-		bool if_portfolio_canceled(evtCancelSuccess const&)
-		{
-		return m_pPlacer->IfPortfolioCanceled();
-		}
-		bool if_leg_canceled(evtCancelSuccess const&)
-		{
-		return !(m_pPlacer->IfPortfolioCanceled());
-		}
-		bool if_cancel_failed(evtCancelFailure const& evt)
-		{
-		// If Cancel failed due to order finished, DON'T go to Error
-		return evt.m_ErrorId != 26;
-		}
-		*/
 		typedef DualScaplerFront_ p;
 
 		// Transition table for OrderPlacer
@@ -255,7 +246,7 @@ void CDualScalperStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, b
 
 			if (m_stopping)
 			{
-				if (state == DUAL_SCALPER_BOTH_EMPTY)
+				if (state == DUAL_SCALPER_BOTH_EMPTY || state == DUAL_SCALPER_ERROR)
 				{
 					// 1. Truly Stop Strategy
 					CStrategy::Stop();
@@ -339,9 +330,14 @@ void CDualScalperStrategy::OnBindedRoutes()
 	m_longOrderPlacer = dynamic_cast<CDualScalperOrderPlacer*>(GetRoute(m_longSideUserId));
 	assert(m_longOrderPlacer != NULL);
 	m_longOrderPlacer->SetUserId(m_longSideUserId);
+	m_longOrderPlacer->SetPortfolioTradedEventHandler(
+		PortfolioTradedEvent(boost::bind(&CDualScalperStrategy::OnLongOrderPlacerDone, this, _1, _2, _3, _4)));
+
 	m_shortOrderPlacer = dynamic_cast<CDualScalperOrderPlacer*>(GetRoute(m_shortSideUserId));
 	assert(m_shortOrderPlacer != NULL);
 	m_shortOrderPlacer->SetUserId(m_shortSideUserId);
+	m_shortOrderPlacer->SetPortfolioTradedEventHandler(
+		PortfolioTradedEvent(boost::bind(&CDualScalperStrategy::OnShortOrderPlacerDone, this, _1, _2, _3, _4)));
 }
 
 void CDualScalperStrategy::OpenPosition(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
@@ -500,6 +496,28 @@ void CDualScalperStrategy::Stop()
 void CDualScalperStrategy::AlreadyStarted()
 {
 	m_stopping = false;
+}
+
+void CDualScalperStrategy::OnLongOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
+{
+	if (doneState == PortfolioError)
+		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(
+			DualScapler::evtErrorFound(m_longOrderPlacer->Portfolio(), 
+				boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_longOrderPlacer->UserId())));
+}
+
+void CDualScalperStrategy::OnShortOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
+{
+	if (doneState == PortfolioError)
+		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(
+			DualScapler::evtErrorFound(m_shortOrderPlacer->Portfolio(),
+				boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_shortOrderPlacer->UserId())));
+}
+
+void CDualScalperStrategy::OnStrategyError(CPortfolio* portf, const string& errorMsg)
+{
+	if (portf != NULL)
+		boost::thread(boost::bind(&CPortfolio::StopStrategyDueTo, portf, errorMsg));
 }
 
 void CMultiRouteStrategy::BindRoutes(CPortfolio* pPortfolio, OnBindingRouteHandler onBindingRouteHandler)

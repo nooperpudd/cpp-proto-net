@@ -65,6 +65,7 @@ CTradeAgent::CTradeAgent(void)
 	, m_index(0)
 	, m_isConnected(false)
 	, m_isLogged(false)
+	, m_reloginNeeded(false)
 	, m_isConfirmed(false)
 	, m_isWorking(false)
 	, m_maxOrderRef(1)
@@ -125,6 +126,7 @@ boost::tuple<bool, string> CTradeAgent::Login(const string& frontAddr, const str
 #ifdef FAKE_LOGIN
 		return boost::make_tuple(true, m_loginErr);
 #endif
+		m_reloginNeeded = false;
 
 		// wait for connected event
 		{
@@ -180,8 +182,8 @@ boost::tuple<bool, string> CTradeAgent::Login(const string& frontAddr, const str
 
 void CTradeAgent::Login()
 {
-	string traceInfo = boost::str(boost::format("Log in trade (%s, %s, %s)") 
-		% m_brokerId % m_userId % m_password);
+	string traceInfo = boost::str(boost::format("Log in trade (%s, %s, %s, %s)") 
+		% m_investorId % m_brokerId % m_userId % m_password);
 	logger.Trace(traceInfo);
 
 	bool reqSucc = false;
@@ -232,7 +234,15 @@ void CTradeAgent::OnFrontConnected()
 {
 	boost::lock_guard<boost::mutex> lock(m_mutConnecting);
 	m_isConnected = true;
-	logger.Info("Trade connected");
+	logger.Info(boost::str(boost::format("%s (%s) Trade connected")
+		% m_investorId % m_userId));
+	if (m_reloginNeeded)
+	{
+		logger.Info(boost::str(boost::format("%s (%s) Re-log in after reconnected...")
+			% m_investorId % m_userId));
+		Login();
+	}
+	m_reloginNeeded = false;
 	m_condConnecting.notify_one();
 }
 
@@ -240,11 +250,12 @@ void CTradeAgent::OnFrontDisconnected( int nReason )
 {
 	if(nReason == 0)
 	{
-		logger.Info(boost::str(boost::format("%s Trade normally disconnected.") % m_investorId));
+		logger.Info(boost::str(boost::format("%s (%s) Trade normally disconnected.") 
+			% m_investorId % m_userId));
 	}
 	else
 	{
-		string reasonTxt = boost::str(boost::format("%s disconnected from trade server due to ") % m_investorId);
+		string reasonTxt = boost::str(boost::format("%s (%s) disconnected from trade server due to ") % m_investorId % m_userId);
 		switch (nReason)
 		{
 		case 0x1001:
@@ -255,9 +266,11 @@ void CTradeAgent::OnFrontDisconnected( int nReason )
 			break;
 		case 0x2001:
 			reasonTxt.append("Receiving heart beat time out");
+			m_reloginNeeded = true;
 			break;
 		case 0x2002:
 			reasonTxt.append("Sending heart beat time out");
+			m_reloginNeeded = true;
 			break;
 		case 0x2003:
 			reasonTxt.append("Invalid packets received");
@@ -266,7 +279,7 @@ void CTradeAgent::OnFrontDisconnected( int nReason )
 		reasonTxt.append(" (will reconnect automatically).");
 		logger.Warning(reasonTxt);
 	}
-
+	m_isLogged = false;
 	m_isConnected = false;
 }
 
@@ -398,7 +411,7 @@ bool CTradeAgent::SubmitOrder( CUstpFtdcInputOrderField& inputOrderField )
 	int iResult = m_pUserApi->ReqOrderInsert(&inputOrderField, iRequestID);
 #endif
 
-	return iResult == 0;
+	return iResult == 0 && m_isLogged;
 }
 
 

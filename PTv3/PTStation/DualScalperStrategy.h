@@ -59,6 +59,8 @@ public:
 	DualScalperState State(){ return m_currentState.load(boost::memory_order_acquire); }
 	void SetState(DualScalperState state){ m_currentState.store(state, boost::memory_order_release); }
 
+	void OnStrategyError(CPortfolio* portf, const string& errorMsg);
+
 protected:
 
 	void OnBindedRoutes();
@@ -73,6 +75,8 @@ private:
 	void LongStopLoss(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp);
 	void ShortStopLoss(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp);
 
+	void OnLongOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded);
+	void OnShortOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded);
 
 	double m_diffThreshold;
 	double m_priceTick;

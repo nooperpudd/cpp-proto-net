@@ -150,27 +150,7 @@ namespace strategy// Concrete FSM implementation
 		{
 			//m_pPlacer->Send();
 		}
-		/*
-		void on_cancel_success(evtCancelSuccess const& evt)
-		{
-			m_pPlacer->OnOrderCanceled(evt.m_pOrd);
-		}
-		
-		// guards
-		bool if_portfolio_canceled(evtCancelSuccess const&)
-		{
-			return m_pPlacer->IfPortfolioCanceled();
-		}
-		bool if_leg_canceled(evtCancelSuccess const&)
-		{
-			return !(m_pPlacer->IfPortfolioCanceled());
-		}
-		bool if_cancel_failed(evtCancelFailure const& evt)
-		{
-			// If Cancel failed due to order finished, DON'T go to Error
-			return evt.m_ErrorId != 26;
-		}
-		*/
+
 		typedef ExecutorFront_ p;
 
 		// Transition table for OrderPlacer

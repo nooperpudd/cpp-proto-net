@@ -556,6 +556,15 @@ void CPortfolioOrderPlacer::Send(const char* openOrderId)
 	// real submit order and unlock to allow next order ref generation
 	bool succ = m_pOrderProcessor->SubmitAndUnlock(&(m_activeOrdPlacer->InputOrder()));
 
+	if (!succ)
+	{
+		boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(
+			evtErrorFound(
+			boost::str(boost::format("%s(%s) Failed to send order") % m_pOrderProcessor->InvestorId()
+			% m_pOrderProcessor->UserId()).c_str()));
+		return;
+	}
+
 	m_activeOrdPlacer->AddSubmitTimes();
 
 	boost::chrono::steady_clock::duration elapsed = 

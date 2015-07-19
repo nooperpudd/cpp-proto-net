@@ -105,7 +105,7 @@ public:
 	int ExecId(){ return m_execId; }
 	void SetExecId(int execId){ m_execId = execId; }
 	CPortfolio* Portfolio(){ return m_pPortf; }
-	void SetPortfolioTradedEventHandler(PortfolioTradedEvent& portfTradedHandler)
+	void SetPortfolioTradedEventHandler(PortfolioTradedEvent portfTradedHandler)
 	{
 		m_portfTradedEventHandler = portfTradedHandler;
 	}

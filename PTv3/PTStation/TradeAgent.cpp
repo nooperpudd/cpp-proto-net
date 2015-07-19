@@ -286,6 +286,7 @@ void CTradeAgent::OnFrontDisconnected( int nReason )
 		logger.Warning(reasonTxt);
 	}
 
+	m_isLogged = false;
 	m_isConnected = false;
 }
 
@@ -470,7 +471,7 @@ bool CTradeAgent::SubmitOrder( CThostFtdcInputOrderField& inputOrderField )
 	int iResult = m_pUserApi->ReqOrderInsert(&inputOrderField, iRequestID);
 #endif
 
-	return iResult == 0;
+	return iResult == 0 && m_isLogged;
 }
 
 void CTradeAgent::OnRspOrderInsert( CThostFtdcInputOrderField *pInputOrder, CThostFtdcRspInfoField *pRspInfo, int nRequestID, bool bIsLast )

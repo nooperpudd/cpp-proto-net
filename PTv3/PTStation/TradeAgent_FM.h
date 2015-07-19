@@ -136,6 +136,7 @@ private:
 	bool m_isLogged;
 	bool m_isConfirmed;
 	string m_loginErr;
+	bool m_reloginNeeded;
 
 	boost::thread m_thTrading;
 	bool m_isWorking;
