@@ -6,6 +6,10 @@
 #include "DoubleCompare.h"
 #include "OrderProcessor.h"
 
+#define BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS
+#define BOOST_MPL_LIMIT_VECTOR_SIZE 50 // or whatever you need               
+#define BOOST_MPL_LIMIT_MAP_SIZE 50 // or whatever you need 
+
 // back-end
 #include <boost/msm/back/state_machine.hpp>
 //front-end
@@ -22,10 +26,18 @@ using namespace msm::front;
 
 namespace DualScapler// Concrete FSM implementation
 {
+	struct evtBothOpen {};
 	struct evtLongOpened {};
+	struct evtLongOpenCanceled {};
 	struct evtShortOpened {};
+	struct evtShortOpenCanceled {};
+	struct evtBothClose {};
+	struct evtLongClose {};
+	struct evtShortClose {};
 	struct evtLongClosed {};
+	struct evtLongCloseCanceled {};
 	struct evtShortClosed {};
+	struct evtShortCloseCanceled {};
 	struct evtErrorFound 
 	{
 	public:
@@ -67,6 +79,101 @@ namespace DualScapler// Concrete FSM implementation
 			void on_exit(Event const&, FSM& fsm)
 			{
 				LOG_DEBUG(logger, "DualScalper leaving: BothEmpty");
+			}
+#endif
+		};
+
+		struct BothOpening : public msm::front::state < >
+		{
+			template <class Event, class FSM>
+			void on_entry(Event const& evt, FSM& fsm)
+			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, "DualScalper entering: BothOpening");
+#endif
+				fsm.Strategy->SetState(DUAL_SCALPER_BOTH_OPENING);
+			}
+#ifdef LOG_FOR_TRADE
+			template <class Event, class FSM>
+			void on_exit(Event const&, FSM& fsm)
+			{
+				LOG_DEBUG(logger, "DualScalper leaving: BothOpening");
+			}
+#endif
+		};
+
+		struct LongOpeningHoldShort : public msm::front::state < >
+		{
+			template <class Event, class FSM>
+			void on_entry(Event const& evt, FSM& fsm)
+			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, "DualScalper entering: LongOpeningHoldShort");
+#endif
+				fsm.Strategy->SetState(DUAL_SCALPER_LONG_OPENING_HOLD_SHORT);
+			}
+#ifdef LOG_FOR_TRADE
+			template <class Event, class FSM>
+			void on_exit(Event const&, FSM& fsm)
+			{
+				LOG_DEBUG(logger, "DualScalper leaving: LongOpeningHoldShort");
+			}
+#endif
+		};
+
+		struct LongOpeningOnly : public msm::front::state < >
+		{
+			template <class Event, class FSM>
+			void on_entry(Event const& evt, FSM& fsm)
+			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, "DualScalper entering: LongOpeningOnly");
+#endif
+				fsm.Strategy->SetState(DUAL_SCALPER_LONG_OPENING_ONLY);
+			}
+#ifdef LOG_FOR_TRADE
+			template <class Event, class FSM>
+			void on_exit(Event const&, FSM& fsm)
+			{
+				LOG_DEBUG(logger, "DualScalper leaving: LongOpeningOnly");
+			}
+#endif
+		};
+
+		struct ShortOpeningHoldLong : public msm::front::state < >
+		{
+			template <class Event, class FSM>
+			void on_entry(Event const& evt, FSM& fsm)
+			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, "DualScalper entering: ShortOpeningHoldLong");
+#endif
+				fsm.Strategy->SetState(DUAL_SCALPER_SHORT_OPENING_HOLD_LONG);
+			}
+#ifdef LOG_FOR_TRADE
+			template <class Event, class FSM>
+			void on_exit(Event const&, FSM& fsm)
+			{
+				LOG_DEBUG(logger, "DualScalper leaving: ShortOpeningHoldLong");
+			}
+#endif
+		};
+
+		struct ShortOpeningOnly : public msm::front::state < >
+		{
+			template <class Event, class FSM>
+			void on_entry(Event const& evt, FSM& fsm)
+			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, "DualScalper entering: ShortOpeningOnly");
+#endif
+				fsm.Strategy->SetState(DUAL_SCALPER_SHORT_OPENING_ONLY);
+			}
+#ifdef LOG_FOR_TRADE
+			template <class Event, class FSM>
+			void on_exit(Event const&, FSM& fsm)
+			{
+				LOG_DEBUG(logger, "DualScalper leaving: ShortOpeningOnly");
 			}
 #endif
 		};
@@ -122,6 +229,101 @@ namespace DualScapler// Concrete FSM implementation
 #endif
 		};
 
+		struct BothClosing : public msm::front::state < >
+		{
+			template <class Event, class FSM>
+			void on_entry(Event const& evt, FSM& fsm)
+			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, "DualScalper entering: BothClosing");
+#endif
+				fsm.Strategy->SetState(DUAL_SCALPER_BOTH_CLOSING);
+			}
+#ifdef LOG_FOR_TRADE
+			template <class Event, class FSM>
+			void on_exit(Event const&, FSM& fsm)
+			{
+				LOG_DEBUG(logger, "DualScalper leaving: BothClosing");
+			}
+#endif
+		};
+
+		struct LongClosingOnly : public msm::front::state < >
+		{
+			template <class Event, class FSM>
+			void on_entry(Event const& evt, FSM& fsm)
+			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, "DualScalper entering: LongClosingOnly");
+#endif
+				fsm.Strategy->SetState(DUAL_SCALPER_LONG_CLOSING_ONLY);
+			}
+#ifdef LOG_FOR_TRADE
+			template <class Event, class FSM>
+			void on_exit(Event const&, FSM& fsm)
+			{
+				LOG_DEBUG(logger, "DualScalper leaving: LongClosingOnly");
+			}
+#endif
+		};
+
+		struct LongClosingHoldShort : public msm::front::state < >
+		{
+			template <class Event, class FSM>
+			void on_entry(Event const& evt, FSM& fsm)
+			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, "DualScalper entering: LongClosingHoldShort");
+#endif
+				fsm.Strategy->SetState(DUAL_SCALPER_LONG_CLOSING_HOLD_SHORT);
+			}
+#ifdef LOG_FOR_TRADE
+			template <class Event, class FSM>
+			void on_exit(Event const&, FSM& fsm)
+			{
+				LOG_DEBUG(logger, "DualScalper leaving: LongClosingHoldShort");
+			}
+#endif
+		};
+
+		struct ShortClosingOnly : public msm::front::state < >
+		{
+			template <class Event, class FSM>
+			void on_entry(Event const& evt, FSM& fsm)
+			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, "DualScalper entering: ShortClosingOnly");
+#endif
+				fsm.Strategy->SetState(DUAL_SCALPER_SHORT_CLOSING_ONLY);
+			}
+#ifdef LOG_FOR_TRADE
+			template <class Event, class FSM>
+			void on_exit(Event const&, FSM& fsm)
+			{
+				LOG_DEBUG(logger, "DualScalper leaving: ShortClosingOnly");
+			}
+#endif
+		};
+
+		struct ShortClosingHoldLong : public msm::front::state < >
+		{
+			template <class Event, class FSM>
+			void on_entry(Event const& evt, FSM& fsm)
+			{
+#ifdef LOG_FOR_TRADE
+				LOG_DEBUG(logger, "DualScalper entering: ShortClosingHoldLong");
+#endif
+				fsm.Strategy->SetState(DUAL_SCALPER_SHORT_CLOSING_HOLD_LONG);
+			}
+#ifdef LOG_FOR_TRADE
+			template <class Event, class FSM>
+			void on_exit(Event const&, FSM& fsm)
+			{
+				LOG_DEBUG(logger, "DualScalper leaving: ShortClosingHoldLong");
+			}
+#endif
+		};
+
 		struct AllOk : public msm::front::state < > {};
 
 		struct Error : public msm::front::terminate_state < >
@@ -153,14 +355,48 @@ namespace DualScapler// Concrete FSM implementation
 		struct transition_table : mpl::vector <
 			//    Start					Event					Next			Action                     Guard
 			//  +-------------------+-------------------+-------------------+---------------------------+--------------------------+
-			_row < BothEmpty		, evtLongOpened		, HoldLongPosition		>,
-			_row < BothEmpty		, evtShortOpened	, HoldShortPosition		>,
-			_row < HoldLongPosition	, evtShortOpened	, BothHeld		>,
-			_row < HoldLongPosition	, evtLongClosed		, BothEmpty		>,
-			_row < HoldShortPosition, evtLongOpened		, BothHeld		>,
-			_row < HoldShortPosition, evtShortClosed	, BothEmpty		>,
-			_row < BothHeld			, evtLongClosed		, HoldShortPosition		>,
-			_row < BothHeld			, evtShortClosed	, HoldLongPosition		>,
+			
+			_row < BothEmpty, evtBothOpen, BothOpening		>,
+			
+			_row < BothOpening, evtLongOpened, ShortOpeningHoldLong		>,
+			_row < BothOpening, evtLongOpenCanceled, ShortOpeningOnly		>,
+			_row < BothOpening, evtShortOpened, LongOpeningHoldShort		>,
+			_row < BothOpening, evtShortOpenCanceled, LongOpeningOnly		>,
+			/*
+			_row < ShortOpeningHoldLong, evtShortOpened, BothHeld		>,*/
+			_row < ShortOpeningHoldLong, evtShortOpenCanceled, HoldLongPosition		>,
+			
+			_row < ShortOpeningOnly, evtShortOpened, HoldShortPosition		>,
+			_row < ShortOpeningOnly, evtShortOpenCanceled, BothEmpty		>,
+			
+//			_row < LongOpeningHoldShort, evtLongOpened, BothHeld		>,
+			_row < LongOpeningHoldShort, evtLongOpenCanceled, HoldShortPosition		>,
+
+			_row < LongOpeningOnly, evtLongOpened, HoldLongPosition		>,
+			_row < LongOpeningOnly, evtLongOpenCanceled, BothEmpty		>,
+			
+//			_row < BothHeld, evtBothClose, BothClosing		>,
+			
+			_row < BothClosing, evtLongClosed, ShortClosingOnly		>,
+			_row < BothClosing, evtLongCloseCanceled, ShortClosingHoldLong		>,
+			_row < BothClosing, evtShortClosed, LongClosingOnly		>,
+			_row < BothClosing, evtShortCloseCanceled, LongClosingHoldShort		>,
+			
+			_row < ShortClosingOnly, evtShortClosed, BothEmpty		>,
+			_row < ShortClosingOnly, evtShortCloseCanceled, HoldShortPosition		>,
+
+			_row < ShortClosingHoldLong, evtShortClosed, HoldLongPosition		>,
+//			_row < ShortClosingHoldLong, evtShortCloseCanceled, BothHeld		>,
+
+			_row < LongClosingOnly, evtLongClosed, BothEmpty		>,
+			_row < LongClosingOnly, evtLongCloseCanceled, HoldLongPosition		>,
+
+			_row < LongClosingHoldShort, evtLongClosed, HoldShortPosition		>,
+//			_row < LongClosingHoldShort, evtLongCloseCanceled, BothHeld		>,
+
+			_row < HoldLongPosition, evtLongClose, LongClosingOnly		>,
+			_row < HoldShortPosition, evtShortClose		, ShortClosingOnly		>,
+			
 			_row < AllOk			, evtErrorFound		, Error			>
 		> {};
 

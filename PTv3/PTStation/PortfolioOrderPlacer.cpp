@@ -20,10 +20,15 @@
 #include "InputOrder_FM.h"
 #endif
 
+#define BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS
+#define BOOST_MPL_LIMIT_VECTOR_SIZE 30 // or whatever you need               
+#define BOOST_MPL_LIMIT_MAP_SIZE 30 // or whatever you need 
+
 #include <boost/date_time.hpp>
 
 // back-end
 #include <boost/msm/back/state_machine.hpp>
+#include <boost/msm/back/tools.hpp>
 //front-end
 #include <boost/msm/front/state_machine_def.hpp>
 // functors
@@ -328,6 +333,7 @@ namespace // Concrete FSM implementation
 		   g_row < Sent				, evtCancelFailure	, Error											, &p::if_cancel_failed		>,
 			_row < Sent				, evtReject			, LegOrderRejected	>,
 			 Row < Sent				, evtRetry		    , none				 , Defer					, none						>,
+		   _irow < Sent				, evtNextLeg							>,
 			_row < LegOrderFilled	, evtAllFilled		, Completed			>,
 		   a_row < LegOrderFilled	, evtNextLeg		, Sending		     , &p::on_send		       >,
 		   a_row < LegOrderCanceled	, evtNextLeg		, Sending		     , &p::on_send		       >,
@@ -339,10 +345,13 @@ namespace // Concrete FSM implementation
 		template <class FSM,class Event>
 		void no_transition(Event const& e, FSM& fsm, int state)
 		{
+			string stateName;
+			fsm.m_pPlacer->GetStateName(stateName, state);
+
 			string unExpectedEvtName = typeid(e).name();
 			LOG_DEBUG(logger, boost::str(boost::format(
-				"no transition from state %d on event %s")
-				% state % unExpectedEvtName));
+				"no transition from state %s(%d) on event %s")
+				% stateName % state % unExpectedEvtName));
 
 			if(PendingTimeUpEventName == unExpectedEvtName ||
 				NextQuoteInEventName == unExpectedEvtName)
@@ -358,6 +367,9 @@ namespace // Concrete FSM implementation
 	};
 	// Pick a back-end
 	typedef msm::back::state_machine<OrderPlacer_> OrderPlacerFsm;
+
+	typedef OrderPlacerFsm::stt Stt;
+	typedef msm::back::generate_state_set<Stt>::type all_states; //all states
 }
 
 CPortfolioOrderPlacer::CPortfolioOrderPlacer(void)
@@ -1207,6 +1219,11 @@ entity::PosiOffsetFlag CPortfolioOrderPlacer::GetPortfolioOffset()
 	return entity::OPEN;
 }
 
+void CPortfolioOrderPlacer::GetStateName(string& stateName, int stateId)
+{
+	boost::mpl::for_each<all_states, boost::msm::wrap<mpl::placeholders::_1> >
+		(msm::back::get_state_name<Stt>(stateName, stateId));
+}
 
 
 

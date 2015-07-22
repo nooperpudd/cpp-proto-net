@@ -342,17 +342,17 @@ void CPortfolio::CheckOpenCancelLimit()
 	string msg;
 	if(m_openTimes >= m_maxOpenPerStart)
 	{
-		msg = boost::str(boost::format("本次策略开仓%d手已达到上限%d") % m_openTimes % m_maxOpenPerStart);
+		msg = boost::str(boost::format("%s 本次策略开仓%d手已达到上限%d") % InvestorId() % m_openTimes % m_maxOpenPerStart);
 		StopStrategyDueTo(msg);
 	}
 	else if(m_cancelTimes >= m_maxCancel)
 	{
-		msg = boost::str(boost::format("撤单%d次已达到上限%d") % m_cancelTimes % m_maxCancel);
+		msg = boost::str(boost::format("%s 撤单%d次已达到上限%d") % InvestorId() % m_cancelTimes % m_maxCancel);
 		StopStrategyDueTo(msg);
 	}
 	else if(m_totalOpenTimes >= m_totalOpenLimit)
 	{
-		msg = boost::str(boost::format("总开仓%d手已达到上限%d") % m_totalOpenTimes % m_totalOpenLimit);
+		msg = boost::str(boost::format("%s 总开仓%d手已达到上限%d") % InvestorId() % m_totalOpenTimes % m_totalOpenLimit);
 		StopStrategyDueTo(msg);
 	}
 }

@@ -110,6 +110,8 @@ public:
 		m_portfTradedEventHandler = portfTradedHandler;
 	}
 
+	void GetStateName(string& stateName, int stateId);
+
 protected:
 
 	void Initialize(const string& mlOrdId);
