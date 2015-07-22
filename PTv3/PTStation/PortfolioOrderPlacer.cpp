@@ -721,6 +721,8 @@ void CPortfolioOrderPlacer::OnOrderCanceled(const RtnOrderWrapperPtr& pRtnOrder 
 	int remained = pRtnOrder->VolumeTotal();
 	// only count cancel TIMES instead of volumes
 	m_pPortf->IncrementalCancelTimes(1);
+
+	RaiseLegOrderCanceledEvent(m_activeOrdPlacer->SequenceNo(), pRtnOrder);
 }
 
 void CPortfolioOrderPlacer::OnCompleted()
@@ -959,6 +961,16 @@ void CPortfolioOrderPlacer::RaiseLegOrderFilledEvent(int sendingIdx, const RtnOr
 	trade::TradeDirectionType direction = pRtnOrder->Direction();
 
 	OnLegOrderFilled(sendingIdx, symbol, offset, direction, price, volume);
+}
+
+
+void CPortfolioOrderPlacer::RaiseLegOrderCanceledEvent(int sendingIdx, const RtnOrderWrapperPtr& pRtnOrder)
+{
+	string symbol = pRtnOrder->Symbol();
+	trade::OffsetFlagType offset = pRtnOrder->Offset();
+	trade::TradeDirectionType direction = pRtnOrder->Direction();
+
+	OnLegOrderCanceled(sendingIdx, symbol, offset, direction);
 }
 
 void CPortfolioOrderPlacer::UpdateLegOrder(const RtnOrderWrapperPtr& pRtnOrder )

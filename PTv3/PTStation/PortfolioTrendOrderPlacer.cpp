@@ -131,6 +131,11 @@ void CPortfolioTrendOrderPlacer::OnLegOrderFilled(int sendingIdx, const string& 
 	m_pPortf->NotifyLegFilled(sendingIdx, symbol, offset, direction, price, volume);
 }
 
+void CPortfolioTrendOrderPlacer::OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
+{
+	m_pPortf->NotifyLegCanceled(sendingIdx, symbol, offset, direction);
+}
+
 double CPortfolioTrendOrderPlacer::CostPrice()
 {
 	if (m_multiLegOrderTemplate->legs_size() > 0)

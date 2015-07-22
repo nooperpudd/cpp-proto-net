@@ -26,18 +26,20 @@ using namespace msm::front;
 
 namespace DualScapler// Concrete FSM implementation
 {
-	struct evtBothOpen {};
+	struct evtLongOpening {};
 	struct evtLongOpened {};
 	struct evtLongOpenCanceled {};
-	struct evtShortOpened {};
-	struct evtShortOpenCanceled {};
-	struct evtBothClose {};
-	struct evtLongClose {};
-	struct evtShortClose {};
+	struct evtLongClosing {};
 	struct evtLongClosed {};
 	struct evtLongCloseCanceled {};
+
+	struct evtShortOpening {};
+	struct evtShortOpened {};
+	struct evtShortOpenCanceled {};
+	struct evtShortClosing {};
 	struct evtShortClosed {};
 	struct evtShortCloseCanceled {};
+
 	struct evtErrorFound 
 	{
 	public:
@@ -64,262 +66,154 @@ namespace DualScapler// Concrete FSM implementation
 		{
 		}
 
-		struct BothEmpty : public msm::front::state < >
+		struct LongEmpty : public msm::front::state < >
 		{
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: BothEmpty");
+				LOG_DEBUG(logger, "DualScalper entering: LongEmpty");
 #endif
-				fsm.Strategy->SetState(DUAL_SCALPER_BOTH_EMPTY);
+				fsm.Strategy->SetLongState(LEG_EMPTY);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
 			void on_exit(Event const&, FSM& fsm)
 			{
-				LOG_DEBUG(logger, "DualScalper leaving: BothEmpty");
+				LOG_DEBUG(logger, "DualScalper leaving: LongEmpty");
 			}
 #endif
 		};
 
-		struct BothOpening : public msm::front::state < >
+		struct LongOpening : public msm::front::state < >
 		{
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: BothOpening");
+				LOG_DEBUG(logger, "DualScalper entering: LongOpening");
 #endif
-				fsm.Strategy->SetState(DUAL_SCALPER_BOTH_OPENING);
+				fsm.Strategy->SetLongState(LEG_OPENING);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
 			void on_exit(Event const&, FSM& fsm)
 			{
-				LOG_DEBUG(logger, "DualScalper leaving: BothOpening");
+				LOG_DEBUG(logger, "DualScalper leaving: LongOpening");
 			}
 #endif
 		};
 
-		struct LongOpeningHoldShort : public msm::front::state < >
+		struct LongClosing : public msm::front::state < >
 		{
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: LongOpeningHoldShort");
+				LOG_DEBUG(logger, "DualScalper entering: LongClosing");
 #endif
-				fsm.Strategy->SetState(DUAL_SCALPER_LONG_OPENING_HOLD_SHORT);
+				fsm.Strategy->SetLongState(LEG_CLOSING);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
 			void on_exit(Event const&, FSM& fsm)
 			{
-				LOG_DEBUG(logger, "DualScalper leaving: LongOpeningHoldShort");
+				LOG_DEBUG(logger, "DualScalper leaving: LongClosing");
 			}
 #endif
 		};
 
-		struct LongOpeningOnly : public msm::front::state < >
+		struct LongOpened : public msm::front::state < >
 		{
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: LongOpeningOnly");
+				LOG_DEBUG(logger, "DualScalper entering: LongOpened");
 #endif
-				fsm.Strategy->SetState(DUAL_SCALPER_LONG_OPENING_ONLY);
+				fsm.Strategy->SetLongState(LEG_HOLD);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
 			void on_exit(Event const&, FSM& fsm)
 			{
-				LOG_DEBUG(logger, "DualScalper leaving: LongOpeningOnly");
+				LOG_DEBUG(logger, "DualScalper leaving: LongOpened");
 			}
 #endif
 		};
 
-		struct ShortOpeningHoldLong : public msm::front::state < >
+		struct ShortEmpty : public msm::front::state < >
 		{
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: ShortOpeningHoldLong");
+				LOG_DEBUG(logger, "DualScalper entering: ShortEmpty");
 #endif
-				fsm.Strategy->SetState(DUAL_SCALPER_SHORT_OPENING_HOLD_LONG);
+				fsm.Strategy->SetShortState(LEG_EMPTY);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
 			void on_exit(Event const&, FSM& fsm)
 			{
-				LOG_DEBUG(logger, "DualScalper leaving: ShortOpeningHoldLong");
+				LOG_DEBUG(logger, "DualScalper leaving: ShortEmpty");
 			}
 #endif
 		};
 
-		struct ShortOpeningOnly : public msm::front::state < >
+		struct ShortOpening : public msm::front::state < >
 		{
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: ShortOpeningOnly");
+				LOG_DEBUG(logger, "DualScalper entering: ShortOpening");
 #endif
-				fsm.Strategy->SetState(DUAL_SCALPER_SHORT_OPENING_ONLY);
+				fsm.Strategy->SetShortState(LEG_OPENING);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
 			void on_exit(Event const&, FSM& fsm)
 			{
-				LOG_DEBUG(logger, "DualScalper leaving: ShortOpeningOnly");
+				LOG_DEBUG(logger, "DualScalper leaving: ShortOpening");
 			}
 #endif
 		};
 
-		struct HoldLongPosition : public msm::front::state < >
+		struct ShortClosing : public msm::front::state < >
 		{
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: HoldLongPosition");
+				LOG_DEBUG(logger, "DualScalper entering: ShortClosing");
 #endif
-				fsm.Strategy->SetState(DUAL_SCALPER_HOLD_LONG);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm) { LOG_DEBUG(logger, "DualScalper leaving: HoldLongPosition"); }
-#endif
-		};
-
-		struct HoldShortPosition : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: HoldShortPosition");
-#endif
-				fsm.Strategy->SetState(DUAL_SCALPER_HOLD_SHORT);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm) { LOG_DEBUG(logger, "DualScalper leaving: HoldShortPosition"); }
-#endif
-		};
-
-		struct BothHeld : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: BothHeld");
-#endif
-				fsm.Strategy->SetState(DUAL_SCALPER_BOTH_HELD);
+				fsm.Strategy->SetShortState(LEG_CLOSING);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
 			void on_exit(Event const&, FSM& fsm)
 			{
-				LOG_DEBUG(logger, "DualScalper leaving: BothHeld");
+				LOG_DEBUG(logger, "DualScalper leaving: ShortClosing");
 			}
 #endif
 		};
 
-		struct BothClosing : public msm::front::state < >
+		struct ShortOpened : public msm::front::state < >
 		{
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
 #ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: BothClosing");
+				LOG_DEBUG(logger, "DualScalper entering: ShortOpened");
 #endif
-				fsm.Strategy->SetState(DUAL_SCALPER_BOTH_CLOSING);
+				fsm.Strategy->SetShortState(LEG_HOLD);
 			}
 #ifdef LOG_FOR_TRADE
 			template <class Event, class FSM>
 			void on_exit(Event const&, FSM& fsm)
 			{
-				LOG_DEBUG(logger, "DualScalper leaving: BothClosing");
-			}
-#endif
-		};
-
-		struct LongClosingOnly : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: LongClosingOnly");
-#endif
-				fsm.Strategy->SetState(DUAL_SCALPER_LONG_CLOSING_ONLY);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: LongClosingOnly");
-			}
-#endif
-		};
-
-		struct LongClosingHoldShort : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: LongClosingHoldShort");
-#endif
-				fsm.Strategy->SetState(DUAL_SCALPER_LONG_CLOSING_HOLD_SHORT);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: LongClosingHoldShort");
-			}
-#endif
-		};
-
-		struct ShortClosingOnly : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: ShortClosingOnly");
-#endif
-				fsm.Strategy->SetState(DUAL_SCALPER_SHORT_CLOSING_ONLY);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: ShortClosingOnly");
-			}
-#endif
-		};
-
-		struct ShortClosingHoldLong : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: ShortClosingHoldLong");
-#endif
-				fsm.Strategy->SetState(DUAL_SCALPER_SHORT_CLOSING_HOLD_LONG);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: ShortClosingHoldLong");
+				LOG_DEBUG(logger, "DualScalper leaving: ShortOpened");
 			}
 #endif
 		};
@@ -340,7 +234,7 @@ namespace DualScapler// Concrete FSM implementation
 #endif
 		};
 
-		typedef mpl::vector<BothEmpty, AllOk> initial_state;
+		typedef mpl::vector<LongEmpty, ShortEmpty, AllOk> initial_state;
 
 		// action
 		template <class Event>
@@ -356,46 +250,19 @@ namespace DualScapler// Concrete FSM implementation
 			//    Start					Event					Next			Action                     Guard
 			//  +-------------------+-------------------+-------------------+---------------------------+--------------------------+
 			
-			_row < BothEmpty, evtBothOpen, BothOpening		>,
-			
-			_row < BothOpening, evtLongOpened, ShortOpeningHoldLong		>,
-			_row < BothOpening, evtLongOpenCanceled, ShortOpeningOnly		>,
-			_row < BothOpening, evtShortOpened, LongOpeningHoldShort		>,
-			_row < BothOpening, evtShortOpenCanceled, LongOpeningOnly		>,
-			/*
-			_row < ShortOpeningHoldLong, evtShortOpened, BothHeld		>,*/
-			_row < ShortOpeningHoldLong, evtShortOpenCanceled, HoldLongPosition		>,
-			
-			_row < ShortOpeningOnly, evtShortOpened, HoldShortPosition		>,
-			_row < ShortOpeningOnly, evtShortOpenCanceled, BothEmpty		>,
-			
-//			_row < LongOpeningHoldShort, evtLongOpened, BothHeld		>,
-			_row < LongOpeningHoldShort, evtLongOpenCanceled, HoldShortPosition		>,
+			_row < LongEmpty, evtLongOpening, LongOpening		>,
+			_row < LongOpening, evtLongOpened, LongOpened		>,
+			_row < LongOpening, evtLongOpenCanceled, LongEmpty		>,
+			_row < LongOpened, evtLongClosing, LongClosing		>,
+			_row < LongClosing, evtLongClosed, LongEmpty		>,
+			_row < LongClosing, evtLongCloseCanceled, LongOpened		>,
 
-			_row < LongOpeningOnly, evtLongOpened, HoldLongPosition		>,
-			_row < LongOpeningOnly, evtLongOpenCanceled, BothEmpty		>,
-			
-//			_row < BothHeld, evtBothClose, BothClosing		>,
-			
-			_row < BothClosing, evtLongClosed, ShortClosingOnly		>,
-			_row < BothClosing, evtLongCloseCanceled, ShortClosingHoldLong		>,
-			_row < BothClosing, evtShortClosed, LongClosingOnly		>,
-			_row < BothClosing, evtShortCloseCanceled, LongClosingHoldShort		>,
-			
-			_row < ShortClosingOnly, evtShortClosed, BothEmpty		>,
-			_row < ShortClosingOnly, evtShortCloseCanceled, HoldShortPosition		>,
-
-			_row < ShortClosingHoldLong, evtShortClosed, HoldLongPosition		>,
-//			_row < ShortClosingHoldLong, evtShortCloseCanceled, BothHeld		>,
-
-			_row < LongClosingOnly, evtLongClosed, BothEmpty		>,
-			_row < LongClosingOnly, evtLongCloseCanceled, HoldLongPosition		>,
-
-			_row < LongClosingHoldShort, evtLongClosed, HoldShortPosition		>,
-//			_row < LongClosingHoldShort, evtLongCloseCanceled, BothHeld		>,
-
-			_row < HoldLongPosition, evtLongClose, LongClosingOnly		>,
-			_row < HoldShortPosition, evtShortClose		, ShortClosingOnly		>,
+			_row < ShortEmpty, evtShortOpening, ShortOpening		>,
+			_row < ShortOpening, evtShortOpened, ShortOpened		>,
+			_row < ShortOpening, evtShortOpenCanceled, ShortEmpty		>,
+			_row < ShortOpened, evtShortClosing, ShortClosing		>,
+			_row < ShortClosing, evtShortClosed, ShortEmpty		>,
+			_row < ShortClosing, evtShortCloseCanceled, ShortOpened		>,
 			
 			_row < AllOk			, evtErrorFound		, Error			>
 		> {};
@@ -426,6 +293,8 @@ CDualScalperStrategy::CDualScalperStrategy()
 	, m_longOrderPlacer(NULL)
 	, m_shortOrderPlacer(NULL)
 	, m_stopping(false)
+	, m_longSideState(LEG_EMPTY)
+	, m_shortSideState(LEG_EMPTY)
 {
 	m_fsm = boost::shared_ptr<void>(new DualScapler::DualScaplerFsm(this));
 }
@@ -689,6 +558,28 @@ void CDualScalperStrategy::OnLegFilled(int sendingIdx, const string& symbol, tra
 	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::BUY && sendingIdx == 1)
 	{
 		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortClosed());
+	}
+}
+
+void CDualScalperStrategy::OnLegCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
+{
+	boost::lock_guard<boost::mutex> l(m_mutFsm);
+
+	if (offset == trade::OF_OPEN && direction == trade::BUY && sendingIdx == 0)
+	{
+		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongOpenCanceled());
+	}
+	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::SELL && sendingIdx == 1)
+	{
+		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongCloseCanceled());
+	}
+	else if (offset == trade::OF_OPEN && direction == trade::SELL && sendingIdx == 0)
+	{
+		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortOpenCanceled());
+	}
+	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::BUY && sendingIdx == 1)
+	{
+		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortCloseCanceled());
 	}
 }
 

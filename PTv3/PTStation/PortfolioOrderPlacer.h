@@ -122,6 +122,7 @@ protected:
 	virtual void OnAddingLegOrderPlacer(CLegOrderPlacer* pLegOrderPlacer){}
 	virtual void OnLegOrderSent(int orderPlacerIdx){}
 	virtual void OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume){}
+	virtual void OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction){}
 	virtual void OnPortfolioDone(PortfolioFinishState portfState){}
 	virtual CLegOrderPlacer* CreateLegOrderPlacer(int openTimeout, int maxRetryTimes);
 	
@@ -133,6 +134,7 @@ protected:
 	void ResetOrderPlacerStatus();
 	void GotoRetry(const RtnOrderWrapperPtr& pRtnOrder);
 	void RaiseLegOrderFilledEvent(int sendingIdx, const RtnOrderWrapperPtr& pRtnOrder);
+	void RaiseLegOrderCanceledEvent(int sendingIdx, const RtnOrderWrapperPtr& pRtnOrder);
 	void GotoNext();
 	void AfterLegDone();
 	void AfterPortfolioDone(PortfolioFinishState portfState);
