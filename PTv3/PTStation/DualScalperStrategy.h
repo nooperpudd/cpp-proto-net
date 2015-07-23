@@ -29,21 +29,37 @@ private:
 
 enum DualScalperState
 {
-	DUAL_SCALPER_BOTH_EMPTY,
-	DUAL_SCALPER_BOTH_OPENING,
-	DUAL_SCALPER_LONG_OPENING_HOLD_SHORT,
-	DUAL_SCALPER_LONG_OPENING_ONLY,
-	DUAL_SCALPER_SHORT_OPENING_HOLD_LONG,
-	DUAL_SCALPER_SHORT_OPENING_ONLY,
-	DUAL_SCALPER_HOLD_LONG,
-	DUAL_SCALPER_HOLD_SHORT,
-	DUAL_SCALPER_BOTH_HELD,
-	DUAL_SCALPER_BOTH_CLOSING,
-	DUAL_SCALPER_LONG_CLOSING_ONLY,
-	DUAL_SCALPER_LONG_CLOSING_HOLD_SHORT,
-	DUAL_SCALPER_SHORT_CLOSING_ONLY,
-	DUAL_SCALPER_SHORT_CLOSING_HOLD_LONG,
-	DUAL_SCALPER_ERROR,
+	DS_BOTH_EMPTY,
+	DS_BOTH_OPENING,
+	DS_LONG_OPENING_HOLD_SHORT,
+	DS_LONG_OPENING_ONLY,
+	DS_SHORT_OPENING_HOLD_LONG,
+	DS_SHORT_OPENING_ONLY,
+	DS_HOLD_LONG,
+	DS_HOLD_SHORT,
+	DS_BOTH_HELD,
+	DS_BOTH_CLOSING,
+	DS_LONG_CLOSING_ONLY,
+	DS_LONG_CLOSING_HOLD_SHORT,
+	DS_SHORT_CLOSING_ONLY,
+	DS_SHORT_CLOSING_HOLD_LONG,
+	DS_ERROR,
+};
+
+enum DualScalperEvent
+{
+	EVT_OPENING,
+	EVT_CLOSING,
+
+	EVT_LONG_OPENED,
+	EVT_LONG_OPEN_CANCELED,
+	EVT_LONG_CLOSED,
+	EVT_LONG_CLOSE_CANCELED,
+
+	EVT_SHORT_OPENED,
+	EVT_SHORT_OPEN_CANCELED,
+	EVT_SHORT_CLOSED,
+	EVT_SHORT_CLOSE_CANCELED
 };
 
 enum DualScalperOrderPlacerState
@@ -93,6 +109,8 @@ protected:
 	virtual void OnStop();
 
 private:
+	void Transition(DualScalperEvent evt);
+
 	void OpenPosition(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp);
 	void ClosePosition(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp);
 	void LongStopLoss(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp);
@@ -122,6 +140,7 @@ private:
 	boost::atomic<DualScalperState> m_currentState;
 	boost::atomic<DualScalperOrderPlacerState> m_longSideState;
 	boost::atomic<DualScalperOrderPlacerState> m_shortSideState;
+	
 	boost::mutex m_mutFsm;
 
 	bool m_stopping;

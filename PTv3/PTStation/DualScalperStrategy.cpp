@@ -225,7 +225,7 @@ namespace DualScapler// Concrete FSM implementation
 			template <class Event, class FSM>
 			void on_entry(Event const& evt, FSM& fsm)
 			{
-				fsm.Strategy->SetState(DUAL_SCALPER_ERROR);
+				fsm.Strategy->SetState(DS_ERROR);
 				fsm.Strategy->OnStrategyError(evt.m_portfolio, evt.m_errorInfo);
 			}
 #ifdef LOG_FOR_TRADE
@@ -283,6 +283,26 @@ namespace DualScapler// Concrete FSM implementation
 	typedef msm::back::state_machine<DualScaplerFront_> DualScaplerFsm;
 }
 
+int TRANSITION_TABLE[15][10] = { 
+//		--- COMMON				--- LONG														--- SHORT
+//	[OPENING, CLOSING] [OPENED, OPEN_CANCELED, CLOSED, CLOSE_CANCELED] [OPENED, OPEN_CANCELED, CLOSED, CLOSE_CANCELED]
+//		0		1		  2			3			 4			5			  6			 7			  8			9
+/*0 DS_BOTH_EMPTY*/{ DS_BOTH_OPENING, -2, -3, -4, -5, -6, -7, -8, -9, -10 },
+/*1 DS_BOTH_OPENING*/{ -1, -2, DS_SHORT_OPENING_HOLD_LONG, DS_SHORT_OPENING_ONLY, -5, -6, DS_LONG_OPENING_HOLD_SHORT, DS_LONG_OPENING_ONLY, -9, -10 },
+/*2 DS_LONG_OPENING_HOLD_SHORT*/{ -1, -2, DS_BOTH_HELD, DS_HOLD_SHORT, -5, -6, -7, -8, -9, -10 },
+/*3 DS_LONG_OPENING_ONLY*/{ -1, -2, DS_HOLD_LONG, DS_BOTH_EMPTY, -5, -6, -7, -8, -9, -10 },
+/*4 DS_SHORT_OPENING_HOLD_LONG*/{ -1, -2, -3, -4, -5, -6, DS_BOTH_HELD, DS_HOLD_LONG, -9, -10 },
+/*5 DS_SHORT_OPENING_ONLY*/{ -1, -2, -3, -4, -5, -6, DS_HOLD_SHORT, DS_BOTH_EMPTY, -9, -10 },
+/*6 DS_HOLD_LONG*/{ -1, DS_LONG_CLOSING_ONLY, -3, -4, -5, -6, -7, -8, -9, -10 },
+/*7 DS_HOLD_SHORT*/{ -1, DS_SHORT_CLOSING_ONLY, -3, -4, -5, -6, -7, -8, -9, -10 },
+/*8 DS_BOTH_HELD*/{ -1, DS_BOTH_CLOSING, -3, -4, -5, -6, -7, -8, -9, -10 },
+/*9 DS_BOTH_CLOSING*/{ -1, -2, -3, -4, DS_SHORT_CLOSING_ONLY, DS_SHORT_CLOSING_HOLD_LONG, -7, -8, DS_LONG_CLOSING_ONLY, DS_LONG_CLOSING_HOLD_SHORT },
+/*10 DS_LONG_CLOSING_ONLY*/{ -1, -2, -3, -4, DS_BOTH_EMPTY, DS_HOLD_LONG, -7, -8, -9, -10 },
+/*11 DS_LONG_CLOSING_HOLD_SHORT*/{ -1, -2, -3, -4, DS_HOLD_SHORT, DS_BOTH_HELD, -7, -8, -9, -10 },
+/*12 DS_SHORT_CLOSING_ONLY*/{ -1, -2, -3, -4, -5, -6, -7, -8, DS_BOTH_EMPTY, DS_HOLD_SHORT },
+/*13 DS_SHORT_CLOSING_HOLD_LONG*/{ -1, -2, -3, -4, -5, -6, -7, -8, DS_HOLD_LONG, DS_BOTH_HELD },
+/*14 DS_ERROR*/{ -1, -2, -3, -4, -5, -6, -7, -8, -9, -10 }
+};
 
 CDualScalperStrategy::CDualScalperStrategy()
 	: m_diffThreshold(0)
@@ -297,6 +317,8 @@ CDualScalperStrategy::CDualScalperStrategy()
 	, m_shortSideState(LEG_EMPTY)
 {
 	m_fsm = boost::shared_ptr<void>(new DualScapler::DualScaplerFsm(this));
+	int dd = TRANSITION_TABLE[DS_SHORT_CLOSING_HOLD_LONG][EVT_SHORT_CLOSE_CANCELED];
+	LOG_DEBUG(logger, "");
 }
 
 
@@ -348,15 +370,18 @@ void CDualScalperStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, b
 		if (IsRunning() && !IsSuspending())
 		{
 			DualScalperState state = State();
+#ifdef LOG_FOR_TRADE
+			LOG_DEBUG(logger, boost::str(boost::format("DualScalper State: %d") % state));
+#endif // LOG_FOR_TRADE
 
 			if (m_stopping)
 			{
-				if (state == DUAL_SCALPER_BOTH_EMPTY || state == DUAL_SCALPER_ERROR)
+				if (state == DS_BOTH_EMPTY || state == DS_ERROR)
 				{
 					// 1. Truly Stop Strategy
 					CStrategy::Stop();
 				}
-				else if (state == DUAL_SCALPER_BOTH_HELD)
+				else if (state == DS_BOTH_HELD)
 				{
 					// 2. Try to close
 					ClosePosition(pQuote, timestamp);
@@ -367,12 +392,12 @@ void CDualScalperStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, b
 				// if price diff meets condition
 				if (DoubleGreaterEqual(m_diff, m_diffThreshold))
 				{
-					if (state == DUAL_SCALPER_BOTH_EMPTY)
+					if (state == DS_BOTH_EMPTY)
 					{
 						// 1. Try to open
 						OpenPosition(pQuote, timestamp);
 					}
-					else if (state == DUAL_SCALPER_BOTH_HELD)
+					else if (state == DS_BOTH_HELD)
 					{
 						// 2. Try to close
 						ClosePosition(pQuote, timestamp);
@@ -380,14 +405,14 @@ void CDualScalperStrategy::Test(entity::Quote* pQuote, CPortfolio* pPortfolio, b
 				}
 			}
 
-			if (state == DUAL_SCALPER_HOLD_LONG)
+			if (state == DS_HOLD_LONG)
 			{
 				if (m_longOrderPlacer->IsOnPending())
 					m_longOrderPlacer->OnQuoteReceived(timestamp, pQuote);
 				else if (m_longOrderPlacer->IsOpened())
 					LongStopLoss(pQuote, timestamp);
 			}
-			else if (state == DUAL_SCALPER_HOLD_SHORT)
+			else if (state == DS_HOLD_SHORT)
 			{
 				if (m_shortOrderPlacer->IsOnPending())
 					m_shortOrderPlacer->OnQuoteReceived(timestamp, pQuote);
@@ -453,6 +478,7 @@ void CDualScalperStrategy::OpenPosition(entity::Quote* pQuote, boost::chrono::st
 	double longLmtPrice[2] = { buyPx, 0.0 };
 	double shortLmtPrice[2] = { sellPx, 0.0 };
 
+	Transition(EVT_OPENING);
 	if (pQuote->bid_size() <= pQuote->ask_size())
 	{
 		//m_shortOrderPlacer->AsyncRun(entity::SHORT, sellPx, timestamp);
@@ -476,6 +502,7 @@ void CDualScalperStrategy::ClosePosition(entity::Quote* pQuote, boost::chrono::s
 	double buyPx = pQuote->bid() + m_openOffset;
 	double sellPx = pQuote->ask() - m_openOffset;
 
+	Transition(EVT_CLOSING);
 	if (pQuote->bid_size() >= pQuote->ask_size())
 	{
 		m_longOrderPlacer->CloseOrder(sellPx, true);
@@ -510,7 +537,7 @@ void CDualScalperStrategy::LongStopLoss(entity::Quote* pQuote, boost::chrono::st
 	{
 		stopLossPx = pQuote->bid(); // set opposite price
 	}
-	
+	Transition(EVT_CLOSING);
 	m_longOrderPlacer->CloseOrder(stopLossPx, false);
 	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Long stop loss @ %.2f (A:%.2f, B:%.2f, %s %d)") 
 		% stopLossPx % pQuote->ask() % pQuote->bid() % pQuote->update_time() % pQuote->update_millisec()));
@@ -533,7 +560,7 @@ void CDualScalperStrategy::ShortStopLoss(entity::Quote* pQuote, boost::chrono::s
 	{
 		stopLossPx = pQuote->ask(); // set opposite price
 	}
-
+	Transition(EVT_CLOSING);
 	m_shortOrderPlacer->CloseOrder(stopLossPx, false);
 	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Short stop loss @ %.2f (A:%.2f, B:%.2f, %s %d)")
 		% stopLossPx % pQuote->ask() % pQuote->bid() % pQuote->update_time() % pQuote->update_millisec()));
@@ -541,45 +568,76 @@ void CDualScalperStrategy::ShortStopLoss(entity::Quote* pQuote, boost::chrono::s
 
 void CDualScalperStrategy::OnLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
 {
-	boost::lock_guard<boost::mutex> l(m_mutFsm);
+	//boost::lock_guard<boost::mutex> l(m_mutFsm);
 
 	if (offset == trade::OF_OPEN && direction == trade::BUY && sendingIdx == 0)
 	{
-		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongOpened());
+		Transition(EVT_LONG_OPENED);
+		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongOpened());
 	}
 	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::SELL && sendingIdx == 1)
 	{
-		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongClosed());
+		Transition(EVT_LONG_CLOSED);
+		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongClosed());
 	}
 	else if (offset == trade::OF_OPEN && direction == trade::SELL && sendingIdx == 0)
 	{
-		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortOpened());
+		Transition(EVT_SHORT_OPENED);
+		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortOpened());
 	}
 	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::BUY && sendingIdx == 1)
 	{
-		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortClosed());
+		Transition(EVT_SHORT_CLOSED);
+		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortClosed());
 	}
 }
 
 void CDualScalperStrategy::OnLegCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
 {
-	boost::lock_guard<boost::mutex> l(m_mutFsm);
+	//boost::lock_guard<boost::mutex> l(m_mutFsm);
 
 	if (offset == trade::OF_OPEN && direction == trade::BUY && sendingIdx == 0)
 	{
-		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongOpenCanceled());
+		Transition(EVT_LONG_OPEN_CANCELED);
+		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongOpenCanceled());
 	}
 	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::SELL && sendingIdx == 1)
 	{
-		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongCloseCanceled());
+		Transition(EVT_LONG_CLOSE_CANCELED);
+		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongCloseCanceled());
 	}
 	else if (offset == trade::OF_OPEN && direction == trade::SELL && sendingIdx == 0)
 	{
-		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortOpenCanceled());
+		Transition(EVT_SHORT_OPEN_CANCELED);
+		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortOpenCanceled());
 	}
 	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::BUY && sendingIdx == 1)
 	{
-		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortCloseCanceled());
+		Transition(EVT_SHORT_CLOSE_CANCELED);
+		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortCloseCanceled());
+	}
+}
+
+void CDualScalperStrategy::Transition(DualScalperEvent evt)
+{
+	boost::lock_guard<boost::mutex> l(m_mutFsm);
+	DualScalperState current = State();
+	int i_next = TRANSITION_TABLE[current][evt];
+	
+	if (i_next > -1)
+	{
+		SetState((DualScalperState)i_next);
+#ifdef LOG_FOR_TRADE
+		LOG_DEBUG(logger, boost::str(boost::format("DualScalper Transition Start: %d -> Event: %d -> Next: %d") 
+			% current % evt % i_next));
+#endif // LOG_FOR_TRADE
+	}
+	else
+	{
+		SetState(DS_ERROR);
+		logger.Error(boost::str(boost::format("Transition ERROR --> Unexpected event(%d) for state (%d)")
+			% evt % current));
+		assert(i_next > -1);
 	}
 }
 
@@ -597,7 +655,7 @@ bool CDualScalperStrategy::OnStart()
 	if (m_shortOrderPlacer != NULL)
 		m_shortOrderPlacer->Prepare();
 
-	boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->start();
+	SetState(DS_BOTH_EMPTY);
 
 	return true;
 }
@@ -605,7 +663,7 @@ bool CDualScalperStrategy::OnStart()
 void CDualScalperStrategy::OnStop()
 {
 	LOG_DEBUG(logger, "DualScapler - Truly Stopped");
-	boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->stop();
+	//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->stop();
 	if (m_longOrderPlacer != NULL)
 		m_longOrderPlacer->Cleanup();
 	if (m_shortOrderPlacer != NULL)
@@ -628,17 +686,27 @@ void CDualScalperStrategy::AlreadyStarted()
 void CDualScalperStrategy::OnLongOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
 {
 	if (doneState == PortfolioError)
-		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(
+	{
+		SetState(DS_ERROR);
+		OnStrategyError(m_longOrderPlacer->Portfolio(),
+			boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_longOrderPlacer->UserId()));
+	}
+		/*boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(
 			DualScapler::evtErrorFound(m_longOrderPlacer->Portfolio(), 
-				boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_longOrderPlacer->UserId())));
+				boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_longOrderPlacer->UserId())));*/
 }
 
 void CDualScalperStrategy::OnShortOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
 {
 	if (doneState == PortfolioError)
-		boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(
+	{
+		SetState(DS_ERROR);
+		OnStrategyError(m_shortOrderPlacer->Portfolio(),
+			boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_shortOrderPlacer->UserId()));
+	}
+		/*boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(
 			DualScapler::evtErrorFound(m_shortOrderPlacer->Portfolio(),
-				boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_shortOrderPlacer->UserId())));
+				boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_shortOrderPlacer->UserId())));*/
 }
 
 void CDualScalperStrategy::OnStrategyError(CPortfolio* portf, const string& errorMsg)
@@ -646,6 +714,7 @@ void CDualScalperStrategy::OnStrategyError(CPortfolio* portf, const string& erro
 	if (portf != NULL)
 		boost::thread(boost::bind(&CPortfolio::StopStrategyDueTo, portf, errorMsg));
 }
+
 
 void CMultiRouteStrategy::BindRoutes(CPortfolio* pPortfolio, OnBindingRouteHandler onBindingRouteHandler)
 {
