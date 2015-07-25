@@ -233,10 +233,10 @@ bool CLegOrderPlacer::IsLegPlacerEligibleRetry()
 
 bool CLegOrderPlacer::CanRetry()
 {
-	return RetryUsedUp();
+	return RetryAvailable();
 }
 
-bool CLegOrderPlacer::RetryUsedUp()
+bool CLegOrderPlacer::RetryAvailable()
 {
 	return m_submitTimes <= m_maxRetry;
 }
@@ -280,16 +280,16 @@ void CDualScalperLegOrderPlacer::StartPending(const RtnOrderWrapperPtr& pendingO
 bool CDualScalperLegOrderPlacer::CanRetry()
 {
 	if (m_cancelOnTimeout)
-		return false;
+		return false;	// special handle work flow in order placer
 	else
 		return CLegOrderPlacer::CanRetry();
 }
 
-bool CDualScalperLegOrderPlacer::RetryUsedUp()
+bool CDualScalperLegOrderPlacer::RetryAvailable()
 {
 	if (m_cancelOnTimeout)
-		return false;
+		return true;	// special handle work flow in order placer
 	else
-		return CLegOrderPlacer::RetryUsedUp();
+		return CLegOrderPlacer::RetryAvailable();
 }
 

@@ -125,7 +125,7 @@ protected:
 	virtual void OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction){}
 	virtual void OnPortfolioDone(PortfolioFinishState portfState){}
 	virtual CLegOrderPlacer* CreateLegOrderPlacer(int openTimeout, int maxRetryTimes);
-	
+
 	void SetNewOrderId(const string& mlOrdId, const char* openOrdId);
 	void ResetTemplate();
 	void FillSendingOrderNote();
@@ -138,7 +138,9 @@ protected:
 	void GotoNext();
 	void AfterLegDone();
 	void AfterPortfolioDone(PortfolioFinishState portfState);
-	
+	void RaiseError(const string& errMsg){ RaiseError(errMsg.c_str()); }
+	void RaiseError(const char* errMsg);
+
 	void GenLegOrderPlacers();
 	void UpdateLegOrder(const RtnOrderWrapperPtr& pRtnOrder);
 	void UpdateLastDoneOrder();

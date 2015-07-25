@@ -570,10 +570,8 @@ void CPortfolioOrderPlacer::Send(const char* openOrderId)
 
 	if (!succ)
 	{
-		boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(
-			evtErrorFound(
-			boost::str(boost::format("%s(%s) Failed to send order") % m_pOrderProcessor->InvestorId()
-			% m_pOrderProcessor->UserId()).c_str()));
+		RaiseError(boost::str(boost::format("%s(%s) Failed to send order") % m_pOrderProcessor->InvestorId()
+			% m_pOrderProcessor->UserId()));
 		return;
 	}
 
@@ -815,7 +813,7 @@ void CPortfolioOrderPlacer::OnQuoteReceived( boost::chrono::steady_clock::time_p
 			return; // in case other symbol's quote coming
 
 #ifdef LOG_FOR_TRADE
-		LOG_DEBUG(logger, boost::str(boost::format("Check If need to orderplacer(%d) cancel and retry") % m_activeOrdPlacer->SequenceNo()));
+		LOG_DEBUG(logger, boost::str(boost::format("Check If need orderplacer(%d) to cancel and retry") % m_activeOrdPlacer->SequenceNo()));
 #endif
 		// if order placer is closing order and retry times available
 		if (m_activeOrdPlacer->IsLegPlacerEligibleRetry())
@@ -831,6 +829,11 @@ void CPortfolioOrderPlacer::OnQuoteReceived( boost::chrono::steady_clock::time_p
 			}
 			m_triggingTimestamp = quoteTimestamp;
 		}
+		else
+		{
+			// As we don't retry the order, we will cancel the pending order
+			boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(evtNextQuoteIn());
+		}
 	}
 	else
 	{
@@ -843,7 +846,7 @@ void CPortfolioOrderPlacer::OnLegRejected(const RtnOrderWrapperPtr& pRtnOrder )
 	AfterLegDone();
 	UpdateLegOrder(pRtnOrder);
 	
-	boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(evtErrorFound(pRtnOrder->StatusMsg()));
+	RaiseError(pRtnOrder->StatusMsg());
 }
 
 void CPortfolioOrderPlacer::OnPortfolioCanceled()
@@ -1042,7 +1045,9 @@ void CPortfolioOrderPlacer::CleanupProc()
 		boost::this_thread::sleep_for(boost::chrono::seconds(1));
 		++retryTimes;
 		if (retryTimes > CLEANUP_TIMEOUT)
-			boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(evtErrorFound("Force terminate due to already wait 3 seconds"));
+		{
+			RaiseError("Force terminate due to already wait 3 seconds");
+		}
 	}
 
 	m_activeOrdPlacer = NULL;
@@ -1095,14 +1100,17 @@ void CPortfolioOrderPlacer::GotoRetry(const RtnOrderWrapperPtr& pRtnOrder)
 	}
 	else
 	{
-		if (m_activeOrdPlacer->RetryUsedUp())
+		if (!m_activeOrdPlacer->RetryAvailable())
 		{
+			int submitTimes = m_activeOrdPlacer->SubmitTimes();
 			AfterLegDone();
 			LOG_INFO(logger, boost::str(boost::format("Retry times is used up. Order(%s) has been retried %d times")
-				% pRtnOrder->Symbol() % m_activeOrdPlacer->SubmitTimes()));
+				% pRtnOrder->Symbol() % submitTimes));
 
 			boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(
-				evtFilledCanceled("单腿:平仓失败"));
+				evtFilledCanceled(
+				boost::str(boost::format("单腿:已重试%d次,平仓失败,请检查持仓情况") % submitTimes
+					)));
 		}
 		else
 		{
@@ -1235,6 +1243,11 @@ void CPortfolioOrderPlacer::GetStateName(string& stateName, int stateId)
 {
 	boost::mpl::for_each<all_states, boost::msm::wrap<mpl::placeholders::_1> >
 		(msm::back::get_state_name<Stt>(stateName, stateId));
+}
+
+void CPortfolioOrderPlacer::RaiseError(const char* errMsg)
+{
+	boost::static_pointer_cast<OrderPlacerFsm>(m_fsm)->process_event(evtErrorFound(errMsg));
 }
 
 

@@ -293,15 +293,15 @@ int TRANSITION_TABLE[15][10] = {
 /*3 DS_LONG_OPENING_ONLY*/{ -1, -2, DS_HOLD_LONG, DS_BOTH_EMPTY, -5, -6, -7, -8, -9, -10 },
 /*4 DS_SHORT_OPENING_HOLD_LONG*/{ -1, -2, -3, -4, -5, -6, DS_BOTH_HELD, DS_HOLD_LONG, -9, -10 },
 /*5 DS_SHORT_OPENING_ONLY*/{ -1, -2, -3, -4, -5, -6, DS_HOLD_SHORT, DS_BOTH_EMPTY, -9, -10 },
-/*6 DS_HOLD_LONG*/{ -1, DS_LONG_CLOSING_ONLY, -3, -4, -5, -6, -7, -8, -9, -10 },
-/*7 DS_HOLD_SHORT*/{ -1, DS_SHORT_CLOSING_ONLY, -3, -4, -5, -6, -7, -8, -9, -10 },
+/*6 DS_HOLD_LONG*/{ -1, -2, -3, -4, DS_BOTH_EMPTY, DS_HOLD_LONG, -7, -8, -9, -10 },
+/*7 DS_HOLD_SHORT*/{ -1, -2, -3, -4, -5, -6, -7, -8, DS_BOTH_EMPTY, DS_HOLD_SHORT },
 /*8 DS_BOTH_HELD*/{ -1, DS_BOTH_CLOSING, -3, -4, -5, -6, -7, -8, -9, -10 },
 /*9 DS_BOTH_CLOSING*/{ -1, -2, -3, -4, DS_SHORT_CLOSING_ONLY, DS_SHORT_CLOSING_HOLD_LONG, -7, -8, DS_LONG_CLOSING_ONLY, DS_LONG_CLOSING_HOLD_SHORT },
 /*10 DS_LONG_CLOSING_ONLY*/{ -1, -2, -3, -4, DS_BOTH_EMPTY, DS_HOLD_LONG, -7, -8, -9, -10 },
 /*11 DS_LONG_CLOSING_HOLD_SHORT*/{ -1, -2, -3, -4, DS_HOLD_SHORT, DS_BOTH_HELD, -7, -8, -9, -10 },
 /*12 DS_SHORT_CLOSING_ONLY*/{ -1, -2, -3, -4, -5, -6, -7, -8, DS_BOTH_EMPTY, DS_HOLD_SHORT },
 /*13 DS_SHORT_CLOSING_HOLD_LONG*/{ -1, -2, -3, -4, -5, -6, -7, -8, DS_HOLD_LONG, DS_BOTH_HELD },
-/*14 DS_ERROR*/{ -1, -2, -3, -4, -5, -6, -7, -8, -9, -10 }
+/*14 DS_ERROR*/{ DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR }
 };
 
 CDualScalperStrategy::CDualScalperStrategy()
@@ -537,7 +537,6 @@ void CDualScalperStrategy::LongStopLoss(entity::Quote* pQuote, boost::chrono::st
 	{
 		stopLossPx = pQuote->bid(); // set opposite price
 	}
-	Transition(EVT_CLOSING);
 	m_longOrderPlacer->CloseOrder(stopLossPx, false);
 	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Long stop loss @ %.2f (A:%.2f, B:%.2f, %s %d)") 
 		% stopLossPx % pQuote->ask() % pQuote->bid() % pQuote->update_time() % pQuote->update_millisec()));
@@ -560,7 +559,6 @@ void CDualScalperStrategy::ShortStopLoss(entity::Quote* pQuote, boost::chrono::s
 	{
 		stopLossPx = pQuote->ask(); // set opposite price
 	}
-	Transition(EVT_CLOSING);
 	m_shortOrderPlacer->CloseOrder(stopLossPx, false);
 	LOG_DEBUG(logger, boost::str(boost::format("DualScapler - Short stop loss @ %.2f (A:%.2f, B:%.2f, %s %d)")
 		% stopLossPx % pQuote->ask() % pQuote->bid() % pQuote->update_time() % pQuote->update_millisec()));

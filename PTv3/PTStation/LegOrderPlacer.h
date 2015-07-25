@@ -81,7 +81,7 @@ public:
 	void ResetOrderEntityStatus(){ m_bOrderReady = false; }
 
 	virtual bool IsLegPlacerEligibleRetry();
-	virtual bool RetryUsedUp();
+	virtual bool RetryAvailable();
 protected:
 	virtual void OnReset(){}
 
@@ -155,7 +155,7 @@ public:
 	virtual bool IsLegPlacerEligibleRetry();
 	virtual void StartPending(const RtnOrderWrapperPtr& pendingOrder);
 	bool CanRetry();
-	bool RetryUsedUp();
+	bool RetryAvailable();
 
 	void SetCancelOnTimeout(bool val){ m_cancelOnTimeout = val; }
 	bool CancelOnTimeout(){ return m_cancelOnTimeout; }
