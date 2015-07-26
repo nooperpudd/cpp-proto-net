@@ -62,14 +62,6 @@ enum DualScalperEvent
 	EVT_SHORT_CLOSE_CANCELED
 };
 
-enum DualScalperOrderPlacerState
-{
-	LEG_EMPTY,
-	LEG_OPENING,
-	LEG_HOLD,
-	LEG_CLOSING,
-};
-
 class CDualScalperStrategy : public CMultiRouteStrategy
 {
 public:
@@ -93,10 +85,6 @@ public:
 
 	DualScalperState State(){ return m_currentState.load(boost::memory_order_acquire); }
 	void SetState(DualScalperState state){ m_currentState.store(state, boost::memory_order_release); }
-	DualScalperOrderPlacerState LongState() { return m_longSideState.load(boost::memory_order_acquire); }
-	void SetLongState(DualScalperOrderPlacerState state){ m_longSideState.store(state, boost::memory_order_release); }
-	DualScalperOrderPlacerState ShortState() { return m_shortSideState.load(boost::memory_order_acquire); }
-	void SetShortState(DualScalperOrderPlacerState state){ m_shortSideState.store(state, boost::memory_order_release); }
 
 	void OnStrategyError(CPortfolio* portf, const string& errorMsg);
 
@@ -136,11 +124,7 @@ private:
 	double m_bid;
 	int m_bidSize;
 
-	boost::shared_ptr<void> m_fsm;
 	boost::atomic<DualScalperState> m_currentState;
-	boost::atomic<DualScalperOrderPlacerState> m_longSideState;
-	boost::atomic<DualScalperOrderPlacerState> m_shortSideState;
-	
 	boost::mutex m_mutFsm;
 
 	bool m_stopping;

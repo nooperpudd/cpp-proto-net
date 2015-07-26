@@ -1,5 +1,6 @@
 #include "StdAfx.h"
 #include "PortfolioManager.h"
+#include "globalmembers.h"
 
 CPortfolioManager::CPortfolioManager(void)
 {
@@ -34,6 +35,8 @@ CPortfolio* CPortfolioManager::Get( const string& portfolioId )
 
 void CPortfolioManager::Clear()
 {
+	EnsureAllStop(true);
+
 	for (std::vector<PortfolioPtr>::iterator iter = m_portfolios.begin();
 		iter != m_portfolios.end(); ++iter)
 	{
@@ -41,4 +44,26 @@ void CPortfolioManager::Clear()
 	}
 
 	m_portfolios.clear();
+}
+
+void CPortfolioManager::EnsureAllStop(bool wait)
+{
+	bool stillHasRunning = false;
+	for (std::vector<PortfolioPtr>::iterator iter = m_portfolios.begin();
+		iter != m_portfolios.end(); ++iter)
+	{
+		const PortfolioPtr& portf = (*iter);
+		if (portf->Strategy()->IsRunning())
+		{
+			portf->StopStrategy();
+			stillHasRunning = true;
+		}
+	}
+
+	if (stillHasRunning && wait)
+	{
+		LOG_DEBUG(logger, boost::str(boost::format("There are still strategies RUNNING, wait %d seconds for stop")
+			% 20));
+		boost::this_thread::sleep_for(boost::chrono::seconds(20));
+	}
 }

@@ -6,283 +6,6 @@
 #include "DoubleCompare.h"
 #include "OrderProcessor.h"
 
-#define BOOST_MPL_CFG_NO_PREPROCESSED_HEADERS
-#define BOOST_MPL_LIMIT_VECTOR_SIZE 50 // or whatever you need               
-#define BOOST_MPL_LIMIT_MAP_SIZE 50 // or whatever you need 
-
-// back-end
-#include <boost/msm/back/state_machine.hpp>
-//front-end
-#include <boost/msm/front/state_machine_def.hpp>
-// functors
-#include <boost/msm/front/functor_row.hpp>
-#include <boost/msm/front/euml/common.hpp>
-// for func_state and func_state_machine
-#include <boost/msm/front/euml/state_grammar.hpp>
-
-namespace msm = boost::msm;
-namespace mpl = boost::mpl;
-using namespace msm::front;
-
-namespace DualScapler// Concrete FSM implementation
-{
-	struct evtLongOpening {};
-	struct evtLongOpened {};
-	struct evtLongOpenCanceled {};
-	struct evtLongClosing {};
-	struct evtLongClosed {};
-	struct evtLongCloseCanceled {};
-
-	struct evtShortOpening {};
-	struct evtShortOpened {};
-	struct evtShortOpenCanceled {};
-	struct evtShortClosing {};
-	struct evtShortClosed {};
-	struct evtShortCloseCanceled {};
-
-	struct evtErrorFound 
-	{
-	public:
-		evtErrorFound() : m_portfolio(NULL)
-		{}
-		evtErrorFound(CPortfolio* pPortf, const string& errorInfo)
-			: m_portfolio(pPortf), m_errorInfo(errorInfo)
-		{}
-		CPortfolio* m_portfolio;
-		string m_errorInfo;
-	};
-
-	struct DualScaplerFront_ : public msm::front::state_machine_def < DualScaplerFront_ >
-	{
-		CDualScalperStrategy* Strategy;
-
-		// constructor with arguments
-		DualScaplerFront_(CDualScalperStrategy* pParent) : Strategy(pParent)
-		{}
-
-		// state machines also have entry/exit actions 
-		template <class Event, class Fsm>
-		void on_entry(Event const&, Fsm& fsm)
-		{
-		}
-
-		struct LongEmpty : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: LongEmpty");
-#endif
-				fsm.Strategy->SetLongState(LEG_EMPTY);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: LongEmpty");
-			}
-#endif
-		};
-
-		struct LongOpening : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: LongOpening");
-#endif
-				fsm.Strategy->SetLongState(LEG_OPENING);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: LongOpening");
-			}
-#endif
-		};
-
-		struct LongClosing : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: LongClosing");
-#endif
-				fsm.Strategy->SetLongState(LEG_CLOSING);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: LongClosing");
-			}
-#endif
-		};
-
-		struct LongOpened : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: LongOpened");
-#endif
-				fsm.Strategy->SetLongState(LEG_HOLD);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: LongOpened");
-			}
-#endif
-		};
-
-		struct ShortEmpty : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: ShortEmpty");
-#endif
-				fsm.Strategy->SetShortState(LEG_EMPTY);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: ShortEmpty");
-			}
-#endif
-		};
-
-		struct ShortOpening : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: ShortOpening");
-#endif
-				fsm.Strategy->SetShortState(LEG_OPENING);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: ShortOpening");
-			}
-#endif
-		};
-
-		struct ShortClosing : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: ShortClosing");
-#endif
-				fsm.Strategy->SetShortState(LEG_CLOSING);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: ShortClosing");
-			}
-#endif
-		};
-
-		struct ShortOpened : public msm::front::state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-#ifdef LOG_FOR_TRADE
-				LOG_DEBUG(logger, "DualScalper entering: ShortOpened");
-#endif
-				fsm.Strategy->SetShortState(LEG_HOLD);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM& fsm)
-			{
-				LOG_DEBUG(logger, "DualScalper leaving: ShortOpened");
-			}
-#endif
-		};
-
-		struct AllOk : public msm::front::state < > {};
-
-		struct Error : public msm::front::terminate_state < >
-		{
-			template <class Event, class FSM>
-			void on_entry(Event const& evt, FSM& fsm)
-			{
-				fsm.Strategy->SetState(DS_ERROR);
-				fsm.Strategy->OnStrategyError(evt.m_portfolio, evt.m_errorInfo);
-			}
-#ifdef LOG_FOR_TRADE
-			template <class Event, class FSM>
-			void on_exit(Event const&, FSM&) {}
-#endif
-		};
-
-		typedef mpl::vector<LongEmpty, ShortEmpty, AllOk> initial_state;
-
-		// action
-		template <class Event>
-		void on_open(Event const&)
-		{
-			//m_pPlacer->Send();
-		}
-
-		typedef DualScaplerFront_ p;
-
-		// Transition table for OrderPlacer
-		struct transition_table : mpl::vector <
-			//    Start					Event					Next			Action                     Guard
-			//  +-------------------+-------------------+-------------------+---------------------------+--------------------------+
-			
-			_row < LongEmpty, evtLongOpening, LongOpening		>,
-			_row < LongOpening, evtLongOpened, LongOpened		>,
-			_row < LongOpening, evtLongOpenCanceled, LongEmpty		>,
-			_row < LongOpened, evtLongClosing, LongClosing		>,
-			_row < LongClosing, evtLongClosed, LongEmpty		>,
-			_row < LongClosing, evtLongCloseCanceled, LongOpened		>,
-
-			_row < ShortEmpty, evtShortOpening, ShortOpening		>,
-			_row < ShortOpening, evtShortOpened, ShortOpened		>,
-			_row < ShortOpening, evtShortOpenCanceled, ShortEmpty		>,
-			_row < ShortOpened, evtShortClosing, ShortClosing		>,
-			_row < ShortClosing, evtShortClosed, ShortEmpty		>,
-			_row < ShortClosing, evtShortCloseCanceled, ShortOpened		>,
-			
-			_row < AllOk			, evtErrorFound		, Error			>
-		> {};
-
-		// Replaces the default no-transition response.
-		template <class FSM, class Event>
-		void no_transition(Event const& e, FSM& fsm, int state)
-		{
-			string unExpectedEvtName = typeid(e).name();
-			LOG_DEBUG(logger, boost::str(boost::format(
-				"no transition from state %d on event %s")
-				% state % unExpectedEvtName));
-			//fsm.process_event(evtErrorFound("Óöµ½ÎÞ·¨´¦ÀíµÄÊÂ¼þ"));
-			logger.Error(boost::str(boost::format("DualScaplerFSM encounter unexpected event %s") % unExpectedEvtName));
-		}
-	};
-	// Pick a back-end
-	typedef msm::back::state_machine<DualScaplerFront_> DualScaplerFsm;
-}
-
 int TRANSITION_TABLE[15][10] = { 
 //		--- COMMON				--- LONG														--- SHORT
 //	[OPENING, CLOSING] [OPENED, OPEN_CANCELED, CLOSED, CLOSE_CANCELED] [OPENED, OPEN_CANCELED, CLOSED, CLOSE_CANCELED]
@@ -313,12 +36,7 @@ CDualScalperStrategy::CDualScalperStrategy()
 	, m_longOrderPlacer(NULL)
 	, m_shortOrderPlacer(NULL)
 	, m_stopping(false)
-	, m_longSideState(LEG_EMPTY)
-	, m_shortSideState(LEG_EMPTY)
 {
-	m_fsm = boost::shared_ptr<void>(new DualScapler::DualScaplerFsm(this));
-	int dd = TRANSITION_TABLE[DS_SHORT_CLOSING_HOLD_LONG][EVT_SHORT_CLOSE_CANCELED];
-	LOG_DEBUG(logger, "");
 }
 
 
@@ -566,53 +284,41 @@ void CDualScalperStrategy::ShortStopLoss(entity::Quote* pQuote, boost::chrono::s
 
 void CDualScalperStrategy::OnLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
 {
-	//boost::lock_guard<boost::mutex> l(m_mutFsm);
-
 	if (offset == trade::OF_OPEN && direction == trade::BUY && sendingIdx == 0)
 	{
 		Transition(EVT_LONG_OPENED);
-		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongOpened());
 	}
 	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::SELL && sendingIdx == 1)
 	{
 		Transition(EVT_LONG_CLOSED);
-		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongClosed());
 	}
 	else if (offset == trade::OF_OPEN && direction == trade::SELL && sendingIdx == 0)
 	{
 		Transition(EVT_SHORT_OPENED);
-		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortOpened());
 	}
 	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::BUY && sendingIdx == 1)
 	{
 		Transition(EVT_SHORT_CLOSED);
-		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortClosed());
 	}
 }
 
 void CDualScalperStrategy::OnLegCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
 {
-	//boost::lock_guard<boost::mutex> l(m_mutFsm);
-
 	if (offset == trade::OF_OPEN && direction == trade::BUY && sendingIdx == 0)
 	{
 		Transition(EVT_LONG_OPEN_CANCELED);
-		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongOpenCanceled());
 	}
 	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::SELL && sendingIdx == 1)
 	{
 		Transition(EVT_LONG_CLOSE_CANCELED);
-		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtLongCloseCanceled());
 	}
 	else if (offset == trade::OF_OPEN && direction == trade::SELL && sendingIdx == 0)
 	{
 		Transition(EVT_SHORT_OPEN_CANCELED);
-		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortOpenCanceled());
 	}
 	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && direction == trade::BUY && sendingIdx == 1)
 	{
 		Transition(EVT_SHORT_CLOSE_CANCELED);
-		//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(DualScapler::evtShortCloseCanceled());
 	}
 }
 
@@ -661,7 +367,6 @@ bool CDualScalperStrategy::OnStart()
 void CDualScalperStrategy::OnStop()
 {
 	LOG_DEBUG(logger, "DualScapler - Truly Stopped");
-	//boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->stop();
 	if (m_longOrderPlacer != NULL)
 		m_longOrderPlacer->Cleanup();
 	if (m_shortOrderPlacer != NULL)
@@ -689,9 +394,6 @@ void CDualScalperStrategy::OnLongOrderPlacerDone(int execId, PortfolioFinishStat
 		OnStrategyError(m_longOrderPlacer->Portfolio(),
 			boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_longOrderPlacer->UserId()));
 	}
-		/*boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(
-			DualScapler::evtErrorFound(m_longOrderPlacer->Portfolio(), 
-				boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_longOrderPlacer->UserId())));*/
 }
 
 void CDualScalperStrategy::OnShortOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
@@ -702,9 +404,6 @@ void CDualScalperStrategy::OnShortOrderPlacerDone(int execId, PortfolioFinishSta
 		OnStrategyError(m_shortOrderPlacer->Portfolio(),
 			boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_shortOrderPlacer->UserId()));
 	}
-		/*boost::static_pointer_cast<DualScapler::DualScaplerFsm>(m_fsm)->process_event(
-			DualScapler::evtErrorFound(m_shortOrderPlacer->Portfolio(),
-				boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_shortOrderPlacer->UserId())));*/
 }
 
 void CDualScalperStrategy::OnStrategyError(CPortfolio* portf, const string& errorMsg)

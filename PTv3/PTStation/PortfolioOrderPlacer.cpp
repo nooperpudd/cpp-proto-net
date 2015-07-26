@@ -41,8 +41,8 @@ namespace msm = boost::msm;
 namespace mpl = boost::mpl;
 using namespace msm::front;
 
-string PendingTimeUpEventName("struct evtPendingTimeUp");
-string NextQuoteInEventName("struct evtNextQuoteIn");
+string PendingTimeUpEventName("evtPendingTimeUp");
+string NextQuoteInEventName("evtNextQuoteIn");
 
 #define CLEANUP_TIMEOUT 3
 
@@ -353,8 +353,9 @@ namespace // Concrete FSM implementation
 				"no transition from state %s(%d) on event %s")
 				% stateName % state % unExpectedEvtName));
 
-			if(PendingTimeUpEventName == unExpectedEvtName ||
-				NextQuoteInEventName == unExpectedEvtName)
+			
+			if (unExpectedEvtName.find(PendingTimeUpEventName) != string::npos ||
+				unExpectedEvtName.find(NextQuoteInEventName) != string::npos)
 			{
 				logger.Warning(boost::str(boost::format("Event %s is ignored") % unExpectedEvtName));
 			}

@@ -17,6 +17,7 @@ public:
 	void AddPortfolio(CAvatarClient* client, const entity::PortfolioItem& portfItem);
 	CPortfolio* Get(const string& portfolioId);
 	void Clear();
+	void EnsureAllStop(bool wait);
 protected:
 	std::vector<PortfolioPtr> m_portfolios;
 	OnAddPortfolioHandler m_onAddPortfolioHandler;
