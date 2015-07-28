@@ -27,6 +27,18 @@ int TRANSITION_TABLE[15][10] = {
 /*14 DS_ERROR*/{ DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR }
 };
 
+double percent = 0.4;
+double pointOffset = 0;
+
+double getOffset(double gap)
+{
+	double offset1 = gap * percent;
+	double offset2 = (int)(offset1 / 0.2) * 0.2;
+	double offset = (offset1 - offset2 - 0.1) > 0.001 ? offset2 + 0.2 : offset2;
+	offset += pointOffset;
+	return offset;
+}
+
 CDualScalperStrategy::CDualScalperStrategy()
 	: m_diffThreshold(0)
 	, m_priceTick(0.2)
@@ -392,7 +404,7 @@ void CDualScalperStrategy::OnLongOrderPlacerDone(int execId, PortfolioFinishStat
 	{
 		SetState(DS_ERROR);
 		OnStrategyError(m_longOrderPlacer->Portfolio(),
-			boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_longOrderPlacer->UserId()));
+			boost::str(boost::format("%s é‡åˆ°é”™è¯¯ç­–ç•¥åœæ­¢") % m_longOrderPlacer->UserId()));
 	}
 }
 
@@ -402,7 +414,7 @@ void CDualScalperStrategy::OnShortOrderPlacerDone(int execId, PortfolioFinishSta
 	{
 		SetState(DS_ERROR);
 		OnStrategyError(m_shortOrderPlacer->Portfolio(),
-			boost::str(boost::format("%s Óöµ½´íÎó²ßÂÔÍ£Ö¹") % m_shortOrderPlacer->UserId()));
+			boost::str(boost::format("%s é‡åˆ°é”™è¯¯ç­–ç•¥åœæ­¢") % m_shortOrderPlacer->UserId()));
 	}
 }
 
