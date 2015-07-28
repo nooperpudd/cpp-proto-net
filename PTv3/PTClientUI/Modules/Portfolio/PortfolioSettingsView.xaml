@@ -571,7 +571,11 @@
                                     </DockPanel>
                                     <DockPanel Margin="12, 0, 6, 2">
                                         <TextBlock Margin="4, 0" VerticalAlignment="Center" Width="104">开仓偏移(点)</TextBlock>
-                                        <xctk:DecimalUpDown Margin="4, 0" Value="{Binding OpenOffset, Mode=TwoWay}" Minimum="0" Increment="0.2"/>
+                                        <xctk:DecimalUpDown Margin="4, 0" Value="{Binding OpenOffset, Mode=TwoWay}" Increment="0.2"/>
+                                    </DockPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <TextBlock Margin="4, 0" VerticalAlignment="Center" Width="104">百分比偏移</TextBlock>
+                                        <xctk:DecimalUpDown Margin="4, 0" FormatString="P0" Value="{Binding PercentOffset, Mode=TwoWay}" Minimum="0" Increment="0.05"/>
                                     </DockPanel>
                                 </StackPanel>
                             </DockPanel>

@@ -627,6 +627,18 @@ public:
 		}
 	}
 
+	property double PercentOffset
+	{
+		double get()
+		{
+			return _percent;
+		}
+		void set(double val)
+		{
+			_percent = val;
+		}
+	}
+
 	property double CloseOffset
 	{
 		double get()
@@ -655,6 +667,7 @@ private:
 	double _threshold;
 	double _priceTick;
 	double _openOffset;
+	double _percent;
 	double _closeOffset;
 	double _oppositeCloseThreshold;
 	String ^_longSideUserId;

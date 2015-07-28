@@ -107,9 +107,12 @@ private:
 	void OnLongOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded);
 	void OnShortOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded);
 
+	double GetOffset(double gap);
+
 	double m_diffThreshold;
 	double m_priceTick;
 	double m_openOffset;
+	double m_percentOffset;
 	double m_closeOffset;
 	double m_oppositeCloseThreshold;
 	string m_longSideUserId;

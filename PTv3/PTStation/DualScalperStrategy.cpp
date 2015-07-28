@@ -27,22 +27,11 @@ int TRANSITION_TABLE[15][10] = {
 /*14 DS_ERROR*/{ DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR, DS_ERROR }
 };
 
-double percent = 0.4;
-double pointOffset = 0;
-
-double getOffset(double gap)
-{
-	double offset1 = gap * percent;
-	double offset2 = (int)(offset1 / 0.2) * 0.2;
-	double offset = (offset1 - offset2 - 0.1) > 0.001 ? offset2 + 0.2 : offset2;
-	offset += pointOffset;
-	return offset;
-}
-
 CDualScalperStrategy::CDualScalperStrategy()
 	: m_diffThreshold(0)
 	, m_priceTick(0.2)
 	, m_openOffset(0.6)
+	, m_percentOffset(0.2)
 	, m_closeOffset(0.4)
 	, m_oppositeCloseThreshold(1)
 	, m_longOrderPlacer(NULL)
@@ -68,12 +57,13 @@ void CDualScalperStrategy::Apply(const entity::StrategyItem& strategyItem, CPort
 	m_priceTick = strategyItem.ds_pricetick();
 	m_diffThreshold = strategyItem.ds_diffthreshold();
 	m_openOffset = strategyItem.ds_openoffset();
+	m_percentOffset = strategyItem.ds_percentoffset();
 	m_closeOffset = strategyItem.ds_closeoffset();
 	m_oppositeCloseThreshold = strategyItem.ds_oppositeclosethreshold();
 
 	logger.Debug(
-		boost::str(boost::format("Portfolio(%s) DualScalper: PxTick = %.2f, Threshold = %.2f, OpenOffset = %.2f, CloseOffset = %.2f")
-		% pPortfolio->ID() % m_priceTick % m_diffThreshold % m_openOffset % m_closeOffset
+		boost::str(boost::format("Portfolio(%s) DualScalper: PxTick = %.2f, Threshold = %.2f, OpenOffset = %.2f, Percent = %.2f, CloseOffset = %.2f")
+		% pPortfolio->ID() % m_priceTick % m_diffThreshold % m_openOffset % m_percentOffset % m_closeOffset
 		));
 
 	m_longSideUserId = strategyItem.ds_longsideuserid();
@@ -202,8 +192,15 @@ void CDualScalperStrategy::OnBindedRoutes()
 
 void CDualScalperStrategy::OpenPosition(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
 {
-	double buyPx = pQuote->bid() + m_openOffset;
-	double sellPx = pQuote->ask() - m_openOffset;
+	double effectiveOffset = GetOffset(pQuote->ask() - pQuote->bid());
+	double buyPx = pQuote->bid() + effectiveOffset;
+	double sellPx = pQuote->ask() - effectiveOffset;
+
+	if (buyPx > sellPx)
+	{
+		LOG_DEBUG(logger, boost::str(boost::format("DualScapler[Open] - Ignore Invalid buy/sell from inappropriate offset(%.2f)") % effectiveOffset));
+		return;
+	}
 
 	double longLmtPrice[2] = { buyPx, 0.0 };
 	double shortLmtPrice[2] = { sellPx, 0.0 };
@@ -229,8 +226,15 @@ void CDualScalperStrategy::OpenPosition(entity::Quote* pQuote, boost::chrono::st
 
 void CDualScalperStrategy::ClosePosition(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
 {
-	double buyPx = pQuote->bid() + m_openOffset;
-	double sellPx = pQuote->ask() - m_openOffset;
+	double effectiveOffset = GetOffset(pQuote->ask() - pQuote->bid());
+	double buyPx = pQuote->bid() + effectiveOffset;
+	double sellPx = pQuote->ask() - effectiveOffset;
+
+	if (buyPx > sellPx)
+	{
+		LOG_DEBUG(logger, boost::str(boost::format("DualScapler[Close] - Ignore Invalid buy/sell from inappropriate offset(%.2f)") % effectiveOffset));
+		return;
+	}
 
 	Transition(EVT_CLOSING);
 	if (pQuote->bid_size() >= pQuote->ask_size())
@@ -424,6 +428,21 @@ void CDualScalperStrategy::OnStrategyError(CPortfolio* portf, const string& erro
 		boost::thread(boost::bind(&CPortfolio::StopStrategyDueTo, portf, errorMsg));
 }
 
+double CDualScalperStrategy::GetOffset(double gap)
+{
+	if (m_percentOffset > 0.001)
+	{
+		double offset1 = gap * m_percentOffset;
+		double offset2 = (int)(offset1 / m_priceTick) * m_priceTick;
+		double offset = (offset1 - offset2 - (m_priceTick / 2)) > 0.001 ? offset2 + m_priceTick : offset2;
+		offset += m_openOffset;
+		return offset;
+	}
+	else
+	{
+		return m_openOffset;
+	}
+}
 
 void CMultiRouteStrategy::BindRoutes(CPortfolio* pPortfolio, OnBindingRouteHandler onBindingRouteHandler)
 {

@@ -233,6 +233,7 @@ message StrategyItem
 	optional double DS_OpenOffset = 325;
 	optional double DS_CloseOffset = 326;
 	optional double DS_OppositeCloseThreshold = 327;
+	optional double DS_PercentOffset = 328;
 	
 	// TechAnaly
 	repeated HistSourceCfg HistSources = 401;

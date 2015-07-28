@@ -94,6 +94,24 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         }
         #endregion
 
+        #region PercentOffset
+        private double _percentOffset = 0.2;
+
+        public double PercentOffset
+        {
+            get { return _percentOffset; }
+            set
+            {
+                if (_percentOffset != value)
+                {
+                    _percentOffset = value;
+                    RaisePropertyChanged("PercentOffset");
+                }
+            }
+        }
+        #endregion
+
+
         #region CloseOffset
         private double _closeOffset;
 
@@ -185,6 +203,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             Threshold = 0.8;
             PriceTick = 0.2;
             OpenOffset = 0.2;
+            PercentOffset = 0.2;
             CloseOffset = 0.2;
             OppositeCloseThreshold = 0.4;
             StopLossCloseMethod = PTEntity.StopLossCloseMethods.BASED_ON_NEXT_QUOTE;
@@ -203,6 +222,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
                 new XAttribute("threshold", Threshold),
                 new XAttribute("prickTick", PriceTick),
                 new XAttribute("openOffset", OpenOffset),
+                new XAttribute("percentOffset", PercentOffset),
                 new XAttribute("closeOffset", CloseOffset),
                 new XAttribute("oppositeCloseThreshold", OppositeCloseThreshold),
                 new XAttribute("stopLossCloseStrategy", StopLossCloseMethod),
@@ -231,6 +251,11 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             if (attr != null)
             {
                 OpenOffset = double.Parse(attr.Value);
+            }
+            attr = elem.Attribute("percentOffset");
+            if (attr != null)
+            {
+                PercentOffset = double.Parse(attr.Value);
             }
             attr = elem.Attribute("closeOffset");
             if (attr != null)
@@ -275,6 +300,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             scalperStrategy.PriceTick = PriceTick;
             scalperStrategy.Threshold = Threshold;
             scalperStrategy.OpenOffset = OpenOffset;
+            scalperStrategy.PercentOffset = PercentOffset;
             scalperStrategy.CloseOffset = CloseOffset;
             scalperStrategy.OppositeCloseThreshold = OppositeCloseThreshold;
             scalperStrategy.OpenTimeout = OpenTimeout;
@@ -292,6 +318,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             Threshold = strategySettings.Threshold;
             PriceTick = strategySettings.PriceTick;
             OpenOffset = strategySettings.OpenOffset;
+            PercentOffset = strategySettings.PercentOffset;
             CloseOffset = strategySettings.CloseOffset;
             OppositeCloseThreshold = strategySettings.OppositeCloseThreshold;
             StopLossCloseMethod = strategySettings.StopLossCloseMethod;
