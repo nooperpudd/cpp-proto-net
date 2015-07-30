@@ -64,6 +64,7 @@ public:
 	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc);
 	virtual void ReinitOrderPlacer(COrderProcessor* pOrderProc);
 
+	virtual bool StopOnTimepoint(){ return false; }
 protected:
 
 	virtual CPortfolioOrderPlacer* CreateOrderPlacer() = 0;

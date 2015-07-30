@@ -493,7 +493,7 @@ void CPortfolio::CheckForStop(const string& quoteUpdateTime)
 	{
 		if(quoteUpdateTime.compare(m_targetEnd) >= 0)
 		{
-			if (m_lastTargetEnd)
+			if (m_lastTargetEnd || m_strategy->StopOnTimepoint())
 			{
 				string msg = boost::str(boost::format("策略(%s-%s)已自动停止于%s") % InvestorId() % ID() % m_targetEnd);
 				StopStrategyDueTo(msg);

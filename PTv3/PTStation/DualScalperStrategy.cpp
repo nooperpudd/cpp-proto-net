@@ -444,6 +444,12 @@ double CDualScalperStrategy::GetOffset(double gap)
 	}
 }
 
+bool CDualScalperStrategy::StopOnTimepoint()
+{
+	DualScalperState state = State();
+	return state != DS_BOTH_HELD;
+}
+
 void CMultiRouteStrategy::BindRoutes(CPortfolio* pPortfolio, OnBindingRouteHandler onBindingRouteHandler)
 {
 	for (vector<string>::iterator iter = m_userIds.begin(); iter != m_userIds.end(); ++iter)

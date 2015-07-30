@@ -87,6 +87,7 @@ public:
 	void SetState(DualScalperState state){ m_currentState.store(state, boost::memory_order_release); }
 
 	void OnStrategyError(CPortfolio* portf, const string& errorMsg);
+	virtual bool StopOnTimepoint();
 
 protected:
 

@@ -908,8 +908,7 @@ void CPortfolioOrderPlacer::OutputStatus( const string& statusMsg )
 
 void CPortfolioOrderPlacer::OnOrderReturned(RtnOrderWrapperPtr& rtnOrder)
 {
-	RtnOrderWrapperPtr pRtnOrder = rtnOrder;
-	m_rtnOrderPump.Enqueue(pRtnOrder);
+	m_rtnOrderPump.Enqueue(rtnOrder);
 }
 
 void CPortfolioOrderPlacer::HandleRtnOrder(RtnOrderWrapperPtr& rtnOrder)

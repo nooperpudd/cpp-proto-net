@@ -74,7 +74,7 @@ public:
 	}
 
 private:
-	void DoWork(T& stuff)
+	void DoWork(T stuff)
 	{
 		if (!m_jobCallback.empty())
 			m_jobCallback(stuff);
