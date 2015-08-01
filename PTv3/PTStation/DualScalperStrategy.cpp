@@ -196,7 +196,7 @@ void CDualScalperStrategy::OpenPosition(entity::Quote* pQuote, boost::chrono::st
 	double buyPx = pQuote->bid() + effectiveOffset;
 	double sellPx = pQuote->ask() - effectiveOffset;
 
-	if (buyPx > sellPx)
+	if (DoubleGreaterEqual(buyPx, sellPx))
 	{
 		LOG_DEBUG(logger, boost::str(boost::format("DualScapler[Open] - Ignore Invalid buy/sell from inappropriate offset(%.2f)") % effectiveOffset));
 		return;
@@ -230,7 +230,7 @@ void CDualScalperStrategy::ClosePosition(entity::Quote* pQuote, boost::chrono::s
 	double buyPx = pQuote->bid() + effectiveOffset;
 	double sellPx = pQuote->ask() - effectiveOffset;
 
-	if (buyPx > sellPx)
+	if (DoubleGreaterEqual(buyPx, sellPx))
 	{
 		LOG_DEBUG(logger, boost::str(boost::format("DualScapler[Close] - Ignore Invalid buy/sell from inappropriate offset(%.2f)") % effectiveOffset));
 		return;
