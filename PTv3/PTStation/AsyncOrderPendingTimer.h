@@ -12,9 +12,12 @@ public:
 	CAsyncOrderPendingTimer(CPortfolioOrderPlacer* pOrdPlacer)
 		: m_pOrdPlacer(pOrdPlacer)
 		, m_legPlacer(NULL)
-		, m_timer(m_io)
+		, io_service(new boost::asio::io_service)
+		, work(new boost::asio::io_service::work(*io_service))
+		, m_timer(*io_service)
 		, m_isStop(true)
 	{
+		m_thWaiting = boost::thread(boost::bind(&boost::asio::io_service::run, io_service));
 	}
 
 	~CAsyncOrderPendingTimer()
