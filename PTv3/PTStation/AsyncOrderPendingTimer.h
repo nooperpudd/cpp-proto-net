@@ -19,6 +19,7 @@ public:
 
 	~CAsyncOrderPendingTimer()
 	{
+		Cancel(); // in case still running
 		m_thWaiting.join();
 	}
 
@@ -39,7 +40,8 @@ public:
 private:
 	void FireEvent(const boost::system::error_code& e);
 
-	boost::asio::io_service m_io;
+	boost::shared_ptr< boost::asio::io_service > io_service;
+	boost::shared_ptr< boost::asio::io_service::work > work;
 	boost::asio::steady_timer m_timer;
 	boost::atomic<bool> m_isStop;
 	boost::thread m_thWaiting;
