@@ -37,7 +37,6 @@ void CAsyncOrderPendingTimer::Run( boost::chrono::steady_clock::time_point expir
 		m_isStop.store(false, boost::memory_order_relaxed);
 		m_timer.expires_at(expireTimePoint);
 		m_timer.async_wait(boost::bind(&CAsyncOrderPendingTimer::FireEvent, this, _1));
-		//m_thWaiting = boost::thread(boost::bind(&boost::asio::io_service::run, &m_io));
 #ifdef LOG_FOR_TRADE
 		LOG_DEBUG(logger, boost::str(boost::format("Start pending timer for Order Ref:%s") % m_legPlacer->OrderRef()));
 #endif

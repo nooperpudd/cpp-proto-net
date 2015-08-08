@@ -23,7 +23,8 @@ public:
 	~CAsyncOrderPendingTimer()
 	{
 		Cancel(); // in case still running
-		m_thWaiting.join();
+		work.reset();
+		m_thWaiting.try_join_for(boost::chrono::seconds(3));
 	}
 
 	void SetLegOrderPlacer(CLegOrderPlacer* pLegOrderPlacer) { m_legPlacer = pLegOrderPlacer; }
