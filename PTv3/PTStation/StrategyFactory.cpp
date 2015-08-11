@@ -12,6 +12,7 @@
 #include "RangeTrendStrategy.h"
 #include "ArbitrageManualMultiStrategy.h"
 #include "DualScalperStrategy.h"
+#include "IcebergStrategy.h"
 
 
 CStrategyFactory::CStrategyFactory(CPortfolio* pPortf, CAvatarClient* pAvatar)

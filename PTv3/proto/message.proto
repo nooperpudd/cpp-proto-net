@@ -155,6 +155,7 @@ enum StrategyType
 	TREND_REVERT = 10;
 	ARBITRAGE_MANUAL = 11;
 	DUAL_SCALPER = 12;
+	ICEBERG = 13;
 }
 
 enum StopPriceType
@@ -224,6 +225,12 @@ message StrategyItem
 	optional DirectionDepends SC_CaseGE4Tick = 304;
 	optional DirectionDepends SC_CaseNoChange = 305;
 	optional StopLossCloseMethods SC_StopLossStrategy = 306;
+	
+	// Iceberg
+	optional double IC_PriceTick = 311;
+	optional double IC_PxDiffThreshold = 312;
+	optional int32 IC_SizeDiffThreshold = 313;
+	optional double IC_TargetGain = 314;
 	
 	// Dual Scalper
 	optional double DS_PriceTick = 321;
@@ -366,6 +373,9 @@ message PortfolioUpdateItem
 	optional double MU_NearLow = 213;
 	optional double MU_Fallback = 214;
 	optional double MU_Bounce = 215;
+	// Iceberg
+	optional double IC_PriceGap = 221;
+	optional int32 IC_SizeGap = 222;
 	// HistSlope
 	optional double HS_FastAngle = 301;
 	optional double HS_SlowAngle = 302;
