@@ -545,6 +545,71 @@ private:
 	StopLossCloseMethods _stopLossStrategy;
 };
 
+public ref class IcebergStrategyItem : StrategyItem
+{
+public:
+	IcebergStrategyItem()
+	{
+		_type = StrategyType::ICEBERG;
+	}
+
+	virtual void To(entity::StrategyItem* pNativeStrategyItem) override;
+
+	property double PriceTick
+	{
+		double get()
+		{
+			return _priceTick;
+		}
+		void set(double val)
+		{
+			_priceTick = val;
+		}
+	}
+
+	property double PxDiffThreshold
+	{
+		double get()
+		{
+			return _pxDiffThreshold;
+		}
+		void set(double val)
+		{
+			_pxDiffThreshold = val;
+		}
+	}
+
+	property int SizeDiffThreshold
+	{
+		int get()
+		{
+			return _sizeDiffThreshold;
+		}
+		void set(int val)
+		{
+			_sizeDiffThreshold = val;
+		}
+	}
+
+	property double TargetGainPercent
+	{
+		double get()
+		{
+			return _targetGainPercent;
+		}
+		void set(double val)
+		{
+			_targetGainPercent = val;
+		}
+	}
+
+private:
+	double _priceTick;
+	double _pxDiffThreshold;
+	int _sizeDiffThreshold;
+	double _targetGainPercent;
+};
+
 public ref class DualScalperStrategyItem : StrategyItem
 {
 public:

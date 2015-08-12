@@ -211,6 +211,8 @@
     <Compile Include="Modules\Portfolio\Strategy\ChangePositionSettingsVM.cs" />
     <Compile Include="Modules\Portfolio\Strategy\DualScalperSetting.cs" />
     <Compile Include="Modules\Portfolio\Strategy\DualScalperSettingVM.cs" />
+    <Compile Include="Modules\Portfolio\Strategy\IcebergSetting.cs" />
+    <Compile Include="Modules\Portfolio\Strategy\IcebergSettingVM.cs" />
     <Compile Include="Modules\Portfolio\Strategy\LinerRegSettingsVM.cs" />
     <Compile Include="Modules\Portfolio\Strategy\LinerRegStrategySettings.cs" />
     <Compile Include="Modules\Portfolio\Strategy\ManualStrategySetting.cs" />

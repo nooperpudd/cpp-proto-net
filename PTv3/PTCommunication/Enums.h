@@ -46,6 +46,7 @@ namespace PTEntity {
 		TREND_REVERT = 10,
 		ARBITRAGE_MANUAL = 11,
 		DUAL_SCALPER = 12,
+		ICEBERG = 13
 	};
 
 	public enum class DirectionDepends : int
