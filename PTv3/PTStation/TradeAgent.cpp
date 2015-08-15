@@ -17,7 +17,7 @@
 
 enum {
 	DISCONNECT_TIMEOUT_SECOND = 1,
-	CONNECT_TIMEOUT_SECONDS = 3,
+	CONNECT_TIMEOUT_SECONDS = 20,
 	QUERY_QUOTE_RETRY_TIMES = 5
 };
 
@@ -964,7 +964,7 @@ void CTradeAgent::FakeLogin()
 	m_fakeDealer.SetSessionParams(FRONT_ID, SESSION_ID);
 #endif
 	m_maxOrderRef = 1;
-
+	m_isLogged = true;
 	//string ds(pRspUserLogin->TradingDay);
 	string ds("20150324");
 	m_tradingDay = boost::gregorian::from_undelimited_string(ds);

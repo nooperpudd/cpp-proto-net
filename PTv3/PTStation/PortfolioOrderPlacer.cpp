@@ -568,15 +568,23 @@ void CPortfolioOrderPlacer::Send(const char* openOrderId)
 
 	// real submit order and unlock to allow next order ref generation
 	bool succ = m_pOrderProcessor->SubmitAndUnlock(&(m_activeOrdPlacer->InputOrder()));
-
+	
+	m_activeOrdPlacer->AddSubmitTimes();
+	
 	if (!succ)
 	{
+		if (m_isFirstLeg && m_activeOrdPlacer->SubmitTimes() == 1)	// Only publish it for the first time
+		{
+			// Generate order Id
+			string mlOrderId;
+			m_pPortf->NewOrderId(mlOrderId);
+			SetNewOrderId(mlOrderId, openOrderId);
+		}
+
 		RaiseError(boost::str(boost::format("%s(%s) Failed to send order") % m_pOrderProcessor->InvestorId()
 			% m_pOrderProcessor->UserId()));
 		return;
 	}
-
-	m_activeOrdPlacer->AddSubmitTimes();
 
 	boost::chrono::steady_clock::duration elapsed = 
 		boost::chrono::steady_clock::now() - m_triggingTimestamp;
@@ -1047,6 +1055,7 @@ void CPortfolioOrderPlacer::CleanupProc()
 		if (retryTimes > CLEANUP_TIMEOUT)
 		{
 			RaiseError("Force terminate due to already wait 3 seconds");
+			AfterLegDone();
 		}
 	}
 
@@ -1065,6 +1074,7 @@ void CPortfolioOrderPlacer::ForceCleanup()
 	int retryTimes = 0;
 	m_isWorking.store(false, boost::memory_order_release);
 
+	AfterLegDone();
 	m_activeOrdPlacer = NULL;
 	m_multiLegOrderTemplate.reset();
 	m_legPlacers.clear();
