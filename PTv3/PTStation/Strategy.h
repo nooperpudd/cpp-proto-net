@@ -65,6 +65,8 @@ public:
 	virtual void ReinitOrderPlacer(COrderProcessor* pOrderProc);
 
 	virtual bool StopOnTimepoint(){ return false; }
+	virtual string GetUserId(){ return ""; }
+
 protected:
 
 	virtual CPortfolioOrderPlacer* CreateOrderPlacer() = 0;

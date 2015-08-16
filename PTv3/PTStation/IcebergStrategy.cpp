@@ -43,6 +43,7 @@ void CIcebergStrategy::Apply(const entity::StrategyItem& strategyItem, bool with
 	m_pxDiffThreshold = strategyItem.ic_pxdiffthreshold();
 	m_sizeDiffThreshold = strategyItem.ic_sizediffthreshold();
 	m_targetGainPercent = strategyItem.ic_targetgain();
+	m_userId = strategyItem.ic_userid();
 }
 
 double RoundByStep(double val, double step)

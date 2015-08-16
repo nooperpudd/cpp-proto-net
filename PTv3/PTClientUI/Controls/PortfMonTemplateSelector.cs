@@ -15,6 +15,7 @@ namespace PortfolioTrading.Controls
         public DataTemplate ArbitrageManualTemplate { get; set; }
         public DataTemplate ScalperTemplate { get; set; }
         public DataTemplate DualScalperTemplate { get; set; }
+        public DataTemplate IcebergTemplate { get; set; }
         public DataTemplate ChangePositionTemplate { get; set; }
         public DataTemplate MACDHistSlopeTemplate { get; set; }
         public DataTemplate WMATrendTemplate { get; set; }
@@ -39,6 +40,8 @@ namespace PortfolioTrading.Controls
                     return ScalperTemplate;
                 else if (portfVm.StrategySetting.Name == StrategySetting.DualScalperStrategyName)
                     return DualScalperTemplate;
+                else if (portfVm.StrategySetting.Name == StrategySetting.IcebergStrategyName)
+                    return IcebergTemplate;
                 else if (portfVm.StrategySetting.Name == StrategySetting.MACDHistSlopeStrategyName)
                     return MACDHistSlopeTemplate;
                 else if (portfVm.StrategySetting.Name == StrategySetting.WMATrendStrategyName)

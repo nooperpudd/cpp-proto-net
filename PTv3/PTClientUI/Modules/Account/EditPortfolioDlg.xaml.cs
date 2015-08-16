@@ -229,6 +229,18 @@ namespace PortfolioTrading.Modules.Account
                     setting.ShortSideUserId = this.ShortSideUserId;
                 }
             }
+            else if (StrategyName == StrategySetting.IcebergStrategyName)
+            {
+                if (!string.IsNullOrEmpty(Symbol1))
+                {
+                    IcebergSetting setting = (IcebergSetting)portf.StrategySetting;
+                    setting.PriceTick = this.PriceTick;
+                    setting.PriceDiffThreshold = this.PriceDiffThreshold;
+                    setting.SizeDiffThreshold = this.SizeDiffThreshold;
+                    setting.TargetGainPercent = this.TargetGainPercent;
+                    setting.UserId = this.LongSideUserId;
+                }
+            }
             else if (StrategyName == StrategySetting.MACDHistSlopeStrategyName)
             {
                 if (!string.IsNullOrEmpty(Symbol1))
@@ -1128,6 +1140,61 @@ namespace PortfolioTrading.Modules.Account
                 {
                     _shortSideUserId = value;
                     RaisePropertyChanged("ShortSideUserId");
+                }
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region Iceberg
+
+        #region PriceDiffThreshold
+        private double _priceDiffThreshold = 1.2;
+
+        public double PriceDiffThreshold
+        {
+            get { return _priceDiffThreshold; }
+            set
+            {
+                if (_priceDiffThreshold != value)
+                {
+                    _priceDiffThreshold = value;
+                    RaisePropertyChanged("PriceDiffThreshold");
+                }
+            }
+        }
+        #endregion
+
+        #region SizeDiffThreshold
+        private int _sizeDiffThreshold = 20;
+
+        public int SizeDiffThreshold
+        {
+            get { return _sizeDiffThreshold; }
+            set
+            {
+                if (_sizeDiffThreshold != value)
+                {
+                    _sizeDiffThreshold = value;
+                    RaisePropertyChanged("SizeDiffThreshold");
+                }
+            }
+        }
+        #endregion
+
+        #region TargetGainPercent
+        private double _targetGainPercent = 0.2;
+
+        public double TargetGainPercent
+        {
+            get { return _targetGainPercent; }
+            set
+            {
+                if (_targetGainPercent != value)
+                {
+                    _targetGainPercent = value;
+                    RaisePropertyChanged("TargetGainPercent");
                 }
             }
         }

@@ -117,7 +117,7 @@ void CAvatarMultiClient::BindingOrderProcessor(CPortfolio* pPortfolio)
 	else
 	{
 		COrderProcessor* pOrderProc = NULL;
-		FindOrderProcessor("", &pOrderProc);
+		FindOrderProcessor(pPortfolio->Strategy()->GetUserId(), &pOrderProc);
 		assert(pOrderProc != NULL);
 		pPortfolio->Strategy()->ReinitOrderPlacer(pOrderProc);
 		if (pOrderProc != NULL)

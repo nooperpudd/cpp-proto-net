@@ -521,6 +521,51 @@
         </Grid>
     </DataTemplate>
 
+    <DataTemplate x:Key="icebergTemplate">
+        <Grid VerticalAlignment="Stretch">
+            <Grid.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="BorderBrush" Value="Blue"/>
+                </Style>
+            </Grid.Resources>
+            <Border BorderThickness="0, 1, 1, 1"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="38"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" BorderThickness="0, 0, 1, 0">
+                    <TextBlock Margin="4" VerticalAlignment="Center">条件</TextBlock>
+                </Border>
+                <Border Grid.Column="1">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
+                        <Grid Grid.Row="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition/>
+                                <ColumnDefinition/>
+                            </Grid.ColumnDefinitions>
+                            <DockPanel Grid.Column="0" >
+                                <TextBlock Text="价差>=" VerticalAlignment="Center" Margin="2"/>
+                                <TextBlock Text="{Binding StrategySetting.PriceDiffThreshold}" VerticalAlignment="Center" Margin="2"/>
+                            </DockPanel>
+                            <DockPanel Grid.Column="1" >
+                                <TextBlock Text="挂单差>=" VerticalAlignment="Center" Margin="2"/>
+                                <TextBlock Text="{Binding StrategySetting.SizeDiffThreshold}" VerticalAlignment="Center" Margin="2"/>
+                            </DockPanel>
+                        </Grid>
+
+                        <TextBlock Grid.Row="1" HorizontalAlignment="Center" Margin="4, 0" Text="{Binding StrategySetting.UserId}" />
+                    </Grid>
+                </Border>
+            </Grid>
+
+        </Grid>
+    </DataTemplate>
+
     <DataTemplate x:Key="macdHistSlopeTemplate">
         <Grid VerticalAlignment="Stretch">
             <Grid.Resources>
@@ -715,6 +760,7 @@
                                     ChangePositionTemplate="{StaticResource changePositionTemplate}"
                                     ScalperTemplate="{StaticResource scalperTemplate}"
                                     DualScalperTemplate="{StaticResource dualScalperTemplate}"
+                                    IcebergTemplate="{StaticResource icebergTemplate}"
                                     MACDHistSlopeTemplate="{StaticResource macdHistSlopeTemplate}"
                                     WMATrendTemplate="{StaticResource wmaTrendTemplate}"
                                     LinerRegressionTemplate="{StaticResource linerRegTemplate}"

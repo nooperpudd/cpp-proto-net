@@ -65,6 +65,9 @@ CStrategy* CStrategyFactory::Create(const entity::StrategyItem& strategyItem)
 	case entity::DUAL_SCALPER:
 		created = new CDualScalperStrategy();
 		break;
+	case entity::ICEBERG:
+		created = new CIcebergStrategy();
+		break;
 	}
 
 	created->Apply(strategyItem, m_portfolio, false);

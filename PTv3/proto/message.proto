@@ -231,6 +231,7 @@ message StrategyItem
 	optional double IC_PxDiffThreshold = 312;
 	optional int32 IC_SizeDiffThreshold = 313;
 	optional double IC_TargetGain = 314;
+	optional string IC_UserId = 315;
 	
 	// Dual Scalper
 	optional double DS_PriceTick = 321;

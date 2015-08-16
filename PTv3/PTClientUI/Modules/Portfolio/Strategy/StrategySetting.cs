@@ -14,6 +14,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         public const string ChangePositionStrategyName = "ChangePosition";
         public const string ScalperStrategyName = "Scalper";
         public const string DualScalperStrategyName = "DualScalper";
+        public const string IcebergStrategyName = "Iceberg";
         public const string MACDHistSlopeStrategyName = "MACDHistSlope";
         public const string WMATrendStrategyName = "WMATrend";
         public const string LinerRegressionStrategyName = "LinerRegression";
@@ -92,6 +93,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
                     break;
                 case DualScalperStrategyName:
                     setting = new DualScalperSetting();
+                    break;
+                case IcebergStrategyName:
+                    setting = new IcebergSetting();
                     break;
                 case MACDHistSlopeStrategyName:
                     setting = new MACDHistSlopeStrategySetting();

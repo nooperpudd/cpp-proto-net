@@ -15,6 +15,7 @@ public:
 	virtual void GetStrategyUpdate(entity::PortfolioUpdateItem* pPortfUpdateItem);
 
 	virtual int OnPortfolioAddPosition(CPortfolio* pPortfolio, const trade::MultiLegOrder& openOrder, int actualTradedVol);
+	virtual string GetUserId(){ return m_userId; }
 
 protected:
 	CPortfolioOrderPlacer* CreateOrderPlacer();
@@ -26,6 +27,7 @@ protected:
 	double m_pxDiffThreshold;
 	int m_sizeDiffThreshold;
 	double m_targetGainPercent;
+	string m_userId;
 
 	// Update properties
 	double m_priceGap;

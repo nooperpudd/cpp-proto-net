@@ -122,12 +122,21 @@ void ScalperStrategyItem::To( entity::StrategyItem* pNativeStrategyItem )
 
 void IcebergStrategyItem::To(entity::StrategyItem* pNativeStrategyItem)
 {
-	pNativeStrategyItem->set_ic_pricetick(_priceTick);
-	pNativeStrategyItem->set_ic_pxdiffthreshold(_pxDiffThreshold);
-	pNativeStrategyItem->set_ic_sizediffthreshold(_sizeDiffThreshold);
-	pNativeStrategyItem->set_ic_targetgain(_targetGainPercent);
-	
-	StrategyItem::To(pNativeStrategyItem);
+	IntPtr userIdPointer;
+	try{
+		pNativeStrategyItem->set_ic_pricetick(_priceTick);
+		pNativeStrategyItem->set_ic_pxdiffthreshold(_pxDiffThreshold);
+		pNativeStrategyItem->set_ic_sizediffthreshold(_sizeDiffThreshold);
+		pNativeStrategyItem->set_ic_targetgain(_targetGainPercent);
+		userIdPointer = (IntPtr)Marshal::StringToHGlobalAnsi(_userId);
+		pNativeStrategyItem->set_ic_userid((char*)userIdPointer.ToPointer());
+
+		StrategyItem::To(pNativeStrategyItem);
+	}
+	finally
+	{
+		Marshal::FreeHGlobal(userIdPointer);
+	}
 }
 
 void DualScalperStrategyItem::To(entity::StrategyItem* pNativeStrategyItem)

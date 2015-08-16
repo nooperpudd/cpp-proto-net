@@ -603,11 +603,24 @@ public:
 		}
 	}
 
+	property String^ UserId
+	{
+		String^ get()
+		{
+			return _userId;
+		}
+		void set(String^ val)
+		{
+			_userId = val;
+		}
+	}
+
 private:
 	double _priceTick;
 	double _pxDiffThreshold;
 	int _sizeDiffThreshold;
 	double _targetGainPercent;
+	String ^_userId;
 };
 
 public ref class DualScalperStrategyItem : StrategyItem
