@@ -49,11 +49,12 @@ public:
 	void PublishTradeUpdate(trade::Trade* pTrade);
 	void PublishPositionDetail(trade::PositionDetailInfo* pPosiDetailInfo);
 
+	void UnderlyingPushPacket(OutgoingPacket* pPacket);
+
 	bool m_destroyed;
 
 protected:
-
-	void UnderlyingPushPacket(OutgoingPacket* pPacket);
+	
 	void HandleAddingPortfolio(CPortfolio* pPortfolio);
 	virtual void OnAddPortfolio(CPortfolio* pPortfolio);
 

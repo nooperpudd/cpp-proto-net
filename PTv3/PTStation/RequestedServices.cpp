@@ -166,13 +166,15 @@ void ApplyStrategySettingsService::handle( LogicalConnection* pClient, IncomingP
 
 void HeartbeatService::handle( LogicalConnection* pClient, IncomingPacket* pRequest )
 {
+	CAvatarClient* avatarClient = (CAvatarClient*)pClient;
 	ProtobufPacket<entity::HeartbeatRequest>* heartbeatReq = (ProtobufPacket<entity::HeartbeatRequest>*)pRequest;
 	
 	ProtobufPacket<entity::HeartbeatResponse> resp(HeartbeatResponseID);
 	string tsSvr = boost::posix_time::to_iso_string(boost::posix_time::second_clock::local_time());
 	resp.getData().set_timestamp(tsSvr);
-	if(!pClient->IsInactive())
-		pClient->PushPacket(&resp);
+
+	if (!avatarClient->IsInactive())
+		avatarClient->UnderlyingPushPacket(&resp);
 }
 
 void PortfModifyQtyService::handle( LogicalConnection* pClient, IncomingPacket* pRequest )
