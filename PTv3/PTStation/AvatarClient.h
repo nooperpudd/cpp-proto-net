@@ -57,6 +57,7 @@ protected:
 	
 	void HandleAddingPortfolio(CPortfolio* pPortfolio);
 	virtual void OnAddPortfolio(CPortfolio* pPortfolio);
+	virtual void RegisterQuote(CPortfolio* pPortfolio);
 
 	string				m_sessionId;
 	string				m_investorId;

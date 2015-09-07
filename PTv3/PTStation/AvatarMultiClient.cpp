@@ -72,7 +72,11 @@ boost::tuple<bool, string> CAvatarMultiClient::QuoteLogin(const string& address,
 	m_quoteUserId = userId;
 	m_quotePassword = password;
 
+#ifdef USE_FEMAS_API
 	return boost::make_tuple(true, "");
+#else
+	return CAvatarClient::QuoteLogin(address, brokerId, investorId, userId, password);
+#endif
 }
 
 void CAvatarMultiClient::QuoteLogout()
@@ -83,7 +87,12 @@ void CAvatarMultiClient::QuoteLogout()
 void CAvatarMultiClient::OnAddPortfolio(CPortfolio* pPortfolio)
 {
 	// 1. Register quote
+#ifdef USE_FEMAS_API
 	RegisterQuote(pPortfolio);
+#else
+	CAvatarClient::RegisterQuote(pPortfolio);
+#endif
+
 	// 2. Binding OrderProcessor
 	BindingOrderProcessor(pPortfolio);
 }

@@ -126,6 +126,11 @@ void CAvatarClient::HandleAddingPortfolio(CPortfolio* pPortfolio)
 
 void CAvatarClient::OnAddPortfolio(CPortfolio* pPortfolio)
 {
+	RegisterQuote(pPortfolio);
+}
+
+void CAvatarClient::RegisterQuote(CPortfolio* pPortfolio)
+{
 	if (pPortfolio != NULL)
 		pPortfolio->SubscribeQuotes(&m_quoteRepositry);
 }
