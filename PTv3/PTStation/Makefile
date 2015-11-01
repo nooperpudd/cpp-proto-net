@@ -33,8 +33,9 @@ _FS_OBJS = stdafx \
 		\
 		ArbitrageManualMultiStrategy ArbitrageMultiStrategy ArbitrageStrategy ArbitrageTrigger ASCTrendStrategy \
 		ASCTrendTrigger ChangePositionStrategy ChangePositionTrigger DualScalperStrategy HistSlopeStrategy \
-		HistSlopeTrigger LinerRegressionStrategy ManualStrategy RangeTrendStrategy ScalperStrategy \
-		ScalperTrigger StrategyOrderCommand TrailingStopTrigger WMATrendStrategy WMATrendTrigger \
+		HistSlopeTrigger IcebergStrategy LinerRegressionStrategy ManualStrategy RangeTrendStrategy \
+		ScalperStrategy ScalperTrigger StrategyOrderCommand TrailingStopTrigger WMATrendStrategy \
+		WMATrendTrigger \
 		\
 		ATRDataSet BollDataSet DiffRecordSet DonchianDataSet HistDataReader \
 		HistDataWriter LinerRegressionDataSet MACDDataSet MultiOpenStrategy OHLCRecordSet \
