@@ -288,6 +288,12 @@
                                             <xctk:DecimalUpDown Value="{Binding Settings.CloseThreshold, FallbackValue=100, Mode=TwoWay}"/>
                                         </DockPanel>
                                     </DockPanel>
+                                    <DockPanel Margin="12, 0, 6, 2">
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock VerticalAlignment="Center" Margin="4, 2">平昨</TextBlock>
+                                            <CheckBox Margin="4, 2" VerticalAlignment="Center" IsChecked="{Binding Settings.CloseYesterday}" HorizontalAlignment="Left" />
+                                        </StackPanel>
+                                    </DockPanel>
                                 </StackPanel>
                             </DockPanel>
                         </Border>

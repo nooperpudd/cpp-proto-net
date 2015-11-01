@@ -185,6 +185,7 @@ message StrategyItem
 	required int32 OpenTimeout = 3;
 	repeated TriggerItem Triggers = 4;
 	required int32 MaxPosition = 5;
+	optional bool CloseYesterday = 6;
 	
 	// MANUAL
 	optional CompareCondition StopGainCondition = 21;

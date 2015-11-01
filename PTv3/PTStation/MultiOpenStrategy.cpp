@@ -14,6 +14,7 @@ CMultiOpenStrategy::CMultiOpenStrategy(CAvatarClient* pAvatar, CPortfolio* pPort
 	, m_longAvgCost(0)
 	, m_shortPosition(0)
 	, m_shortAvgCost(0)
+	, m_closeYesterday(false)
 {
 	m_portfTradedEvtPump.Init(boost::bind(&CMultiOpenStrategy::HandlePortfolioDone, this, _1));
 }
@@ -61,6 +62,13 @@ void CMultiOpenStrategy::Apply(const entity::StrategyItem& strategyItem, CPortfo
 	OnApply(strategyItem, pPortfolio, withTriggers);
 
 	m_maxQuantity = strategyItem.maxposition();
+	if (strategyItem.has_closeyesterday())
+	{
+		m_closeYesterday = strategyItem.closeyesterday();
+		LOG_INFO(logger, boost::str(boost::format("CMultiOpenStrategy setting CloseYesterday %s") 
+			% (m_closeYesterday ? "Yes" : "No")));
+	}
+
 	m_perOpenQuantity = pPortfolio->Quantity();
 }
 
@@ -440,7 +448,7 @@ bool CMultiOpenStrategy::OnStart()
 	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
 		iter != m_strategyExecutors.end(); ++iter)
 	{
-		bool indReady = (*iter)->Prepare();
+		bool indReady = (*iter)->Prepare(m_closeYesterday);
 		if (!indReady)
 		{
 			allReady = false;

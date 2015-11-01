@@ -86,7 +86,8 @@ void CPortfolioArbitrageOrderPlacer::ClosePosition(int volumeToClose, entity::Po
 {
 	m_multiLegOrderTemplate->set_reason(reason);
 	m_multiLegOrderTemplate->set_offset(trade::ML_OF_CLOSE);
-	Run(posiDirection, volumeToClose, trade::OF_CLOSE_TODAY, pLmtPxArr, iPxSize, trigQuoteTimestamp, m_lastOpenOrderId.c_str());
+	Run(posiDirection, volumeToClose, (!m_closeYesterday ? trade::OF_CLOSE_TODAY : trade::OF_CLOSE_YESTERDAY),
+		pLmtPxArr, iPxSize, trigQuoteTimestamp, m_lastOpenOrderId.c_str());
 	m_openingPosition = false;
 }
 

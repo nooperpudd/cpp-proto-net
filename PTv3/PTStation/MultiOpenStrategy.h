@@ -81,6 +81,7 @@ protected:
 	double m_longAvgCost;
 	int m_shortPosition;
 	double m_shortAvgCost;
+	bool m_closeYesterday;
 
 	vector<StrategyExecutorPtr> m_strategyExecutors;
 	

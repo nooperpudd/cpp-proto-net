@@ -112,6 +112,9 @@ public:
 
 	void GetStateName(string& stateName, int stateId);
 
+	bool IsCloseYesterday(){ return m_closeYesterday; }
+	void SetCloseYesterday(bool closeYesterday){ m_closeYesterday = closeYesterday; }
+
 protected:
 
 	void Initialize(const string& mlOrdId);
@@ -191,6 +194,7 @@ protected:
 	boost::atomic<bool> m_isWorking;
 	bool m_isReady;
 	bool m_sendNextOnFilled;
+	bool m_closeYesterday;
 	string m_sendingOrderNote;
 	entity::PosiDirectionType m_posiDirection;
 	boost::chrono::steady_clock::time_point m_triggingTimestamp;

@@ -38,7 +38,7 @@ public:
 
 	int ExecId(){ return m_execId; }
 	int Quantity() { return m_quantity; }
-	bool Prepare();
+	bool Prepare(bool closeYesterday);
 	virtual void Cleanup();
 	void Start();
 	void FireEvent(ExecutorEvent execEvent);

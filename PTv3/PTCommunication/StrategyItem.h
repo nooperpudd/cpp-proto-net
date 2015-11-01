@@ -338,6 +338,18 @@ public:
 		}
 	}
 
+	property bool CloseYesterday
+	{
+		bool get()
+		{
+			return _closeYesterday;
+		}
+		void set(bool val)
+		{
+			_closeYesterday = val;
+		}
+	}
+
 private:
 
 	PosiDirectionType _direction;
@@ -346,6 +358,7 @@ private:
 	double _openThreshold;
 	CompareCondition _closeCondition;
 	double _closeThreshold;
+	bool _closeYesterday;
 };
 
 public ref class ChangePositionStrategyItem : StrategyItem

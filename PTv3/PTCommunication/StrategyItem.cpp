@@ -71,6 +71,7 @@ void ArbitrageManualStrategyItem::To(entity::StrategyItem* pNativeStrategyItem)
 		pNativeStrategyItem->set_am_openthreshold(_openThreshold);
 		pNativeStrategyItem->set_am_closecondition(static_cast<entity::CompareCondition>(_closeCondition));
 		pNativeStrategyItem->set_am_closethreshold(_closeThreshold);
+		pNativeStrategyItem->set_closeyesterday(_closeYesterday);
 
 		StrategyItem::To(pNativeStrategyItem);
 	}

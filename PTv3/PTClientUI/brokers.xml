@@ -114,6 +114,15 @@
           <item>27.115.78.150:26213</item>
         </MarketData>
       </Server>
+      <Server>
+        <Name>SimNow</Name>
+        <Trading>
+          <item>180.168.146.187:10000</item>
+        </Trading>
+        <MarketData>
+          <item>180.168.146.187:10010</item>
+        </MarketData>
+      </Server>
 		</Servers>
 	</broker>
 </root>

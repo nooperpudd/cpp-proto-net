@@ -163,6 +163,23 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             }
         }
         #endregion
+
+        #region CloseYesterday
+        private bool _closeYesterday = false;
+
+        public bool CloseYesterday
+        {
+            get { return _closeYesterday; }
+            set
+            {
+                if (_closeYesterday != value)
+                {
+                    _closeYesterday = value;
+                    RaisePropertyChanged("CloseYesterday");
+                }
+            }
+        }
+        #endregion
         
 
         public event Action<PTEntity.PosiDirectionType> OnDirectionChange;
@@ -211,7 +228,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             elem.Add(elemOpenPosition);
             XElement elemClosePosition = new XElement("closePosition",
                 new XAttribute("condition", CloseCondition),
-                new XAttribute("threshold", CloseThreshold));
+                new XAttribute("threshold", CloseThreshold),
+                new XAttribute("closeYesterday", CloseYesterday));
+
             elem.Add(elemClosePosition);
             return elem.ToString();
         }
@@ -265,7 +284,11 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             {
                 CloseThreshold = double.Parse(attr.Value);
             }
-            
+            attr = elemClosePosition.Attribute("closeYesterday");
+            if (attr != null)
+            {
+                CloseYesterday = bool.Parse(attr.Value);
+            }
         }
 
         public override PTEntity.StrategyItem GetEntity()
@@ -281,6 +304,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             strategyItem.CloseCondition = CloseCondition;
             strategyItem.CloseThreshold = CloseThreshold;
             strategyItem.MaxPosition = MaxPosition;
+            strategyItem.CloseYesterday = CloseYesterday;
 
             return strategyItem;
         }
@@ -297,6 +321,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
             this.CloseCondition = strategySettings.CloseCondition;
             this.CloseThreshold = strategySettings.CloseThreshold;
             this.MaxPosition = strategySettings.MaxPosition;
+            this.CloseYesterday = strategySettings.CloseYesterday;
         }
     }
 }

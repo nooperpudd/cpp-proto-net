@@ -244,11 +244,12 @@ void CStrategyExecutor::OnCanceled()
 	OnFinished();	// in case strategy stop and doing deferred clean up
 }
 
-bool CStrategyExecutor::Prepare()
+bool CStrategyExecutor::Prepare(bool closeYesterday)
 {
 	bool succ = false;
 	if (m_orderPlacer.get() != NULL)
 	{
+		m_orderPlacer->SetCloseYesterday(closeYesterday);
 		succ = m_orderPlacer->Prepare();
 		if (!succ)
 			logger.Warning(boost::str(boost::format("Executor(%d) did NOT get prepared successfully") % m_execId));
