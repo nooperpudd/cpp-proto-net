@@ -70,6 +70,7 @@ protected:
 	void OnPortfolioDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded);
 	void HandlePortfolioDone(PortfolioDoneMsgPtr msgPtr);
 	void PutErrorList(CStrategyExecutor* pErrExecutor);
+	COrderProcessor* GetEffectiveProcessor();
 
 	static double CalcMlOrderCost(const trade::MultiLegOrder& openOrder);
 	static entity::PosiDirectionType GetMlOrderDirection(const trade::MultiLegOrder& mlOrder);
@@ -97,6 +98,7 @@ protected:
 	// the current executor that is waiting for opening position
 	CStrategyExecutor* m_activeExecutor;
 	CPortfolio* m_pPortfolio;
+	COrderProcessor* m_reInitProc;
 	
 	boost::mutex m_mut;
 

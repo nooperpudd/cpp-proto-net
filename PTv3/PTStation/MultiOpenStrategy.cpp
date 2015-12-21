@@ -15,6 +15,7 @@ CMultiOpenStrategy::CMultiOpenStrategy(CAvatarClient* pAvatar, CPortfolio* pPort
 	, m_shortPosition(0)
 	, m_shortAvgCost(0)
 	, m_closeYesterday(false)
+	, m_reInitProc(NULL)
 {
 	m_portfTradedEvtPump.Init(boost::bind(&CMultiOpenStrategy::HandlePortfolioDone, this, _1));
 }
@@ -101,7 +102,7 @@ bool CMultiOpenStrategy::PrepareExecutors()
 				InitializeExecutors();
 
 				// Must call InitOrderPlacer before use
-				InitOrderPlacer(m_pPortfolio, m_pPortfolio->OrderProcessor());
+				InitOrderPlacer(m_pPortfolio, GetEffectiveProcessor());
 
 				return true;
 			}
@@ -292,13 +293,14 @@ void CMultiOpenStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pO
 	}
 }
 
+COrderProcessor* CMultiOpenStrategy::GetEffectiveProcessor()
+{
+	return m_reInitProc != NULL ? m_reInitProc : m_pPortfolio->OrderProcessor();
+}
+
 void CMultiOpenStrategy::ReinitOrderPlacer(COrderProcessor* pOrderProc)
 {
-	for (vector<StrategyExecutorPtr>::iterator iter = m_strategyExecutors.begin();
-		iter != m_strategyExecutors.end(); ++iter)
-	{
-		(*iter)->UpdateOrderProcessor(pOrderProc);
-	}
+	m_reInitProc = pOrderProc;
 }
 
 bool CMultiOpenStrategy::GetReadyExecutor(CStrategyExecutor** pOutExector)

@@ -57,10 +57,12 @@
       <Server>
         <Name>2002万兆系统</Name>
         <Trading>
+          <item>116.228.246.92:55558</item>
           <item>192.168.217.4:41205</item>
           <item>192.168.217.5:41205</item>
         </Trading>
         <MarketData>
+          <item>116.228.246.92:55559</item>
           <item>192.168.217.4:41213</item>
           <item>192.168.217.5:41213</item>
         </MarketData>
