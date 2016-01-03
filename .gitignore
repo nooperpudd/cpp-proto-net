@@ -20,3 +20,6 @@
 /PTv3/PTCommunication/*.aps
 /PTv3/PTStation/*.aps
 /PTv3/QuoteBroadcast/Release
+/PTv3/.vs/PTv3/v14/*.suo
+/PTv3/PTCommunication/PTCommunication.vcxproj.user
+/PTv3/*.opendb
