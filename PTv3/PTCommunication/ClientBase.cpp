@@ -124,7 +124,7 @@ void ClientBase::AddPortfolio( PortfolioItem ^portfItem )
 		_nativeClient->AddPortfolio(portfItem);
 }
 
-void ClientBase::AddPortfCollection( array<PortfolioItem ^> ^portfItems )
+void ClientBase::AddPortfCollection(cli::array<PortfolioItem ^> ^portfItems )
 {
 	if(this->IsConnected)
 		_nativeClient->AddPortfolios(portfItems);
@@ -215,7 +215,7 @@ void ClientBase::PortfApplyStrategySettings( String ^portfId, StrategyItem ^stra
 	}
 }
 
-void ClientBase::PortfModifyQuantity( String ^portfId, int perOpenQty, int perStartQty, int totalOpenLimit, int maxCancelQty, array<String^> ^timepoints )
+void ClientBase::PortfModifyQuantity( String ^portfId, int perOpenQty, int perStartQty, int totalOpenLimit, int maxCancelQty, cli::array<String^> ^timepoints )
 {
 	if(!this->IsConnected)
 		return;
@@ -325,7 +325,7 @@ void ClientBase::PortfSetPreferredLeg(String ^portfId, String ^legName)
 	}
 }
 
-void ClientBase::SetUserIds(array<String^> ^userIds)
+void ClientBase::SetUserIds(cli::array<String^> ^userIds)
 {
 	try
 	{

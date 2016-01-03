@@ -65,7 +65,7 @@ string CHistDataReader::GetFilePath(const boost::gregorian::date& tradingDay)
 
 void CHistDataReader::ReadFromFile(const string& dataFilePath, COHLCRecordSet* pRecordSet, CPriceBarGen* pPriceBarGen, bool histData)
 {
-    ifstream f(dataFilePath.c_str());
+    std::ifstream f(dataFilePath.c_str());
     if(f.good())
     {
         while(!f.eof())

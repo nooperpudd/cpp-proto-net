@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -12,7 +12,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{155496B9-C70D-4731-B52D-4D6175559FBD}</ProjectGuid>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <Keyword>ManagedCProj</Keyword>
     <RootNamespace>PTCommunication</RootNamespace>
   </PropertyGroup>
@@ -22,14 +22,14 @@
     <UseDebugLibraries>true</UseDebugLibraries>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <CLRSupport>true</CLRSupport>
     <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -55,15 +55,15 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>D:\Dev\boost_1_56_0;D:\Dev\protobuf-2.5.0\src;D:\Dev\PushFramework_2.2.1\include;./tcpsocket;../PTStation;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\boost_1_60_0;D:\Dev\protobuf-2.5.0\src;D:\Dev\PushFramework_2.2.1\include;./tcpsocket;../PTStation;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>libprotobuf.lib;PushFramework.lib</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\Dev\boost_1_56_0\stage\lib;D:\Dev\protobuf-2.5.0\lib\debug;D:\Dev\PushFramework_2.2.1\lib\debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Dev\boost_1_60_0\stage\lib;D:\Dev\protobuf-2.5.0\lib_vc140\debug;D:\Dev\PushFramework_2.2.1\lib\vc140\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y D:\Dev\PushFramework_2.2.1\lib\$(ConfigurationName)\PushFramework.dll $(OutDir)</Command>
+      <Command>copy /y D:\Dev\PushFramework_2.2.1\lib\vc140\$(ConfigurationName)\PushFramework.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -71,15 +71,15 @@
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>WIN32;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>Use</PrecompiledHeader>
-      <AdditionalIncludeDirectories>D:\Dev\boost_1_56_0;D:\Dev\protobuf-2.5.0\src;D:\Dev\PushFramework_2.2.1\include;./tcpsocket;../PTStation;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\boost_1_60_0;D:\Dev\protobuf-2.5.0\src;D:\Dev\PushFramework_2.2.1\include;./tcpsocket;../PTStation;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>libprotobuf.lib;PushFramework.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>D:\Dev\boost_1_56_0\stage\lib;D:\Dev\protobuf-2.5.0\lib\release;D:\Dev\PushFramework_2.2.1\lib\release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Dev\boost_1_60_0\stage\lib;D:\Dev\protobuf-2.5.0\lib_vc140\release;D:\Dev\PushFramework_2.2.1\lib\vc140\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
     <PostBuildEvent>
-      <Command>copy /y D:\Dev\PushFramework_2.2.1\lib\$(ConfigurationName)\PushFramework.dll $(OutDir)</Command>
+      <Command>copy /y D:\Dev\PushFramework_2.2.1\lib\vc140\$(ConfigurationName)\PushFramework.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

@@ -362,7 +362,7 @@ void CASCTrendStrategy::OpenPosition( entity::PosiDirectionType direction, CPort
 
 void CASCTrendStrategy::ClosePosition( CPortfolio* pPortfolio, CPortfolioTrendOrderPlacer* pOrderPlacer, entity::Quote* pQuote, const char* noteText )
 {
-	if(pOrderPlacer != NULL)
+	if(pOrderPlacer != nullptr)
 	{
 		entity::PosiDirectionType posiDirection = pOrderPlacer->PosiDirection();
 

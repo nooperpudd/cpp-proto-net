@@ -1,5 +1,6 @@
 CC = g++
 INC_DIR=-I../dev/pushframework-2.2.1/include
+LIB_DIR=-L/usr/local/lib
 CFLAGS=$(INC_DIR) -DUSE_NET_LIBS -O3
 FM_FLAGS=-DUSE_FEMAS_API
 ZE_FLAGS=-DUSE_ZEUSING_API
@@ -78,7 +79,7 @@ pt-station: $(ENTITY_OBJS) $(FS_COM_CTP_OBJS) $(FS_CTP_OBJS)
 	$(CC) -o PTStation $^ $(LIBS) $(CTP_TD_LIBS) -Wall
 
 pt-station-fm: $(ENTITY_OBJS) $(FS_COM_FM_OBJS) $(FS_FM_OBJS)
-	$(CC) -o PTStationFM $^ $(LIBS) $(FM_TD_LIBS) -Wall
+	$(CC) -o PTStationFM $^ $(LIBS) $(FM_TD_LIBS) $(LIB_DIR) -Wall
 
 pt-station-ze: $(ENTITY_OBJS) $(FS_COM_ZE_OBJS) $(FS_ZE_OBJS)
 	$(CC) -o PTStationZE $^ $(LIBS) $(ZE_TD_LIBS) -Wall

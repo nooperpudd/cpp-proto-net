@@ -62,9 +62,9 @@ public:
 		}
 	}
 
-	property array<TriggerStatusItem^>^ Triggers
+	property cli::array<TriggerStatusItem^>^ Triggers
 	{
-		array<TriggerStatusItem^>^ get()
+		cli::array<TriggerStatusItem^>^ get()
 		{
 			return _triggers; 
 		}
@@ -72,7 +72,7 @@ public:
 
 internal:
 
-	void SetTriggers(array<TriggerStatusItem^>^ triggers)
+	void SetTriggers(cli::array<TriggerStatusItem^>^ triggers)
 	{
 		_triggers = triggers;
 	}
@@ -90,7 +90,7 @@ internal:
 protected:
 	bool _running;
 	bool _suspending;
-	array<TriggerStatusItem^>^ _triggers;
+	cli::array<TriggerStatusItem^>^ _triggers;
 };
 
 public ref class ArbitrageStrategyUpdateItem : StrategyUpdateItem

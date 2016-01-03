@@ -31,7 +31,7 @@ public:
 
 	void SendHeartbeat(const char* timestamp);
 	void AddPortfolio(PTEntity::PortfolioItem ^portfolioItem);
-	void AddPortfolios(array<PTEntity::PortfolioItem^> ^portfolioItems);
+	void AddPortfolios(cli::array<PTEntity::PortfolioItem^> ^portfolioItems);
 	void PortfEnableStrategy(const char* portfId, bool isEnabled, int lastOrderId);
 	void PortfPauseStrategy(const char* portfId, bool isSuspending);
 	void PortfTurnSwitches(const char* portfId, int triggerIndex, bool enabled);

@@ -142,7 +142,7 @@ void CNatvieClient::AddPortfolio( PTEntity::PortfolioItem ^portfolioItem )
 	sendRequest(&request);
 }
 
-void CNatvieClient::AddPortfolios( array<PTEntity::PortfolioItem^> ^portfolioItems )
+void CNatvieClient::AddPortfolios(cli::array<PTEntity::PortfolioItem^> ^portfolioItems )
 {
 	ProtobufPacket<entity::AddPortfolioRequest> request(AddPortfolioRequestID);
 	for each(PTEntity::PortfolioItem ^portf in portfolioItems)

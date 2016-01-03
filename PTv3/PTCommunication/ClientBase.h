@@ -65,13 +65,13 @@ namespace PTCommunication {
 			}
 		}
 
-		property array<String^> ^AlternativeUserIds
+		property cli::array<String^> ^AlternativeUserIds
 		{
-			array<String^> ^get()
+			cli::array<String^> ^get()
 			{
 				return _userIds;
 			}
-			void set(array<String^> ^userIds)
+			void set(cli::array<String^> ^userIds)
 			{
 				_userIds = userIds;
 				SetUserIds(userIds);
@@ -90,7 +90,7 @@ namespace PTCommunication {
 
 		void AddPortfolio(PortfolioItem ^portfItem);
 
-		void AddPortfCollection(array<PortfolioItem ^> ^portfItems);
+		void AddPortfCollection(cli::array<PortfolioItem ^> ^portfItems);
 
 		void RemovePortf(String ^portfId)
 		{
@@ -113,7 +113,7 @@ namespace PTCommunication {
 
 		}
 
-		void PortfModifyQuantity(String ^portfId, int perOpenQty, int perStartQty, int totalOpenLimit, int maxCancelQty, array<String^> ^timepoints);
+		void PortfModifyQuantity(String ^portfId, int perOpenQty, int perStartQty, int totalOpenLimit, int maxCancelQty, cli::array<String^> ^timepoints);
 
 		void PortfSetPreferredLeg(String ^portfId, String ^legName);
 
@@ -153,8 +153,8 @@ namespace PTCommunication {
 
 	private:
 		void SendHeartbeat(Object ^obj);
-		void SetUserIds(array<String^> ^userIds);
+		void SetUserIds(cli::array<String^> ^userIds);
 
-		array<String^> ^_userIds;
+		cli::array<String^> ^_userIds;
 	};
 }

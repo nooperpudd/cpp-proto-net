@@ -19,7 +19,7 @@ public:
 	property String ^ PortfolioId;
 	property int Quantity;
 
-	property array<Order^>^ Legs;
+	property cli::array<Order^>^ Legs;
 	property String ^ OpenOrderId;
 	property String ^ OpenDate;
 
