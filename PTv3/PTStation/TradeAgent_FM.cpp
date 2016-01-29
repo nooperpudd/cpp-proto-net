@@ -194,7 +194,7 @@ void CTradeAgent::Login()
 		strcpy_s(req.BrokerID, m_brokerId.c_str());
 		strcpy_s(req.UserID, m_userId.c_str());
 		strcpy_s(req.Password, m_password.c_str());
-		strcpy_s(req.UserProductInfo, "TradeStationFM 4.2");
+		strcpy_s(req.UserProductInfo, "QYTrader");
 		if(m_pUserApi != NULL)
 		{
 			int requestId = RequestIDIncrement();

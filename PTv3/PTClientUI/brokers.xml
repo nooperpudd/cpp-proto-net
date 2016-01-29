@@ -91,9 +91,11 @@
         <Trading>
           <item>117.184.207.110:17131</item>
           <item>117.184.207.108:6666</item>
+          <item>118.126.16.229:17131</item>
         </Trading>
         <MarketData>
           <item>117.184.207.110:17101</item>
+          <item>118.126.16.229:17101</item>
           <item>udp://255.255.255.255:41115</item>
         </MarketData>
       </Server>

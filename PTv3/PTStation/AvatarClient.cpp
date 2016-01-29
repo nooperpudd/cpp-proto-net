@@ -43,6 +43,9 @@ boost::tuple<bool, string> CAvatarClient::TradeLogin(const string& address, cons
 		return boost::make_tuple(false, "Trade already Logged in");
 	m_investorId = investorId;
 	m_userId = userIds[0];
+#ifdef USE_FEMAS_API
+	m_tradeAgent.SetIndex(0);
+#endif
 	return m_tradeAgent.Login(address, brokerId, investorId, m_userId, password);
 }
 
