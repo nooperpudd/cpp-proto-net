@@ -5,11 +5,11 @@
 
 class CDualScalperOrderPlacer;
 
-class CDualScalperStrategy : public CMultiRouteStrategy
+class CDualQueueStrategy : public CMultiRouteStrategy
 {
 public:
-	CDualScalperStrategy();
-	~CDualScalperStrategy();
+	CDualQueueStrategy();
+	~CDualQueueStrategy();
 
 	virtual void Apply(const entity::StrategyItem& strategyItem, CPortfolio* pPortfolio, bool withTriggers);
 	virtual void Apply(const entity::StrategyItem& strategyItem, bool withTriggers);
@@ -20,14 +20,14 @@ public:
 	virtual void Test(entity::Quote* pQuote, CPortfolio* pPortfolio, boost::chrono::steady_clock::time_point& timestamp);
 	virtual void GetStrategyUpdate(entity::PortfolioUpdateItem* pPortfUpdateItem);
 
-	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc){}
+	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc) {}
 
 	virtual void OnLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume);
 	virtual void OnLegCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction);
 	virtual int OnPortfolioAddPosition(CPortfolio* pPortfolio, const trade::MultiLegOrder& openOrder, int actualTradedVol);
 
-	DualScalperState State(){ return m_currentState.load(boost::memory_order_acquire); }
-	void SetState(DualScalperState state){ m_currentState.store(state, boost::memory_order_release); }
+	DualScalperState State() { return m_currentState.load(boost::memory_order_acquire); }
+	void SetState(DualScalperState state) { m_currentState.store(state, boost::memory_order_release); }
 
 	void OnStrategyError(CPortfolio* portf, const string& errorMsg);
 	virtual bool StopOnTimepoint();
@@ -53,23 +53,20 @@ private:
 
 	double GetOffset(double gap);
 
-	double m_diffThreshold;
 	double m_priceTick;
-	double m_openOffset;
-	double m_percentOffset;
-	double m_closeOffset;
-	double m_oppositeCloseThreshold;
 	string m_longSideUserId;
 	string m_shortSideUserId;
 
 	CDualScalperOrderPlacer* m_longOrderPlacer;
 	CDualScalperOrderPlacer* m_shortOrderPlacer;
 
-	double m_diff;
-	double m_ask;
-	int m_askSize;
-	double m_bid;
-	int m_bidSize;
+	//double m_diff;
+	//double m_ask;
+	//int m_askSize;
+	//double m_bid;
+	//int m_bidSize;
+	int m_stableTickThreshold;
+	int m_minSize;
 
 	boost::atomic<DualScalperState> m_currentState;
 	boost::mutex m_mutFsm;

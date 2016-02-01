@@ -419,6 +419,15 @@
     <ClInclude Include="IcebergStrategy.h">
       <Filter>Header Files\strategy</Filter>
     </ClInclude>
+    <ClInclude Include="DualQueueStrategy.h">
+      <Filter>Header Files\strategy</Filter>
+    </ClInclude>
+    <ClInclude Include="MultiRouteStrategy.h">
+      <Filter>Header Files\strategy</Filter>
+    </ClInclude>
+    <ClInclude Include="DualTradingEnums.h">
+      <Filter>Header Files\strategy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -713,6 +722,9 @@
       <Filter>Source Files\strategy</Filter>
     </ClCompile>
     <ClCompile Include="IcebergStrategy.cpp">
+      <Filter>Source Files\strategy</Filter>
+    </ClCompile>
+    <ClCompile Include="DualQueueStrategy.cpp">
       <Filter>Source Files\strategy</Filter>
     </ClCompile>
   </ItemGroup>
