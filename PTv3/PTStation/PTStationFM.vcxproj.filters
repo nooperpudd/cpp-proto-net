@@ -395,6 +395,9 @@
     <ClInclude Include="DualScalperStrategy.h">
       <Filter>Header Files\strategy</Filter>
     </ClInclude>
+    <ClInclude Include="IcebergStrategy.h">
+      <Filter>Header Files\strategy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -686,6 +689,9 @@
       <Filter>Source Files\quote</Filter>
     </ClCompile>
     <ClCompile Include="DualScalperStrategy.cpp">
+      <Filter>Source Files\strategy</Filter>
+    </ClCompile>
+    <ClCompile Include="IcebergStrategy.cpp">
       <Filter>Source Files\strategy</Filter>
     </ClCompile>
   </ItemGroup>
