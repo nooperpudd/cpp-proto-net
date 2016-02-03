@@ -156,6 +156,7 @@ enum StrategyType
 	ARBITRAGE_MANUAL = 11;
 	DUAL_SCALPER = 12;
 	ICEBERG = 13;
+	DUAL_QUEUE = 14;
 }
 
 enum StopPriceType
@@ -243,6 +244,11 @@ message StrategyItem
 	optional double DS_CloseOffset = 326;
 	optional double DS_OppositeCloseThreshold = 327;
 	optional double DS_PercentOffset = 328;
+
+	// Dual Queue
+	optional double DQ_PriceTick = 331;
+	optional int32 DQ_StableTickThreshold = 332;
+	optional int32 DQ_MinWorkingSize = 333;
 	
 	// TechAnaly
 	repeated HistSourceCfg HistSources = 401;
