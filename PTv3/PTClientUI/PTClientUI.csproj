@@ -209,6 +209,8 @@
     <Compile Include="Modules\Portfolio\Strategy\ASCTrendStrategySettings.cs" />
     <Compile Include="Modules\Portfolio\Strategy\ChangePositionSetting.cs" />
     <Compile Include="Modules\Portfolio\Strategy\ChangePositionSettingsVM.cs" />
+    <Compile Include="Modules\Portfolio\Strategy\DualQueueSetting.cs" />
+    <Compile Include="Modules\Portfolio\Strategy\DualQueueSettingVM.cs" />
     <Compile Include="Modules\Portfolio\Strategy\DualScalperSetting.cs" />
     <Compile Include="Modules\Portfolio\Strategy\DualScalperSettingVM.cs" />
     <Compile Include="Modules\Portfolio\Strategy\IcebergSetting.cs" />

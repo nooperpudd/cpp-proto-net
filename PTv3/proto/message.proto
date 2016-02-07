@@ -247,8 +247,10 @@ message StrategyItem
 
 	// Dual Queue
 	optional double DQ_PriceTick = 331;
-	optional int32 DQ_StableTickThreshold = 332;
-	optional int32 DQ_MinWorkingSize = 333;
+	optional PosiDirectionType DQ_Direction = 332;
+	optional int32 DQ_StableTickThreshold = 333;
+	optional int32 DQ_MinWorkingSize = 334;
+
 	
 	// TechAnaly
 	repeated HistSourceCfg HistSources = 401;

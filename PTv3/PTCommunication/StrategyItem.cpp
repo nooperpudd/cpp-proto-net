@@ -166,6 +166,16 @@ void DualScalperStrategyItem::To(entity::StrategyItem* pNativeStrategyItem)
 	}
 }
 
+void DualQueueStrategyItem::To(entity::StrategyItem* pNativeStrategyItem)
+{
+	pNativeStrategyItem->set_dq_pricetick(_priceTick);
+	pNativeStrategyItem->set_dq_direction(static_cast<entity::PosiDirectionType>(_direction));
+	pNativeStrategyItem->set_dq_stabletickthreshold(_stableTickThreshold);
+	pNativeStrategyItem->set_dq_minworkingsize(_minWorkingSize);
+
+	StrategyItem::To(pNativeStrategyItem);
+}
+
 void MACDSlopeStrategyItem::To( entity::StrategyItem* pNativeStrategyItem )
 {
 	IntPtr symbolPtr;

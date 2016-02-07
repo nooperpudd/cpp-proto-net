@@ -229,6 +229,16 @@ namespace PortfolioTrading.Modules.Account
                     setting.ShortSideUserId = this.ShortSideUserId;
                 }
             }
+            else if (StrategyName == StrategySetting.DualQueueStrategyName)
+            {
+                if (!string.IsNullOrEmpty(Symbol1))
+                {
+                    DualQueueSetting setting = (DualQueueSetting)portf.StrategySetting;
+                    setting.PriceTick = this.PriceTick;
+                    setting.StableTickThreshold = this.StableTickThreshold;
+                    setting.MinWorkingSize = this.MinWorkingSize;
+                }
+            }
             else if (StrategyName == StrategySetting.IcebergStrategyName)
             {
                 if (!string.IsNullOrEmpty(Symbol1))
@@ -329,7 +339,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_strategyName != value)
                 {
                     _strategyName = value;
-                    RaisePropertyChanged("StrategyName");
+                    RaisePropertyChanged(nameof(StrategyName));
                 }
             }
         }
@@ -346,7 +356,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_portfId != value)
                 {
                     _portfId = value;
-                    RaisePropertyChanged("PortfId");
+                    RaisePropertyChanged(nameof(PortfId));
                 }
             }
         }
@@ -363,7 +373,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_qty != value)
                 {
                     _qty = value;
-                    RaisePropertyChanged("Quantity");
+                    RaisePropertyChanged(nameof(Quantity));
                 }
             }
         }
@@ -380,7 +390,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_totalOpenLimit != value)
                 {
                     _totalOpenLimit = value;
-                    RaisePropertyChanged("TotalOpenLimit");
+                    RaisePropertyChanged(nameof(TotalOpenLimit));
                 }
             }
         }
@@ -397,7 +407,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_maxCancelVol != value)
                 {
                     _maxCancelVol = value;
-                    RaisePropertyChanged("MaxCancelVol");
+                    RaisePropertyChanged(nameof(MaxCancelVol));
                 }
             }
         }
@@ -414,7 +424,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_maxOpenPerStart != value)
                 {
                     _maxOpenPerStart = value;
-                    RaisePropertyChanged("MaxOpenPerStart");
+                    RaisePropertyChanged(nameof(MaxOpenPerStart));
                 }
             }
         }
@@ -431,7 +441,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_endTimePointsExpr != value)
                 {
                     _endTimePointsExpr = value;
-                    RaisePropertyChanged("EndTimePointsExpr");
+                    RaisePropertyChanged(nameof(EndTimePointsExpr));
                 }
             }
         }
@@ -448,7 +458,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_leg1 != value)
                 {
                     _leg1 = value;
-                    RaisePropertyChanged("Leg1");
+                    RaisePropertyChanged(nameof(Leg1));
                 }
             }
         }
@@ -465,7 +475,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_symbol1 != value)
                 {
                     _symbol1 = value;
-                    RaisePropertyChanged("Symbol1");
+                    RaisePropertyChanged(nameof(Symbol1));
                 }
             }
         }
@@ -482,7 +492,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_side1 != value)
                 {
                     _side1 = value;
-                    RaisePropertyChanged("Side1");
+                    RaisePropertyChanged(nameof(Side1));
                 }
             }
         }
@@ -499,7 +509,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_ratio1 != value)
                 {
                     _ratio1 = value;
-                    RaisePropertyChanged("Ratio1");
+                    RaisePropertyChanged(nameof(Ratio1));
                 }
             }
         }
@@ -516,7 +526,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_preferLeg1 != value)
                 {
                     _preferLeg1 = value;
-                    RaisePropertyChanged("PreferLeg1");
+                    RaisePropertyChanged(nameof(PreferLeg1));
                 }
             }
         }
@@ -533,7 +543,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_leg2 != value)
                 {
                     _leg2 = value;
-                    RaisePropertyChanged("Leg2");
+                    RaisePropertyChanged(nameof(Leg2));
                 }
             }
         }
@@ -550,7 +560,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_symbol2 != value)
                 {
                     _symbol2 = value;
-                    RaisePropertyChanged("Symbol2");
+                    RaisePropertyChanged(nameof(Symbol2));
                 }
             }
         }
@@ -567,7 +577,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_side2 != value)
                 {
                     _side2 = value;
-                    RaisePropertyChanged("Side2");
+                    RaisePropertyChanged(nameof(Side2));
                 }
             }
         }
@@ -584,7 +594,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_ratio2 != value)
                 {
                     _ratio2 = value;
-                    RaisePropertyChanged("Ratio2");
+                    RaisePropertyChanged(nameof(Ratio2));
                 }
             }
         }
@@ -601,7 +611,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_preferLeg2 != value)
                 {
                     _preferLeg2 = value;
-                    RaisePropertyChanged("PreferLeg2");
+                    RaisePropertyChanged(nameof(PreferLeg2));
                 }
             }
         }
@@ -618,7 +628,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_isBusy != value)
                 {
                     _isBusy = value;
-                    RaisePropertyChanged("IsBusy");
+                    RaisePropertyChanged(nameof(IsBusy));
                 }
             }
         }
@@ -635,7 +645,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_tick != value)
                 {
                     _tick = value;
-                    RaisePropertyChanged("PriceTick");
+                    RaisePropertyChanged(nameof(PriceTick));
                 }
             }
         }
@@ -652,7 +662,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_maxPosition != value)
                 {
                     _maxPosition = value;
-                    RaisePropertyChanged("MaxPosition");
+                    RaisePropertyChanged(nameof(MaxPosition));
                 }
             }
         }
@@ -670,7 +680,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_retryTimes != value)
                 {
                     _retryTimes = value;
-                    RaisePropertyChanged("RetryTimes");
+                    RaisePropertyChanged(nameof(RetryTimes));
                 }
             }
         }
@@ -687,7 +697,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_threshold != value)
                 {
                     _threshold = value;
-                    RaisePropertyChanged("Threshold");
+                    RaisePropertyChanged(nameof(Threshold));
                 }
             }
         }
@@ -706,7 +716,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_fastPeriod != value)
                 {
                     _fastPeriod = value;
-                    RaisePropertyChanged("FastPeriod");
+                    RaisePropertyChanged(nameof(FastPeriod));
                 }
             }
         }
@@ -723,7 +733,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_slowPeriod != value)
                 {
                     _slowPeriod = value;
-                    RaisePropertyChanged("SlowPeriod");
+                    RaisePropertyChanged(nameof(SlowPeriod));
                 }
             }
         }
@@ -740,7 +750,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_fastStdDiff != value)
                 {
                     _fastStdDiff = value;
-                    RaisePropertyChanged("FastStdDiff");
+                    RaisePropertyChanged(nameof(FastStdDiff));
                 }
             }
         }
@@ -757,7 +767,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_slowStdDiff != value)
                 {
                     _slowStdDiff = value;
-                    RaisePropertyChanged("SlowStdDiff");
+                    RaisePropertyChanged(nameof(SlowStdDiff));
                 }
             }
         }
@@ -774,7 +784,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_trailingStop != value)
                 {
                     _trailingStop = value;
-                    RaisePropertyChanged("TrailingStop");
+                    RaisePropertyChanged(nameof(TrailingStop));
                 }
             }
         }
@@ -795,7 +805,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_lr_period != value)
                 {
                     _lr_period = value;
-                    RaisePropertyChanged("LR_Period");
+                    RaisePropertyChanged(nameof(LR_Period));
                 }
             }
         }
@@ -812,7 +822,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_lr_number != value)
                 {
                     _lr_number = value;
-                    RaisePropertyChanged("LR_Number");
+                    RaisePropertyChanged(nameof(LR_Number));
                 }
             }
         }
@@ -829,7 +839,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_lr_openThreshold != value)
                 {
                     _lr_openThreshold = value;
-                    RaisePropertyChanged("LR_OpenThreshold");
+                    RaisePropertyChanged(nameof(LR_OpenThreshold));
                 }
             }
         }
@@ -846,7 +856,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_lr_closeThreshold != value)
                 {
                     _lr_closeThreshold = value;
-                    RaisePropertyChanged("LR_CloseThreshold");
+                    RaisePropertyChanged(nameof(LR_CloseThreshold));
                 }
             }
         }
@@ -867,7 +877,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_wtPeriod != value)
                 {
                     _wtPeriod = value;
-                    RaisePropertyChanged("WT_Period");
+                    RaisePropertyChanged(nameof(WT_Period));
                 }
             }
         }
@@ -884,7 +894,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_wmaParam != value)
                 {
                     _wmaParam = value;
-                    RaisePropertyChanged("WMA_Param");
+                    RaisePropertyChanged(nameof(WMA_Param));
                 }
             }
         }
@@ -901,7 +911,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_maN != value)
                 {
                     _maN = value;
-                    RaisePropertyChanged("MA_N");
+                    RaisePropertyChanged(nameof(MA_N));
                 }
             }
         }
@@ -922,7 +932,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_as_period != value)
                 {
                     _as_period = value;
-                    RaisePropertyChanged("AS_Period");
+                    RaisePropertyChanged(nameof(AS_Period));
                 }
             }
         }
@@ -939,7 +949,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_as_risk != value)
                 {
                     _as_risk = value;
-                    RaisePropertyChanged("AS_Risk");
+                    RaisePropertyChanged(nameof(AS_Risk));
                 }
             }
         }
@@ -956,7 +966,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_as_averagePeriod != value)
                 {
                     _as_averagePeriod = value;
-                    RaisePropertyChanged("AS_AveragePeriod");
+                    RaisePropertyChanged(nameof(AS_AveragePeriod));
                 }
             }
         }
@@ -973,7 +983,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_as_breakoutLength != value)
                 {
                     _as_breakoutLength = value;
-                    RaisePropertyChanged("AS_BreakoutLength");
+                    RaisePropertyChanged(nameof(AS_BreakoutLength));
                 }
             }
         }
@@ -994,7 +1004,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_rt_timeframe != value)
                 {
                     _rt_timeframe = value;
-                    RaisePropertyChanged("RT_TimeFrame");
+                    RaisePropertyChanged(nameof(RT_TimeFrame));
                 }
             }
         }
@@ -1011,7 +1021,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_rt_openPeriod != value)
                 {
                     _rt_openPeriod = value;
-                    RaisePropertyChanged("RT_OpenPeriod");
+                    RaisePropertyChanged(nameof(RT_OpenPeriod));
                 }
             }
         }
@@ -1028,7 +1038,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_rt_closePeriod != value)
                 {
                     _rt_closePeriod = value;
-                    RaisePropertyChanged("RT_ClosePeriod");
+                    RaisePropertyChanged(nameof(RT_ClosePeriod));
                 }
             }
         }
@@ -1045,7 +1055,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_rt_stopLossFactor != value)
                 {
                     _rt_stopLossFactor = value;
-                    RaisePropertyChanged("RT_StopLossFactor");
+                    RaisePropertyChanged(nameof(RT_StopLossFactor));
                 }
             }
         }
@@ -1062,7 +1072,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_rt_trendFactor != value)
                 {
                     _rt_trendFactor = value;
-                    RaisePropertyChanged("RT_TrendFactor");
+                    RaisePropertyChanged(nameof(RT_TrendFactor));
                 }
             }
         }
@@ -1083,7 +1093,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_ar_BollPeriod != value)
                 {
                     _ar_BollPeriod = value;
-                    RaisePropertyChanged("AR_BollPeriod");
+                    RaisePropertyChanged(nameof(AR_BollPeriod));
                 }
             }
         }
@@ -1100,7 +1110,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_ar_StdDevMultiplier != value)
                 {
                     _ar_StdDevMultiplier = value;
-                    RaisePropertyChanged("AR_StdDevMultiplier");
+                    RaisePropertyChanged(nameof(AR_StdDevMultiplier));
                 }
             }
         }
@@ -1122,7 +1132,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_longSideUserId != value)
                 {
                     _longSideUserId = value;
-                    RaisePropertyChanged("LongSideUserId");
+                    RaisePropertyChanged(nameof(LongSideUserId));
                 }
             }
         }
@@ -1139,7 +1149,62 @@ namespace PortfolioTrading.Modules.Account
                 if (_shortSideUserId != value)
                 {
                     _shortSideUserId = value;
-                    RaisePropertyChanged("ShortSideUserId");
+                    RaisePropertyChanged(nameof(ShortSideUserId));
+                }
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region Dual Queue 
+
+        #region StableTickThreshold
+        private int _stableTickThreshold = 6;
+
+        public int StableTickThreshold
+        {
+            get { return _stableTickThreshold; }
+            set
+            {
+                if (_stableTickThreshold != value)
+                {
+                    _stableTickThreshold = value;
+                    RaisePropertyChanged(nameof(StableTickThreshold));
+                }
+            }
+        }
+        #endregion
+
+        #region MinWorkingSize
+        private int _minWorkingSize = 100;
+
+        public int MinWorkingSize
+        {
+            get { return _minWorkingSize; }
+            set
+            {
+                if (_minWorkingSize != value)
+                {
+                    _minWorkingSize = value;
+                    RaisePropertyChanged(nameof(MinWorkingSize));
+                }
+            }
+        }
+        #endregion
+
+        #region DQ_Direction
+        private PTEntity.PosiDirectionType _dq_direction = PTEntity.PosiDirectionType.LONG;
+
+        public PTEntity.PosiDirectionType DQ_Direction
+        {
+            get { return _dq_direction; }
+            set
+            {
+                if (_dq_direction != value)
+                {
+                    _dq_direction = value;
+                    RaisePropertyChanged(nameof(DQ_Direction));
                 }
             }
         }
@@ -1160,7 +1225,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_priceDiffThreshold != value)
                 {
                     _priceDiffThreshold = value;
-                    RaisePropertyChanged("PriceDiffThreshold");
+                    RaisePropertyChanged(nameof(PriceDiffThreshold));
                 }
             }
         }
@@ -1177,7 +1242,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_sizeDiffThreshold != value)
                 {
                     _sizeDiffThreshold = value;
-                    RaisePropertyChanged("SizeDiffThreshold");
+                    RaisePropertyChanged(nameof(SizeDiffThreshold));
                 }
             }
         }
@@ -1194,7 +1259,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_targetGainPercent != value)
                 {
                     _targetGainPercent = value;
-                    RaisePropertyChanged("TargetGainPercent");
+                    RaisePropertyChanged(nameof(TargetGainPercent));
                 }
             }
         }

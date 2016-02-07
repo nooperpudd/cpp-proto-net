@@ -766,6 +766,71 @@ private:
 	StopLossCloseMethods _stopLossStrategy;
 };
 
+public ref class DualQueueStrategyItem : StrategyItem
+{
+public:
+	DualQueueStrategyItem()
+	{
+		_type = StrategyType::DUAL_QUEUE;
+	}
+
+	virtual void To(entity::StrategyItem* pNativeStrategyItem) override;
+
+	property double PriceTick
+	{
+		double get()
+		{
+			return _priceTick;
+		}
+		void set(double val)
+		{
+			_priceTick = val;
+		}
+	}
+
+	property PosiDirectionType Direction
+	{
+		PosiDirectionType get()
+		{
+			return _direction;
+		}
+		void set(PosiDirectionType val)
+		{
+			_direction = val;
+		}
+	}
+
+	property int StableTickThreshold
+	{
+		int get()
+		{
+			return _stableTickThreshold;
+		}
+		void set(int val)
+		{
+			_stableTickThreshold = val;
+		}
+	}
+
+	property int MinWorkingSize
+	{
+		int get()
+		{
+			return _minWorkingSize;
+		}
+		void set(int val)
+		{
+			_minWorkingSize = val;
+		}
+	}
+
+private:
+	double _priceTick;
+	PosiDirectionType _direction;
+	int _stableTickThreshold;
+	int _minWorkingSize;
+};
+
 public ref class MACDSlopeStrategyItem : StrategyItem
 {
 public:

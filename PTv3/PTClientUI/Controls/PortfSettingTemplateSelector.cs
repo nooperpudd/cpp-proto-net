@@ -15,6 +15,7 @@ namespace PortfolioTrading.Controls
         public DataTemplate ChangePositionTemplate { get; set; }
         public DataTemplate ScalperTemplate { get; set; }
         public DataTemplate DualScalperTemplate { get; set; }
+        public DataTemplate DualQueueTemplate { get; set; }
         public DataTemplate IcebergTemplate { get; set; }
         public DataTemplate MACDHistSlopeTemplate { get; set; }
         public DataTemplate WMATrendTemplate { get; set; }
@@ -35,6 +36,8 @@ namespace PortfolioTrading.Controls
                 return ScalperTemplate;
             else if (item is DualScalperSettingVM)
                 return DualScalperTemplate;
+            else if (item is DualQueueSettingVM)
+                return DualQueueTemplate;
             else if (item is IcebergSettingVM)
                 return IcebergTemplate;
             else if (item is MACDHistSlopeSettingsVM)

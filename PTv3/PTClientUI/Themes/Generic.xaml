@@ -521,6 +521,32 @@
         </Grid>
     </DataTemplate>
 
+    <DataTemplate x:Key="dualQueueTemplate">
+        <Grid VerticalAlignment="Stretch">
+            <Grid.Resources>
+                <Style TargetType="Border">
+                    <Setter Property="BorderBrush" Value="Blue"/>
+                </Style>
+            </Grid.Resources>
+            <Border BorderThickness="0, 1, 1, 1"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="38"/>
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Border Grid.Column="0" BorderThickness="0, 0, 1, 0">
+                    <TextBlock Margin="4" VerticalAlignment="Center">方向</TextBlock>
+                </Border>
+                <Border Grid.Column="1">
+                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
+                               Text="{Binding StrategySetting.Direction, Converter={StaticResource directionDisplayConverter}}">
+                    </TextBlock>
+                </Border>
+            </Grid>
+
+        </Grid>
+    </DataTemplate>
+
     <DataTemplate x:Key="icebergTemplate">
         <Grid VerticalAlignment="Stretch">
             <Grid.Resources>
@@ -760,6 +786,7 @@
                                     ChangePositionTemplate="{StaticResource changePositionTemplate}"
                                     ScalperTemplate="{StaticResource scalperTemplate}"
                                     DualScalperTemplate="{StaticResource dualScalperTemplate}"
+                                    DualQueueTemplate="{StaticResource dualQueueTemplate}"
                                     IcebergTemplate="{StaticResource icebergTemplate}"
                                     MACDHistSlopeTemplate="{StaticResource macdHistSlopeTemplate}"
                                     WMATrendTemplate="{StaticResource wmaTrendTemplate}"

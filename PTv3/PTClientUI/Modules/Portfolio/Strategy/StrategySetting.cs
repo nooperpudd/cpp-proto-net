@@ -14,6 +14,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
         public const string ChangePositionStrategyName = "ChangePosition";
         public const string ScalperStrategyName = "Scalper";
         public const string DualScalperStrategyName = "DualScalper";
+        public const string DualQueueStrategyName = "DualQueue";
         public const string IcebergStrategyName = "Iceberg";
         public const string MACDHistSlopeStrategyName = "MACDHistSlope";
         public const string WMATrendStrategyName = "WMATrend";
@@ -49,6 +50,8 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
                     return "高频";
                 case DualScalperStrategyName:
                     return "双向高频";
+                case DualQueueStrategyName:
+                    return "排队";
                 case MACDHistSlopeStrategyName:
                     return "MACD角度";
                 case WMATrendStrategyName:
@@ -94,6 +97,9 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
                 case DualScalperStrategyName:
                     setting = new DualScalperSetting();
                     break;
+                case DualQueueStrategyName:
+                    setting = new DualQueueSetting();
+                    break;
                 case IcebergStrategyName:
                     setting = new IcebergSetting();
                     break;
@@ -116,7 +122,7 @@ namespace PortfolioTrading.Modules.Portfolio.Strategy
                     setting = new ManualStrategySetting();
                     break;
                 default:
-                    throw new ArgumentException(string.Format("Unexpected strategy setting ({0})", name));
+                    throw new ArgumentException($"Unexpected strategy setting ({name})");
             }
             return setting;
         }
