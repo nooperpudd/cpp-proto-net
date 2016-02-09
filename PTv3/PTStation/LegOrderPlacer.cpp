@@ -293,3 +293,56 @@ bool CDualScalperLegOrderPlacer::RetryAvailable()
 		return CLegOrderPlacer::RetryAvailable();
 }
 
+bool CQueueLegOrderPlacer::ModifyPrice(entity::Quote* pQuote)
+{
+	trade::TradeDirectionType direction = m_inputOrder.Direction();
+
+	if (direction == trade::BUY)
+	{
+		double buy = pQuote->bid();
+
+#ifdef FAKE_DEAL
+		bool needChange = true;
+#else
+		bool needChange = buy - m_inputOrder.LimitPrice() > 0.001;
+#endif
+		if (needChange)
+		{
+#ifdef LOG_FOR_TRADE
+			LOG_DEBUG(logger, boost::str(boost::format("Modify order(%s): Buy @ %.2f -> %.2f")
+				% Symbol() % m_inputOrder.LimitPrice() % buy));
+#endif
+			m_inputOrder.set_limitprice(buy);
+		}
+
+		return needChange;
+	}
+	else if (direction == trade::SELL)
+	{
+		double sell = pQuote->ask();
+#ifdef FAKE_DEAL
+		bool needChange = true;
+#else
+		bool needChange = m_inputOrder.LimitPrice() - sell  > 0.001;
+#endif
+		if (needChange)
+		{
+#ifdef LOG_FOR_TRADE
+			LOG_DEBUG(logger, boost::str(boost::format("Modify order(%s): Sell @ %.2f -> %.2f")
+				% Symbol() % m_inputOrder.LimitPrice() % sell));
+#endif
+			m_inputOrder.set_limitprice(sell);
+		}
+		return needChange;
+	}
+
+	return true;
+}
+
+void CQueueLegOrderPlacer::StartPending(const RtnOrderWrapperPtr& pendingOrder)
+{
+	m_exchId = pendingOrder->ExchangeId();
+	m_ordSysId = pendingOrder->OrderSysId();
+	m_userId = pendingOrder->UserId();
+	m_isPending = true;
+}

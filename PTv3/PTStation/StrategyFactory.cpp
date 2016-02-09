@@ -13,6 +13,7 @@
 #include "ArbitrageManualMultiStrategy.h"
 #include "DualScalperStrategy.h"
 #include "IcebergStrategy.h"
+#include "DualQueueStrategy.h"
 
 
 CStrategyFactory::CStrategyFactory(CPortfolio* pPortf, CAvatarClient* pAvatar)
@@ -68,6 +69,8 @@ CStrategy* CStrategyFactory::Create(const entity::StrategyItem& strategyItem)
 	case entity::ICEBERG:
 		created = new CIcebergStrategy();
 		break;
+	case entity::DUAL_QUEUE:
+		created = new CDualQueueStrategy();
 	}
 
 	created->Apply(strategyItem, m_portfolio, false);

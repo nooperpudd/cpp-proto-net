@@ -96,6 +96,17 @@ StrategyUpdateItem^ CreateStrategyUpdate(StrategyType straType, entity::Portfoli
 			pEntity->mu_bounce()
 		);
 		break;
+	case StrategyType::ICEBERG:
+		retStrategyUpdate = gcnew IcebergStrategyUpdateItem
+			(
+				pEntity->ic_pricegap(),
+				pEntity->ic_sizegap()
+			);
+		break;
+	case StrategyType::DUAL_QUEUE:
+		retStrategyUpdate = gcnew DualQueueStrategyUpdateItem
+			();
+		break;
 	default:
 		return nullptr;
 	}

@@ -386,6 +386,9 @@ message PortfolioUpdateItem
 	// Iceberg
 	optional double IC_PriceGap = 221;
 	optional int32 IC_SizeGap = 222;
+	// Dual Queue
+	optional bool DQ_StableQuote = 231;
+	optional LegStatus DQ_Status = 232;
 	// HistSlope
 	optional double HS_FastAngle = 301;
 	optional double HS_SlowAngle = 302;

@@ -53,7 +53,7 @@ public:
 	int SubmitTimes() { return m_submitTimes; }
 	int AddSubmitTimes() { return ++m_submitTimes; }
 	virtual bool CanRetry();
-	bool ModifyPrice(entity::Quote* pQuote);
+	virtual bool ModifyPrice(entity::Quote* pQuote);
 	bool ModifyPriceBasedOnTick(entity::Quote* pQuote);
 	bool ModifyPriceBasedOnOpposite(entity::Quote* pQuote);
 
@@ -165,6 +165,21 @@ protected:
 
 private:
 	bool m_cancelOnTimeout;
+};
+
+class CQueueLegOrderPlacer : public CLegOrderPlacer
+{
+public:
+	CQueueLegOrderPlacer(CPortfolioOrderPlacer* portfOrdPlacer)
+		: CLegOrderPlacer(portfOrdPlacer, -1, -1)
+	{
+		m_modifyPriceWay = BASED_ON_OPPOSITE;
+	}
+	~CQueueLegOrderPlacer() {}
+
+	virtual bool IsLegPlacerEligibleRetry() { return true; }
+	virtual bool ModifyPrice(entity::Quote* pQuote);
+	virtual void StartPending(const RtnOrderWrapperPtr& pendingOrder);
 };
 
 typedef boost::shared_ptr<CLegOrderPlacer> LegOrderPlacerPtr;

@@ -1,15 +1,21 @@
 #include "stdafx.h"
 #include "DualQueueStrategy.h"
-#include "ManualOrderPlacer.h"
+#include "PortfolioScalperOrderPlacer.h"
 #include "globalmembers.h"
 #include "Portfolio.h"
 #include "DoubleCompare.h"
+#include "TechAnalyStrategy.h"
 
 CDualQueueStrategy::CDualQueueStrategy()
 	: m_priceTick(0)
 	, m_stableTickThreshold(6)
 	, m_minWorkingSize(0)
 	, m_stopping(false)
+	, m_lastAsk(0)
+	, m_lastBid(0)
+	, m_stableQuoteCount(0)
+	, m_stableQuote(false)
+	, m_status(DQ_UNOPENED)
 {
 }
 
@@ -22,12 +28,14 @@ void CDualQueueStrategy::Apply(const entity::StrategyItem & strategyItem, CPortf
 {
 	if (withTriggers)
 	{
-		logger.Debug("Applying Dual ScalperStrategy...");
+		logger.Debug("Applying Dual Queue Strategy...");
 	}
+	boost::mutex::scoped_lock l(m_mut);
 
 	CStrategy::Apply(strategyItem, withTriggers);
 
 	m_priceTick = strategyItem.dq_pricetick();
+	m_direction = strategyItem.dq_direction();
 	m_stableTickThreshold = strategyItem.dq_stabletickthreshold();
 	m_minWorkingSize = strategyItem.dq_minworkingsize();
 
@@ -44,7 +52,7 @@ void CDualQueueStrategy::Apply(const entity::StrategyItem & strategyItem, bool w
 
 CPortfolioOrderPlacer * CDualQueueStrategy::CreateOrderPlacer()
 {
-	return new CManualOrderPlacer;
+	return new CPortfolioQueueOrderPlacer();
 }
 
 bool CDualQueueStrategy::OnStart()
@@ -79,8 +87,16 @@ void CDualQueueStrategy::Stop()
 
 void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, boost::chrono::steady_clock::time_point & timestamp)
 {
+	boost::mutex::scoped_lock l(m_mut);
+
 	if (pQuote->ask() > 0 && pQuote->bid() > 0)
 	{
+		CPortfolioQueueOrderPlacer* pOrderPlacer = dynamic_cast<CPortfolioQueueOrderPlacer*>(pPortfolio->OrderPlacer());
+
+		m_stableQuote = IfQuotingStable(pQuote);
+		LOG_DEBUG(logger, boost::str(boost::format("DualQueue - Quote %s Stable. Stable Quote Count:%d") 
+			% (m_stableQuote ? "IS" : "IS NOT") % m_stableQuoteCount));
+
 		if (IsRunning() && !IsSuspending())
 		{
 			if (m_stopping)
@@ -91,8 +107,19 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 			}
 			else
 			{
-				// Open position if empty
-
+				if(m_stableQuote)
+				{
+					// Open position if empty
+					if (!pOrderPlacer->IsWorking())
+					{
+						OpenPosition(pOrderPlacer, pQuote, timestamp, false);
+					}
+					else if(pOrderPlacer->IsOnPending())
+					{
+						pOrderPlacer->OnQuoteReceived(timestamp, pQuote);
+					}
+				}
+				
 			}
 		}
 	}
@@ -109,50 +136,44 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 
 void CDualQueueStrategy::GetStrategyUpdate(entity::PortfolioUpdateItem * pPortfUpdateItem)
 {
+	CStrategy::GetStrategyUpdate(pPortfUpdateItem);
+	pPortfUpdateItem->set_dq_stablequote(m_stableQuote);
+	pPortfUpdateItem->set_dq_status(static_cast<entity::LegStatus>(m_status.load()));
 }
 
-void CDualQueueStrategy::OpenPosition(entity::Quote * pQuote, boost::chrono::steady_clock::time_point & timestamp)
+
+void CDualQueueStrategy::OpenPosition(CPortfolioQueueOrderPlacer* pOrderPlacer, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, bool forceOpening)
 {
-	double buyPx = pQuote->bid();
-	double sellPx = pQuote->ask();
-
-	double longLmtPrice[2] = { buyPx, 0.0 };
-	double shortLmtPrice[2] = { sellPx, 0.0 };
-
-	if (pQuote->bid_size() <= pQuote->ask_size())
+	if (m_direction > entity::NET)
 	{
-		//m_shortOrderPlacer->AsyncRun(entity::SHORT, sellPx, timestamp);
-	}
-	else
-	{
-		//m_longOrderPlacer->AsyncRun(entity::LONG, buyPx, timestamp);
-	}
+		double lmtPrice[2];
+		if (m_direction == entity::LONG)
+		{
+			lmtPrice[0] = pQuote->bid();
+			lmtPrice[1] = pQuote->ask();
+		}
+		else if (m_direction == entity::SHORT)
+		{
+			lmtPrice[0] = pQuote->ask();
+			lmtPrice[1] = pQuote->bid();
+		}
 
-	LOG_DEBUG(logger, boost::str(boost::format("DualQueue - Open position @ B:%.2f - S:%.2f (A:%.2f, B:%.2f, %s %d)")
-		% buyPx % sellPx
-		% pQuote->ask() % pQuote->bid() % pQuote->update_time() % pQuote->update_millisec()));
-}
+		LOG_DEBUG(logger, boost::str(boost::format("Double Queue - %s Open position @ %.2f (%s)")
+			% GetPosiDirectionText(m_direction) % lmtPrice[0] % pQuote->update_time()));
 
-void CDualQueueStrategy::ClosePosition(entity::Quote * pQuote, boost::chrono::steady_clock::time_point & timestamp)
-{
-	double buyPx = pQuote->bid();
-	double sellPx = pQuote->ask();
+		string openComment = boost::str(boost::format("ÅÅ¶Ó %s ¿ª²Ö @ %.2f") % GetPosiDirectionText(m_direction) % lmtPrice[0]);
 
-	if (pQuote->bid_size() <= pQuote->ask_size())
-	{
+		pOrderPlacer->SetMlOrderStatus(openComment);
+		m_status = DQ_IS_OPENING;
+		pOrderPlacer->QueueOrder(m_direction, lmtPrice[0], lmtPrice[1], timestamp);
+		ResetForceOpen();
 	}
-	else
-	{
-	}
-
-	LOG_DEBUG(logger, boost::str(boost::format("DualQueue - Close position @ B:%.2f - S:%.2f ((A:%.2f, B:%.2f, %s %d))")
-		% buyPx % sellPx
-		% pQuote->ask() % pQuote->bid() % pQuote->update_time() % pQuote->update_millisec()));
 }
 
 void CDualQueueStrategy::OnLegFilled(int sendingIdx, const string & symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
 {
 	// if opened position, close position in the other side
+	//ClosePosition();
 }
 
 void CDualQueueStrategy::OnLegCanceled(int sendingIdx, const string & symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
@@ -176,6 +197,26 @@ void CDualQueueStrategy::OnStrategyError(CPortfolio * portf, const string & erro
 {
 	if (portf != NULL)
 		boost::thread(boost::bind(&CPortfolio::StopStrategyDueTo, portf, errorMsg));
+}
+
+bool CDualQueueStrategy::IfQuotingStable(entity::Quote * pQuote)
+{
+	double ask = pQuote->ask();
+	double bid = pQuote->bid();
+	if(DoubleEqual(ask, m_lastAsk) && DoubleEqual(bid, m_lastBid))
+	{
+		++m_stableQuoteCount;
+	}else
+	{
+		m_stableQuoteCount = 0;
+	}
+	m_lastAsk = ask;
+	m_lastBid = bid;
+
+	bool stable = m_stableQuoteCount >= m_stableTickThreshold;
+	if (m_minWorkingSize > 0)
+		stable = stable && (pQuote->ask_size() >= m_minWorkingSize && pQuote->bid_size() >= m_minWorkingSize);
+	return stable;
 }
 
 

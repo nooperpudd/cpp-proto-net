@@ -98,3 +98,7 @@ void CPortfolioScalperOrderPlacer::OnAddingLegOrderPlacer( CLegOrderPlacer* pLeg
 	}
 }
 
+CLegOrderPlacer* CPortfolioQueueOrderPlacer::CreateLegOrderPlacer(int openTimeout, int maxRetryTimes)
+{
+	return new CQueueLegOrderPlacer(this);
+}

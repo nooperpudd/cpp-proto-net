@@ -307,6 +307,72 @@ private:
 	double _diff;
 };
 
+public ref class IcebergStrategyUpdateItem : StrategyUpdateItem
+{
+public:
+	IcebergStrategyUpdateItem(double priceGap, int sizeGap)
+	{
+		_priceGap = priceGap;
+		_sizeGap = sizeGap;
+	}
+
+	property StrategyType Kind
+	{
+		virtual StrategyType get() override
+		{
+			return StrategyType::ICEBERG;
+		}
+	}
+
+	property double PriceGap
+	{
+		double get()
+		{
+			return _priceGap;
+		}
+		void set(double val)
+		{
+			_priceGap = val;
+		}
+	}
+
+	property int SizeGap
+	{
+		int get()
+		{
+			return _sizeGap;
+		}
+		void set(int val)
+		{
+			_sizeGap = val;
+		}
+	}
+
+private:
+	double _priceGap;
+	int _sizeGap;
+};
+
+public ref class DualQueueStrategyUpdateItem : StrategyUpdateItem
+{
+public:
+	DualQueueStrategyUpdateItem()
+	{
+	}
+
+	property StrategyType Kind
+	{
+		virtual StrategyType get() override
+		{
+			return StrategyType::DUAL_QUEUE;
+		}
+	}
+
+
+private:
+
+};
+
 public ref class HistSlopeStrategyUpdateItem : StrategyUpdateItem
 {
 public:
