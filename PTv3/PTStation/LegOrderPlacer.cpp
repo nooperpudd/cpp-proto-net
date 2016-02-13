@@ -301,11 +301,7 @@ bool CQueueLegOrderPlacer::ModifyPrice(entity::Quote* pQuote)
 	{
 		double buy = pQuote->bid();
 
-#ifdef FAKE_DEAL
-		bool needChange = true;
-#else
 		bool needChange = buy - m_inputOrder.LimitPrice() > 0.001;
-#endif
 		if (needChange)
 		{
 #ifdef LOG_FOR_TRADE
@@ -320,11 +316,8 @@ bool CQueueLegOrderPlacer::ModifyPrice(entity::Quote* pQuote)
 	else if (direction == trade::SELL)
 	{
 		double sell = pQuote->ask();
-#ifdef FAKE_DEAL
-		bool needChange = true;
-#else
+
 		bool needChange = m_inputOrder.LimitPrice() - sell  > 0.001;
-#endif
 		if (needChange)
 		{
 #ifdef LOG_FOR_TRADE

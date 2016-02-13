@@ -698,11 +698,12 @@ void protobuf_AddDesc_trade_2eproto() {
     "\0204*C\n\017PriceSourceType\022\023\n\017PSRC_LAST_PRICE"
     "\0200\022\014\n\010PSRC_BUY\0201\022\r\n\tPSRC_SELL\0202*.\n\016Actio"
     "nFlagType\022\r\n\tAF_Delete\0200\022\r\n\tAF_Modify\0203*"
-    "\200\001\n\014SubmitReason\022\r\n\tSR_Manual\020\000\022\017\n\013SR_Au"
+    "\220\001\n\014SubmitReason\022\r\n\tSR_Manual\020\000\022\017\n\013SR_Au"
     "toOpen\020\001\022\017\n\013SR_StopGain\020\002\022\017\n\013SR_StopLoss"
     "\020\003\022\021\n\rSR_AutoSwitch\020\004\022\r\n\tSR_Scalpe\020\005\022\014\n\010"
-    "SR_Trend\020\006*A\n\rMlOrderOffset\022\016\n\nML_OF_OPE"
-    "N\020\000\022\017\n\013ML_OF_CLOSE\020\001\022\017\n\013ML_OF_OTHER\020\002", 8517);
+    "SR_Trend\020\006\022\016\n\nSR_Queuing\020\007*A\n\rMlOrderOff"
+    "set\022\016\n\nML_OF_OPEN\020\000\022\017\n\013ML_OF_CLOSE\020\001\022\017\n\013"
+    "ML_OF_OTHER\020\002", 8533);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedFile(
     "trade.proto", &protobuf_RegisterTypes);
   AccountInfo::default_instance_ = new AccountInfo();
@@ -1049,6 +1050,7 @@ bool SubmitReason_IsValid(int value) {
     case 4:
     case 5:
     case 6:
+    case 7:
       return true;
     default:
       return false;

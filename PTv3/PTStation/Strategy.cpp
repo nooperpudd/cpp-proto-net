@@ -130,7 +130,8 @@ double CStrategy::CalcOrderProfit( const trade::MultiLegOrder& openOrder )
 	for(int ordIdx = 0; ordIdx < legCount; ++ordIdx)
 	{
 		const trade::Order& legOrd = openOrder.legs(ordIdx);
-		double ordPrice = legOrd.limitprice();
+		double ordPrice = legOrd.limitprice() * legOrd.volumetraded();
+		
 		if(ordPrice > 0)
 		{
 			if(legOrd.direction() == trade::BUY)

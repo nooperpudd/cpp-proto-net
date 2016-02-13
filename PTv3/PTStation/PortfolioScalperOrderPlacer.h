@@ -8,6 +8,7 @@ public:
 	CPortfolioScalperOrderPlacer(void);
 	virtual ~CPortfolioScalperOrderPlacer(void);
 
+	virtual trade::SubmitReason SubmitReason() { return trade::SR_Scalpe; }
 	virtual void BuildTemplateOrder();
 
 	virtual void OnAddingLegOrderPlacer(CLegOrderPlacer* pLegOrderPlacer);
@@ -21,13 +22,15 @@ public:
 	~CPortfolioQueueOrderPlacer(){}
 
 	void QueueOrder(entity::PosiDirectionType posiDirection, double openPx, double closePx,
-		boost::chrono::steady_clock::time_point trigQuoteTimestamp)
-	{
-		m_openPrice = openPx;
-		m_closePrice = closePx;
-		double lmtPrice[2] = { openPx, closePx };
-		Run(posiDirection, lmtPrice, 2, trigQuoteTimestamp);
-	}
+	                boost::chrono::steady_clock::time_point trigQuoteTimestamp);
+
+	bool IsOpening();
+	bool IsClosing();
+	void CancelPendingOrder();
+	void CancelPendingAndClosePosition(entity::Quote* pQuote);
+	virtual trade::SubmitReason SubmitReason() { return trade::SR_Queuing; }
+	virtual void OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume);
+	virtual void OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction);
 
 	double GetOpenPrice() const
 	{ return m_openPrice; }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Enums.h"
+#include "entity/message.pb.h"
 
 using namespace System;
 
@@ -356,8 +357,10 @@ private:
 public ref class DualQueueStrategyUpdateItem : StrategyUpdateItem
 {
 public:
-	DualQueueStrategyUpdateItem()
+	DualQueueStrategyUpdateItem(bool stableQuote, entity::LegStatus status)
 	{
+		_stableQuote = stableQuote;
+		_status = static_cast<LegStatus>(status);
 	}
 
 	property StrategyType Kind
@@ -368,8 +371,33 @@ public:
 		}
 	}
 
+	property LegStatus Status
+	{
+		LegStatus get()
+		{
+			return _status;
+		}
+		void set(LegStatus val)
+		{
+			_status = val;
+		}
+	}
+
+	property bool StableQuote
+	{
+		bool get()
+		{
+			return _stableQuote;
+		}
+		void set(bool val)
+		{
+			_stableQuote = val;
+		}
+	}
 
 private:
+	LegStatus _status;
+	bool _stableQuote;
 
 };
 

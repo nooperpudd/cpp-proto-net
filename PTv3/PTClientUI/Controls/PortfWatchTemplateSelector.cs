@@ -19,6 +19,7 @@ namespace PortfolioTrading.Controls
         public DataTemplate RangeTrendTemplate { get; set; }
         public DataTemplate ManualTemplate { get; set; }
         public DataTemplate QuickScoreTemplate { get; set; }
+        public DataTemplate DualQueueTemplate { get; set; }
 
         public override DataTemplate SelectTemplate(object item, DependencyObject container)
         {
@@ -42,6 +43,8 @@ namespace PortfolioTrading.Controls
                     return ManualTemplate;
                 else if (portfVm.StrategySetting.Name == StrategySetting.QuickScoreStrategyName)
                     return QuickScoreTemplate;
+                else if (portfVm.StrategySetting.Name == StrategySetting.DualQueueStrategyName)
+                    return DualQueueTemplate;
                 else
                     return ArbitrageTemplate;
             }

@@ -776,6 +776,7 @@ enum SubmitReason
 	SR_AutoSwitch = 4;
 	SR_Scalpe = 5;
 	SR_Trend = 6;
+	SR_Queuing = 7;
 }
 
 enum MlOrderOffset

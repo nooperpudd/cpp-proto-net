@@ -13,6 +13,7 @@ using Microsoft.Practices.Prism.Events;
 using Microsoft.Practices.ServiceLocation;
 using PortfolioTrading.Modules.Portfolio.Strategy;
 using PortfolioTrading.Modules.Portfolio;
+ using PTEntity;
 
 namespace PortfolioTrading.Modules.Account
 {
@@ -1031,7 +1032,79 @@ namespace PortfolioTrading.Modules.Account
         }
         #endregion
 
-#endregion
+        #endregion
+
+#region Dual Queue updating fields
+
+        #region DQ_StableQuote
+        private bool _dq_stableQuote;
+
+        public bool DQ_StableQuote
+        {
+            get { return _dq_stableQuote; }
+            set
+            {
+                if (_dq_stableQuote != value)
+                {
+                    _dq_stableQuote = value;
+                    RaisePropertyChanged("DQ_StableQuote");
+                }
+            }
+        }
+        #endregion
+
+        #region DQ_Status
+        private string _dq_status = "空仓";
+
+        public string DQ_Status
+        {
+            get { return _dq_status; }
+            set
+            {
+                if (_dq_status != value)
+                {
+                    _dq_status = value;
+                    RaisePropertyChanged("DQ_Status");
+                }
+            }
+        }
+        #endregion
+
+        #region DQ_AskSize
+        private int _dq_askSize;
+
+        public int DQ_AskSize
+        {
+            get { return _dq_askSize; }
+            set
+            {
+                if (_dq_askSize != value)
+                {
+                    _dq_askSize = value;
+                    RaisePropertyChanged("DQ_AskSize");
+                }
+            }
+        }
+        #endregion
+
+        #region DQ_BidSize
+        private int _dq_bidSize;
+
+        public int DQ_BidSize
+        {
+            get { return _dq_bidSize; }
+            set
+            {
+                if (_dq_bidSize != value)
+                {
+                    _dq_bidSize = value;
+                    RaisePropertyChanged("DQ_BidSize");
+                }
+            }
+        }
+        #endregion
+
+        #endregion
 
         public StrategySetting StrategySetting { get; set; }
 
@@ -1379,6 +1452,20 @@ namespace PortfolioTrading.Modules.Account
                 MU_Fallback = ToDecimal(strategyUpdate.Fallback);
                 MU_Bounce = ToDecimal(strategyUpdate.Bounce);
             }
+            else if (item.StrategyUpdate.Kind == PTEntity.StrategyType.DUAL_QUEUE)
+            {
+                PTEntity.DualQueueStrategyUpdateItem strategyUpdate =
+                    item.StrategyUpdate as PTEntity.DualQueueStrategyUpdateItem;
+
+                DQ_StableQuote = strategyUpdate.StableQuote;
+                DQ_Status = DisplayLegStatus(strategyUpdate.Status);
+                if (LegCount > 0)
+                {
+                    LegVM legVm = GetLeg(0);
+                    DQ_AskSize = legVm.AskSize;
+                    DQ_BidSize = legVm.BidSize;
+                }
+            }
 
             OpenTimes = item.TotalOpenTimes;
             DoneTimes = item.TotalCloseTimes;
@@ -1404,17 +1491,42 @@ namespace PortfolioTrading.Modules.Account
             }
         }
 
+        private static string DisplayLegStatus(PTEntity.LegStatus status)
+        {
+            string ret = "";
+            switch (status)
+            {
+                case LegStatus.UNOPENED:
+                    ret = "空仓";
+                    break;
+                case LegStatus.IS_OPENING:
+                    ret = "正开仓";
+                    break;
+                case LegStatus.OPENED:
+                    ret = "已开仓";
+                    break;
+                case LegStatus.IS_CLOSING:
+                    ret = "正平仓";
+                    break;
+                case LegStatus.CLOSED:
+                    ret = "已平仓";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(status), status, null);
+            }
+            return ret;
+        }
+
         private static decimal ToDecimal(double val)
         {
-            return val >= (double)decimal.MaxValue || val <= (double)decimal.MinValue ? 
-                0 : (decimal)Math.Round(val, 2);
+            return val >= (double) decimal.MaxValue || val <= (double) decimal.MinValue ? 0 : (decimal) Math.Round(val, 2);
         }
 
         private void OnLongOpen()
         {
-            if(StrategySetting is ManualStrategySetting)
+            if (StrategySetting is ManualStrategySetting)
             {
-                ((ManualStrategySetting)StrategySetting).Direction = PTEntity.PosiDirectionType.LONG;
+                ((ManualStrategySetting) StrategySetting).Direction = PTEntity.PosiDirectionType.LONG;
                 _accountVm.Host.PortfApplyStrategySettings(this.Id, StrategySetting.GetEntity());
                 OnOpenPosition();
                 NotifyManualOpenDirectionChange();
@@ -1425,7 +1537,7 @@ namespace PortfolioTrading.Modules.Account
         {
             if (StrategySetting is ManualStrategySetting)
             {
-                ((ManualStrategySetting)StrategySetting).Direction = PTEntity.PosiDirectionType.SHORT;
+                ((ManualStrategySetting) StrategySetting).Direction = PTEntity.PosiDirectionType.SHORT;
                 _accountVm.Host.PortfApplyStrategySettings(this.Id, StrategySetting.GetEntity());
                 OnOpenPosition();
                 NotifyManualOpenDirectionChange();
@@ -1465,15 +1577,14 @@ namespace PortfolioTrading.Modules.Account
             ChangeSpecifiedQtyDlg dlg = new ChangeSpecifiedQtyDlg(viewModel);
             dlg.Owner = System.Windows.Application.Current.MainWindow;
             bool? ret = dlg.ShowDialog();
-            if(ret ?? false)
+            if (ret ?? false)
             {
                 int qty = viewModel.Quantity;
                 bool isVirtual = viewModel.IsVirtual;
                 if (_accountVm.VerifyStatus())
                 {
                     _accountVm.Host.PortfOpenPosition(Id, qty, isVirtual);
-                    EventLogger.Write("{0} 开仓组合 {1}, 数量 {2} - ({3})", _accountVm.InvestorId, DisplayText, qty,
-                        isVirtual ? "虚拟" : "真实");
+                    EventLogger.Write("{0} 开仓组合 {1}, 数量 {2} - ({3})", _accountVm.InvestorId, DisplayText, qty, isVirtual ? "虚拟" : "真实");
                 }
             }
         }
@@ -1501,8 +1612,7 @@ namespace PortfolioTrading.Modules.Account
                 if (_accountVm.VerifyStatus())
                 {
                     _accountVm.Host.PortfClosePosition(Id, qty);
-                    EventLogger.Write("{0} 平仓组合 {1}, 数量 {2} - ({3})", _accountVm.InvestorId, DisplayText, qty,
-                        isVirtual ? "虚拟" : "真实");
+                    EventLogger.Write("{0} 平仓组合 {1}, 数量 {2} - ({3})", _accountVm.InvestorId, DisplayText, qty, isVirtual ? "虚拟" : "真实");
                 }
             }
         }
@@ -1530,11 +1640,9 @@ namespace PortfolioTrading.Modules.Account
                 if (_accountVm.IsConnected)
                 {
                     _accountVm.Host.PortfModifyQuantity(Id, Quantity, MaxOpenPerStart, TotalOpenLimit, MaxCancel, viewModel.getEndTimePoints());
-                    EventLogger.Write("{0} 修改组合 {1}数量: 每次->{2}, 每组->{3}， 最多->{4}, 撤单->{5}",
-                        _accountVm.InvestorId, DisplayText, Quantity, MaxOpenPerStart, TotalOpenLimit, MaxCancel);
+                    EventLogger.Write("{0} 修改组合 {1}数量: 每次->{2}, 每组->{3}， 最多->{4}, 撤单->{5}", _accountVm.InvestorId, DisplayText, Quantity, MaxOpenPerStart, TotalOpenLimit, MaxCancel);
                 }
             }
-            
         }
 
         private void OnStart()
@@ -1573,7 +1681,7 @@ namespace PortfolioTrading.Modules.Account
                     if (portfOrdersView != null)
                         existingOrderCount = portfOrdersView.OrderRepositry.GetAccountOrderCount(AccountId, Id);
                 }
-                
+
                 _accountVm.Host.PortfEnableStrategy(Id, IsRunning, existingOrderCount);
             }
         }
@@ -1601,24 +1709,22 @@ namespace PortfolioTrading.Modules.Account
         {
             if (_accountVm.IsConnected)
             {
-                _accountVm.Host.PortfTurnSwitches(this.Id, AutoOpen, AutoStopGain, AutoStopLoss,
-                    AutoTracking, EnablePrefer);
+                _accountVm.Host.PortfTurnSwitches(this.Id, AutoOpen, AutoStopGain, AutoStopLoss, AutoTracking, EnablePrefer);
             }
 
-            if(!IsLoading)
+            if (!IsLoading)
                 _accountVm.PublishChanged();
         }
 
         public void ApplyStrategySettings(StrategySetting settings)
         {
             this.StrategySetting.CopyFrom(settings);
-            if(_accountVm.IsConnected)
+            if (_accountVm.IsConnected)
             {
                 _accountVm.Host.PortfApplyStrategySettings(this.Id, StrategySetting.GetEntity());
             }
 
             _accountVm.PublishChanged();
         }
-
     }
 }

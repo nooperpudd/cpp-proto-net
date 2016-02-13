@@ -916,7 +916,7 @@
         </Grid>
     </DataTemplate>
 
-    <DataTemplate x:Key="quickScoreWatchTemplate">
+    <DataTemplate x:Key="dualQueueWatchTemplate">
         <Grid VerticalAlignment="Stretch">
             <Grid.Resources>
                 <Style TargetType="Border">
@@ -924,6 +924,55 @@
                 </Style>
             </Grid.Resources>
             <Border BorderThickness="0, 1, 1, 1"/>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Border Grid.Column="0" Grid.Row="0" BorderBrush="Blue" BorderThickness="0, 0, 1, 1">
+                    <DockPanel>
+                        <TextBlock Margin="4, 2">行情</TextBlock>
+                        <TextBlock Margin="2" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Text" Value="不稳定"></Setter>
+                                    <Setter Property="Foreground" Value="DarkRed"></Setter>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding DQ_StableQuote}" Value="True">
+                                            <Setter Property="Text" Value="稳定"></Setter>
+                                            <Setter Property="Foreground" Value="GreenYellow"></Setter>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </DockPanel>
+                </Border>
+                <Border Grid.Column="0" Grid.Row="1" BorderBrush="Blue" BorderThickness="0, 0, 1, 0">
+                    <DockPanel>
+                        <TextBlock Margin="4, 2">开平</TextBlock>
+                        <TextBlock Margin="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                                               Text="{Binding DQ_Status}"/>
+                    </DockPanel>
+                </Border>
+                <Border Grid.Column="1" Grid.Row="0" BorderBrush="Blue" BorderThickness="0, 0, 1, 1">
+                    <DockPanel>
+                        <TextBlock Margin="4, 2">卖一</TextBlock>
+                        <TextBlock Text="{Binding DQ_AskSize}" Margin="2" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+                    </DockPanel>
+                </Border>
+                <Border Grid.Column="1" Grid.Row="1" BorderBrush="Blue" BorderThickness="0, 0, 1, 0">
+                    <DockPanel>
+                        <TextBlock Margin="4, 2">买一</TextBlock>
+                        <TextBlock Margin="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
+                                               Text="{Binding DQ_BidSize}"/>
+                    </DockPanel>
+                </Border>
+            </Grid>
         </Grid>
     </DataTemplate>
 
@@ -1171,6 +1220,7 @@
                                       ASCTrendTremplate="{StaticResource ascTrendWatchTemplate}"
                                       RangeTrendTemplate="{StaticResource rangeTrendWatchTemplate}"
                                       ManualTemplate="{StaticResource manualWatchTemplate}"
+                                      DualQueueTemplate ="{StaticResource dualQueueWatchTemplate}"
                                       />
 
     <Style TargetType="{x:Type local:PriceDiffWatchPanel}">

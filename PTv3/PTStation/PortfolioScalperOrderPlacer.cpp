@@ -42,7 +42,7 @@ void CPortfolioScalperOrderPlacer::BuildTemplateOrder()
 
 	boost::gregorian::date d = boost::gregorian::day_clock::local_day();
 	pMultiLegOrder->set_opendate(boost::gregorian::to_iso_string(d));
-	pMultiLegOrder->set_reason(trade::SR_Scalpe);
+	pMultiLegOrder->set_reason(SubmitReason());
 
 	assert(m_pPortf->Count() == 1);
 
@@ -98,7 +98,48 @@ void CPortfolioScalperOrderPlacer::OnAddingLegOrderPlacer( CLegOrderPlacer* pLeg
 	}
 }
 
+void CPortfolioQueueOrderPlacer::QueueOrder(entity::PosiDirectionType posiDirection, double openPx, double closePx, boost::chrono::steady_clock::time_point trigQuoteTimestamp)
+{
+	m_openPrice = openPx;
+	m_closePrice = closePx;
+	double lmtPrice[2] = { openPx, closePx };
+	Run(posiDirection, lmtPrice, 2, trigQuoteTimestamp);
+}
+
+bool CPortfolioQueueOrderPlacer::IsOpening()
+{
+	return IsWorking() && m_activeOrdPlacer->SequenceNo() == 0;
+}
+
+bool CPortfolioQueueOrderPlacer::IsClosing()
+{
+	return IsWorking() && m_activeOrdPlacer->SequenceNo() == 1;
+}
+
+void CPortfolioQueueOrderPlacer::CancelPendingOrder()
+{
+	// Go to canceling event
+	OnPendingTimeUp();
+}
+
+void CPortfolioQueueOrderPlacer::CancelPendingAndClosePosition(entity::Quote* pQuote)
+{
+	m_activeOrdPlacer->ModifyPriceBasedOnOpposite(pQuote);
+	// Go to canceling event
+	OnPendingTimeUp();
+}
+
 CLegOrderPlacer* CPortfolioQueueOrderPlacer::CreateLegOrderPlacer(int openTimeout, int maxRetryTimes)
 {
 	return new CQueueLegOrderPlacer(this);
+}
+
+void CPortfolioQueueOrderPlacer::OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
+{
+	m_pPortf->NotifyLegFilled(sendingIdx, symbol, offset, direction, price, volume);
+}
+
+void CPortfolioQueueOrderPlacer::OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
+{
+	m_pPortf->NotifyLegCanceled(sendingIdx, symbol, offset, direction);
 }

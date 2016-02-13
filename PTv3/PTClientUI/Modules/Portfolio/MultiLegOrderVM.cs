@@ -294,11 +294,11 @@ namespace PortfolioTrading.Modules.Portfolio
 
                 if (closeOrd.Direction == PTEntity.TradeDirectionType.SELL)
                 {
-                    profit += (closeOrd.LimitPrice - openOrd.LimitPrice);
+                    profit += (closeOrd.LimitPrice * closeOrd.VolumeTraded - openOrd.LimitPrice * openOrd.VolumeTraded);
                 }
                 else
                 {
-                    profit += (openOrd.LimitPrice - closeOrd.LimitPrice);
+                    profit += (openOrd.LimitPrice * openOrd.VolumeTraded - closeOrd.LimitPrice * closeOrd.VolumeTraded);
                 }
             }
 
@@ -318,11 +318,11 @@ namespace PortfolioTrading.Modules.Portfolio
                 {
                     if (closeOrd.Direction == PTEntity.TradeDirectionType.SELL)
                     {
-                        profit += (closeOrd.LimitPrice - openOrd.LimitPrice);
+                        profit += (closeOrd.LimitPrice * closeOrd.VolumeTraded - openOrd.LimitPrice * openOrd.VolumeTraded);
                     }
                     else
                     {
-                        profit += (openOrd.LimitPrice - closeOrd.LimitPrice);
+                        profit += (openOrd.LimitPrice * openOrd.VolumeTraded - closeOrd.LimitPrice * closeOrd.VolumeTraded);
                     }
                 }
             }
@@ -348,6 +348,8 @@ namespace PortfolioTrading.Modules.Portfolio
                     return "高频";
                 case PTEntity.SubmitReason.SR_Trend:
                     return "趋势";
+                case PTEntity.SubmitReason.SR_Queuing:
+                    return "排队";
                 default:
                     return "未知";
             }

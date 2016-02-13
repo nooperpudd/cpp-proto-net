@@ -101,7 +101,8 @@ namespace PTEntity {
 		SR_StopLoss,
 		SR_AutoSwitch,
 		SR_Scalpe,
-		SR_Trend
+		SR_Trend,
+		SR_Queuing
 	};
 
 	public enum class MlOrderOffset : int

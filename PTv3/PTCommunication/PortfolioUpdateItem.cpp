@@ -105,7 +105,7 @@ StrategyUpdateItem^ CreateStrategyUpdate(StrategyType straType, entity::Portfoli
 		break;
 	case StrategyType::DUAL_QUEUE:
 		retStrategyUpdate = gcnew DualQueueStrategyUpdateItem
-			();
+			( pEntity->dq_stablequote(), pEntity->dq_status());
 		break;
 	default:
 		return nullptr;

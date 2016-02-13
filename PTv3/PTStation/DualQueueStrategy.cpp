@@ -6,10 +6,18 @@
 #include "DoubleCompare.h"
 #include "TechAnalyStrategy.h"
 
+void PrintQuote(entity::Quote* pQuote)
+{
+	string quoteTxt = boost::str(boost::format("Display Quote: A:%.2f(%d), B:%.2f(%d)")
+		% pQuote->ask() % pQuote->ask_size() % pQuote->bid() % pQuote->bid_size());
+	LOG_DEBUG(logger, quoteTxt);
+}
+
 CDualQueueStrategy::CDualQueueStrategy()
 	: m_priceTick(0)
 	, m_stableTickThreshold(6)
 	, m_minWorkingSize(0)
+	, m_direction(entity::NET)
 	, m_stopping(false)
 	, m_lastAsk(0)
 	, m_lastBid(0)
@@ -94,6 +102,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 		CPortfolioQueueOrderPlacer* pOrderPlacer = dynamic_cast<CPortfolioQueueOrderPlacer*>(pPortfolio->OrderPlacer());
 
 		m_stableQuote = IfQuotingStable(pQuote);
+		PrintQuote(pQuote);
 		LOG_DEBUG(logger, boost::str(boost::format("DualQueue - Quote %s Stable. Stable Quote Count:%d") 
 			% (m_stableQuote ? "IS" : "IS NOT") % m_stableQuoteCount));
 
@@ -101,9 +110,17 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 		{
 			if (m_stopping)
 			{
-				// Cancel order in pending state 
-
+				if (!pOrderPlacer->IsWorking())
+				{
+					// Truly Stop Strategy
+					CStrategy::Stop();
+				}
+				// Cancel order in pending state
+				else if(pOrderPlacer->IsOpening())
+					pOrderPlacer->CancelPendingOrder();
 				// If own position, closing position
+				else if (pOrderPlacer->IsClosing())
+					pOrderPlacer->CancelPendingAndClosePosition(pQuote);
 			}
 			else
 			{
@@ -120,6 +137,18 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 					}
 				}
 				
+				bool forceClosing = IsForceClosing();
+				if (forceClosing)
+				{
+					if (pOrderPlacer->IsClosing())
+					{
+						pOrderPlacer->CancelPendingAndClosePosition(pQuote);
+					}
+					else
+					{
+						ResetForceClose();	// ignore and reset unexpected force closing
+					}
+				}
 			}
 		}
 	}
@@ -172,13 +201,34 @@ void CDualQueueStrategy::OpenPosition(CPortfolioQueueOrderPlacer* pOrderPlacer, 
 
 void CDualQueueStrategy::OnLegFilled(int sendingIdx, const string & symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
 {
-	// if opened position, close position in the other side
-	//ClosePosition();
+	if (offset == trade::OF_OPEN && sendingIdx == 0)
+	{
+		m_status = DQ_IS_CLOSING;
+	}
+	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && sendingIdx == 1)
+	{
+		if (m_stopping)
+			m_status = DQ_UNOPENED;
+		else
+			m_status = DQ_CLOSED;
+
+		ResetForceClose();
+	}
 }
 
 void CDualQueueStrategy::OnLegCanceled(int sendingIdx, const string & symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
 {
-	
+	if(m_stopping)
+	{
+		if (offset == trade::OF_OPEN && sendingIdx == 0)
+		{
+			m_status = DQ_UNOPENED;
+		}
+		else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && sendingIdx == 1)
+		{
+			m_status = DQ_IS_CLOSING;
+		}
+	}
 }
 
 int CDualQueueStrategy::OnPortfolioAddPosition(CPortfolio * pPortfolio, const trade::MultiLegOrder & openOrder, int actualTradedVol)

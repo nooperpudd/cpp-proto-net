@@ -178,6 +178,7 @@ public:
 	~CQueueLegOrderPlacer() {}
 
 	virtual bool IsLegPlacerEligibleRetry() { return true; }
+	virtual bool RetryAvailable() { return true; }
 	virtual bool ModifyPrice(entity::Quote* pQuote);
 	virtual void StartPending(const RtnOrderWrapperPtr& pendingOrder);
 };
