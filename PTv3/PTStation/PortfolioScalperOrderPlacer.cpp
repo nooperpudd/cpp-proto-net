@@ -134,12 +134,12 @@ CLegOrderPlacer* CPortfolioQueueOrderPlacer::CreateLegOrderPlacer(int openTimeou
 	return new CQueueLegOrderPlacer(this);
 }
 
-void CPortfolioQueueOrderPlacer::OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
+void CPortfolioQueueOrderPlacer::OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume, int execId)
 {
-	m_pPortf->NotifyLegFilled(sendingIdx, symbol, offset, direction, price, volume);
+	m_pPortf->NotifyLegFilled(sendingIdx, symbol, offset, direction, price, volume, execId);
 }
 
-void CPortfolioQueueOrderPlacer::OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
+void CPortfolioQueueOrderPlacer::OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, int execId)
 {
-	m_pPortf->NotifyLegCanceled(sendingIdx, symbol, offset, direction);
+	m_pPortf->NotifyLegCanceled(sendingIdx, symbol, offset, direction, execId);
 }

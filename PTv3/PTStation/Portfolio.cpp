@@ -664,14 +664,14 @@ void CPortfolio::PrintLegsQuote()
 	}
 }
 
-void CPortfolio::NotifyLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
+void CPortfolio::NotifyLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume, int execId)
 {
-	m_strategy->OnLegFilled(sendingIdx, symbol, offset, direction, price, volume);
+	m_strategy->OnLegFilled(sendingIdx, symbol, offset, direction, price, volume, execId);
 }
 
-void CPortfolio::NotifyLegCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
+void CPortfolio::NotifyLegCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, int execId)
 {
-	m_strategy->OnLegCanceled(sendingIdx, symbol, offset, direction);
+	m_strategy->OnLegCanceled(sendingIdx, symbol, offset, direction, execId);
 }
 
 void CPortfolio::SetHedgeFlag(trade::HedgeFlagType hedgeType)

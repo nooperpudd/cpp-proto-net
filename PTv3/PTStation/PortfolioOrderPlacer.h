@@ -124,8 +124,8 @@ protected:
 	virtual void SetLimitPrice(double* pLmtPxArr, int iPxSize);
 	virtual void OnAddingLegOrderPlacer(CLegOrderPlacer* pLegOrderPlacer){}
 	virtual void OnLegOrderSent(int orderPlacerIdx){}
-	virtual void OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume){}
-	virtual void OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction){}
+	virtual void OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume, int execId){}
+	virtual void OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, int execId){}
 	virtual void OnPortfolioDone(PortfolioFinishState portfState){}
 	virtual CLegOrderPlacer* CreateLegOrderPlacer(int openTimeout, int maxRetryTimes);
 

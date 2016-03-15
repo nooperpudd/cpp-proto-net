@@ -292,7 +292,7 @@ void CManualStrategy::ResetUpdates()
 	m_bounce = 0;
 }
 
-void CManualStrategy::OnLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
+void CManualStrategy::OnLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume, int execId)
 {
 	// double confirm
 	if (sendingIdx == 0 && offset == trade::OF_OPEN)

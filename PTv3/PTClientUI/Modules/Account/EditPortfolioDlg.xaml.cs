@@ -237,6 +237,7 @@ namespace PortfolioTrading.Modules.Account
                     setting.PriceTick = this.PriceTick;
                     setting.StableTickThreshold = this.StableTickThreshold;
                     setting.MinWorkingSize = this.MinWorkingSize;
+                    setting.Direction = this.DQ_Direction;
                 }
             }
             else if (StrategyName == StrategySetting.IcebergStrategyName)

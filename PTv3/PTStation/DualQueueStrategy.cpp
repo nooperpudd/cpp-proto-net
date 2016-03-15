@@ -5,6 +5,8 @@
 #include "Portfolio.h"
 #include "DoubleCompare.h"
 #include "TechAnalyStrategy.h"
+#include "PortfolioArbitrageOrderPlacer.h"
+#include "SymbolTimeUtil.h"
 
 void PrintQuote(entity::Quote* pQuote)
 {
@@ -13,9 +15,48 @@ void PrintQuote(entity::Quote* pQuote)
 	LOG_DEBUG(logger, quoteTxt);
 }
 
+CLevelOrderPlacer::CLevelOrderPlacer(int lvlId, CPortfolioQueueOrderPlacer* pOrderPlacer)
+	: m_levelId(lvlId)
+	, m_orderPlacer(pOrderPlacer)
+	, m_status(DQ_UNOPENED)
+{
+}
+
+CPortfolioQueueOrderPlacer* CLevelOrderPlacer::GetOrderPlacer()
+{
+	CPortfolioOrderPlacer* placer = m_orderPlacer.get();
+	return placer != NULL ? dynamic_cast<CPortfolioQueueOrderPlacer*>(placer) : NULL;
+}
+
+bool CLevelOrderPlacer::IsStop(entity::Quote * pQuote)
+{
+	bool working = m_orderPlacer->IsWorking();
+	if (working)
+		CancelPendingAndClosePosition(pQuote);
+	return !working;
+}
+
+void CLevelOrderPlacer::CancelPendingAndClosePosition(entity::Quote * pQuote)
+{
+	CPortfolioQueueOrderPlacer* queueOrderPlacer = GetOrderPlacer();
+	if (queueOrderPlacer == NULL)
+		return;
+
+	if (queueOrderPlacer->IsOpening())
+		queueOrderPlacer->CancelPendingOrder();
+	// If own position, closing position
+	else if (queueOrderPlacer->IsClosing())
+		queueOrderPlacer->CancelPendingAndClosePosition(pQuote);
+}
+
 CDualQueueStrategy::CDualQueueStrategy()
 	: m_priceTick(0)
 	, m_stableTickThreshold(6)
+	, m_levelsNum(5)
+	, m_stableMinutesThreshold(5)
+	, m_openThresholdTimes(2)
+	, m_latestHigh(-9999)
+	, m_latestLow(9999999)
 	, m_minWorkingSize(0)
 	, m_direction(entity::NET)
 	, m_stopping(false)
@@ -23,7 +64,6 @@ CDualQueueStrategy::CDualQueueStrategy()
 	, m_lastBid(0)
 	, m_stableQuoteCount(0)
 	, m_stableQuote(false)
-	, m_status(DQ_UNOPENED)
 {
 }
 
@@ -60,7 +100,19 @@ void CDualQueueStrategy::Apply(const entity::StrategyItem & strategyItem, bool w
 
 CPortfolioOrderPlacer * CDualQueueStrategy::CreateOrderPlacer()
 {
-	return new CPortfolioQueueOrderPlacer();
+	return new CPortfolioQueueOrderPlacer(0);
+}
+
+void CDualQueueStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc)
+{
+	for (int i = 0; i < m_levelsNum; ++i)
+	{
+		int execId = i + 1;
+		CPortfolioQueueOrderPlacer *pOrderPlacer = new CPortfolioQueueOrderPlacer(execId);
+		pOrderPlacer->Initialize(pPortf, pOrderProc);
+		LevelOrderPlacerPtr levelOrderPlacer(new CLevelOrderPlacer(execId, pOrderPlacer));
+		m_levelOrderPlacers.insert(make_pair(execId, levelOrderPlacer));
+	}
 }
 
 bool CDualQueueStrategy::OnStart()
@@ -99,6 +151,41 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 
 	if (pQuote->ask() > 0 && pQuote->bid() > 0)
 	{
+
+		if (IsRunning() && !IsSuspending())
+		{
+			if (m_stopping)
+			{
+				if (EnsureAllPlacerStop(pQuote))
+				{
+					// Truly Stop Strategy
+					CStrategy::Stop();
+				}
+			}
+			else
+			{
+				if (OperatingConditionCheck(pQuote))
+				{
+					// including list order size check
+					entity::PosiDirectionType direction = DecideOpenDirection(pQuote);
+					if(direction != entity::NET && !IfLevelExists(pQuote))
+					{
+						CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
+						if (lvlOrdPlacer != NULL)
+						{
+							OpenPosition(lvlOrdPlacer, direction, pQuote, timestamp, false);
+						}
+						else
+						{
+							// There is no available order placer for opening position
+						}
+					}
+					
+				}
+			}
+		}
+
+		/*
 		CPortfolioQueueOrderPlacer* pOrderPlacer = dynamic_cast<CPortfolioQueueOrderPlacer*>(pPortfolio->OrderPlacer());
 
 		m_stableQuote = IfQuotingStable(pQuote);
@@ -151,6 +238,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 				}
 			}
 		}
+		*/
 	}
 
 	// there is only ONE leg for scalper strategy 
@@ -167,66 +255,94 @@ void CDualQueueStrategy::GetStrategyUpdate(entity::PortfolioUpdateItem * pPortfU
 {
 	CStrategy::GetStrategyUpdate(pPortfUpdateItem);
 	pPortfUpdateItem->set_dq_stablequote(m_stableQuote);
-	pPortfUpdateItem->set_dq_status(static_cast<entity::LegStatus>(m_status.load()));
+	//pPortfUpdateItem->set_dq_status(static_cast<entity::LegStatus>(m_status.load()));
 }
 
 
-void CDualQueueStrategy::OpenPosition(CPortfolioQueueOrderPlacer* pOrderPlacer, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, bool forceOpening)
+void CDualQueueStrategy::OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::PosiDirectionType direction, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, bool forceOpening)
 {
-	if (m_direction > entity::NET)
+	if (direction > entity::NET)
 	{
 		double lmtPrice[2];
-		if (m_direction == entity::LONG)
+		if (direction == entity::LONG)
 		{
 			lmtPrice[0] = pQuote->bid();
 			lmtPrice[1] = pQuote->ask();
 		}
-		else if (m_direction == entity::SHORT)
+		else if (direction == entity::SHORT)
 		{
 			lmtPrice[0] = pQuote->ask();
 			lmtPrice[1] = pQuote->bid();
 		}
-
+		
 		LOG_DEBUG(logger, boost::str(boost::format("Double Queue - %s Open position @ %.2f (%s)")
 			% GetPosiDirectionText(m_direction) % lmtPrice[0] % pQuote->update_time()));
 
-		string openComment = boost::str(boost::format("排队 %s 开仓 @ %.2f") % GetPosiDirectionText(m_direction) % lmtPrice[0]);
+		string openComment = boost::str(boost::format("排队 %s 开仓 @ %.2f") % GetPosiDirectionText(direction) % lmtPrice[0]);
 
-		pOrderPlacer->SetMlOrderStatus(openComment);
-		m_status = DQ_IS_OPENING;
-		pOrderPlacer->QueueOrder(m_direction, lmtPrice[0], lmtPrice[1], timestamp);
+		pLevelPlacer->SetLevelPx(pQuote->bid());
+		pLevelPlacer->GetOrderPlacer()->SetMlOrderStatus(openComment);
+		pLevelPlacer->SetStatus(DQ_IS_OPENING);
+		pLevelPlacer->GetOrderPlacer()->QueueOrder(m_direction, lmtPrice[0], lmtPrice[1], timestamp);
 		ResetForceOpen();
 	}
 }
 
-void CDualQueueStrategy::OnLegFilled(int sendingIdx, const string & symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
+void CDualQueueStrategy::OnLegFilled(int sendingIdx, const string & symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume, int execId)
 {
-	if (offset == trade::OF_OPEN && sendingIdx == 0)
-	{
-		m_status = DQ_IS_CLOSING;
-	}
-	else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && sendingIdx == 1)
-	{
-		if (m_stopping)
-			m_status = DQ_UNOPENED;
-		else
-			m_status = DQ_CLOSED;
+	boost::mutex::scoped_lock l(m_mutLevels);
 
-		ResetForceClose();
-	}
-}
-
-void CDualQueueStrategy::OnLegCanceled(int sendingIdx, const string & symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
-{
-	if(m_stopping)
+	if(execId > 0)
 	{
+		DQ_STATUS status = DQ_UNKNOWN;
 		if (offset == trade::OF_OPEN && sendingIdx == 0)
 		{
-			m_status = DQ_UNOPENED;
+			status = DQ_IS_CLOSING;
 		}
 		else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && sendingIdx == 1)
 		{
-			m_status = DQ_IS_CLOSING;
+			if (m_stopping)
+				status = DQ_UNOPENED;
+			else
+				status = DQ_CLOSED;
+
+			//ResetForceClose();
+		}
+
+		if (status > DQ_UNKNOWN)
+		{
+			boost::unordered_map<int, LevelOrderPlacerPtr>::iterator iter = m_levelOrderPlacers.find(execId);
+			if (iter != m_levelOrderPlacers.end())
+			{
+				(iter->second)->SetStatus(status);
+			}
+		}
+	}
+}
+
+void CDualQueueStrategy::OnLegCanceled(int sendingIdx, const string & symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, int execId)
+{
+	boost::mutex::scoped_lock l(m_mutLevels);
+
+	if(m_stopping)
+	{
+		DQ_STATUS status = DQ_UNKNOWN;
+		if (offset == trade::OF_OPEN && sendingIdx == 0)
+		{
+			status = DQ_UNOPENED;
+		}
+		else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && sendingIdx == 1)
+		{
+			status = DQ_IS_CLOSING;
+		}
+
+		if (status > DQ_UNKNOWN)
+		{
+			boost::unordered_map<int, LevelOrderPlacerPtr>::iterator iter = m_levelOrderPlacers.find(execId);
+			if (iter != m_levelOrderPlacers.end())
+			{
+				(iter->second)->SetStatus(status);
+			}
 		}
 	}
 }
@@ -269,4 +385,88 @@ bool CDualQueueStrategy::IfQuotingStable(entity::Quote * pQuote)
 	return stable;
 }
 
+void CDualQueueStrategy::CalculateContext(entity::Quote* pQuote)
+{
+	m_lastAsk = pQuote->ask();
+	m_lastBid = pQuote->bid();
+	double last = pQuote->last();
+	boost::chrono::seconds currentTime = ParseTimeString(pQuote->update_time());
+	if (DoubleLessEqual(last, m_latestHigh) && DoubleGreaterEqual(last, m_latestLow))
+	{	// between upper and lower
+		boost::chrono::seconds nearTime = m_latestHighTime < m_latestLowTime ? m_latestHighTime : m_latestLowTime;
+		m_stableSeconds = currentTime - nearTime;
+	}
+	else
+	{
+		if (last > m_latestHigh)	// going up
+		{
+			m_latestHigh = last;
+			m_latestHighTime = currentTime;
+		}
+		if (last < m_latestLow)		// going down
+		{
+			m_latestLow = last;
+			m_latestLowTime = currentTime;
+		}
+	}
+}
 
+bool CDualQueueStrategy::OperatingConditionCheck(entity::Quote * pQuote)
+{
+	return m_stableSeconds > m_stableMinutes;
+}
+
+entity::PosiDirectionType CDualQueueStrategy::DecideOpenDirection(entity::Quote * pQuote)
+{
+	if (pQuote->ask() > m_lastAsk)
+		return entity::SHORT;
+
+	if (pQuote->bid() < m_lastBid)
+		return entity::LONG;
+
+	if (pQuote->ask_size() >= pQuote->bid_size())
+		return entity::SHORT;
+	
+	return entity::LONG;
+}
+
+bool CDualQueueStrategy::EnsureAllPlacerStop(entity::Quote * pQuote)
+{
+	for (LevelOrderPlacersIter iter = m_levelOrderPlacers.begin(); iter != m_levelOrderPlacers.end(); ++iter)
+	{
+		if (!iter->second->IsStop(pQuote))
+			return false;
+	}
+	return true;
+}
+
+CLevelOrderPlacer* CDualQueueStrategy::GetReadyOrderPlacer()
+{
+	if(!m_readyQueue.empty())
+	{
+		int readyId = m_readyQueue.front();
+		m_readyQueue.pop();
+
+		LevelOrderPlacersIter iterFound = m_levelOrderPlacers.find(readyId);
+		if(iterFound != m_levelOrderPlacers.end())
+		{
+			return (iterFound->second).get();
+		}
+	}
+	return NULL;
+}
+
+bool CDualQueueStrategy::IfLevelExists(entity::Quote* pQuote)
+{
+	boost::mutex::scoped_lock l(m_mutLevels);
+
+	double comparingPx = pQuote->bid();
+	for (LevelOrderPlacersIter iter = m_levelOrderPlacers.begin(); iter != m_levelOrderPlacers.end(); ++iter)
+	{
+		double levelPx = iter->second->GetLevelPx();
+		if (DoubleEqual(comparingPx, levelPx))
+			return true;
+	}
+
+	return false;
+}

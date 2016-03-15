@@ -298,7 +298,7 @@ void CDualScalperStrategy::ShortStopLoss(entity::Quote* pQuote, boost::chrono::s
 		% stopLossPx % pQuote->ask() % pQuote->bid() % pQuote->update_time() % pQuote->update_millisec()));
 }
 
-void CDualScalperStrategy::OnLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
+void CDualScalperStrategy::OnLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume, int execId)
 {
 	if (offset == trade::OF_OPEN && direction == trade::BUY && sendingIdx == 0)
 	{
@@ -318,7 +318,7 @@ void CDualScalperStrategy::OnLegFilled(int sendingIdx, const string& symbol, tra
 	}
 }
 
-void CDualScalperStrategy::OnLegCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
+void CDualScalperStrategy::OnLegCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, int execId)
 {
 	if (offset == trade::OF_OPEN && direction == trade::BUY && sendingIdx == 0)
 	{

@@ -972,7 +972,7 @@ void CPortfolioOrderPlacer::RaiseLegOrderFilledEvent(int sendingIdx, const RtnOr
 	trade::OffsetFlagType offset = pRtnOrder->Offset();
 	trade::TradeDirectionType direction = pRtnOrder->Direction();
 
-	OnLegOrderFilled(sendingIdx, symbol, offset, direction, price, volume);
+	OnLegOrderFilled(sendingIdx, symbol, offset, direction, price, volume, m_execId);
 }
 
 
@@ -982,7 +982,7 @@ void CPortfolioOrderPlacer::RaiseLegOrderCanceledEvent(int sendingIdx, const Rtn
 	trade::OffsetFlagType offset = pRtnOrder->Offset();
 	trade::TradeDirectionType direction = pRtnOrder->Direction();
 
-	OnLegOrderCanceled(sendingIdx, symbol, offset, direction);
+	OnLegOrderCanceled(sendingIdx, symbol, offset, direction, m_execId);
 }
 
 void CPortfolioOrderPlacer::UpdateLegOrder(const RtnOrderWrapperPtr& pRtnOrder )

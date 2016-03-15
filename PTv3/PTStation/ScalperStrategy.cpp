@@ -62,9 +62,9 @@ void CScalperStrategy::Test( entity::Quote* pQuote, CPortfolio* pPortfolio, boos
 {
 	m_diff = pQuote->ask() - pQuote->bid();
 	m_ask = pQuote->ask();
-	m_askSize = 1;// pQuote->ask_size();
+	m_askSize = pQuote->ask_size();
 	m_bid = pQuote->bid();
-	m_bidSize = 1;// pQuote->bid_size();
+	m_bidSize = pQuote->bid_size();
 
 	if(m_askSize > 0 && m_bidSize > 0)
 	{

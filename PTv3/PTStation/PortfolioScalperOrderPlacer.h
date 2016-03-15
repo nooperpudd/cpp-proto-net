@@ -17,8 +17,10 @@ public:
 class CPortfolioQueueOrderPlacer : public CPortfolioScalperOrderPlacer
 {
 public:
-	CPortfolioQueueOrderPlacer(): m_openPrice(0), m_closePrice(0)
-	{}
+	CPortfolioQueueOrderPlacer(int execId): m_openPrice(0), m_closePrice(0)
+	{
+		SetExecId(execId);
+	}
 	~CPortfolioQueueOrderPlacer(){}
 
 	void QueueOrder(entity::PosiDirectionType posiDirection, double openPx, double closePx,
@@ -29,8 +31,8 @@ public:
 	void CancelPendingOrder();
 	void CancelPendingAndClosePosition(entity::Quote* pQuote);
 	virtual trade::SubmitReason SubmitReason() { return trade::SR_Queuing; }
-	virtual void OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume);
-	virtual void OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction);
+	virtual void OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume, int execId);
+	virtual void OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, int execId);
 
 	double GetOpenPrice() const
 	{ return m_openPrice; }

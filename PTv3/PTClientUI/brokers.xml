@@ -27,12 +27,12 @@
 
 		<Servers>
 			<Server>
-				<Name>1000场内系统</Name>
+				<Name>招商CTP</Name>
 				<Trading>
-					<item>172.18.5.2:41205</item>
+					<item>180.166.85.37:41205</item>
 					</Trading>
 				<MarketData>
-					<item>172.18.5.2:41213</item>
+					<item>180.166.85.37:41213</item>
 				</MarketData>
 			</Server>
 			<Server>

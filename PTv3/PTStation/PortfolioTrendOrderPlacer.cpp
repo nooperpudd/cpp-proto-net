@@ -126,14 +126,14 @@ void CPortfolioTrendOrderPlacer::OnAddingLegOrderPlacer( CLegOrderPlacer* pLegOr
 	}
 }
 
-void CPortfolioTrendOrderPlacer::OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume)
+void CPortfolioTrendOrderPlacer::OnLegOrderFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume, int execId)
 {
-	m_pPortf->NotifyLegFilled(sendingIdx, symbol, offset, direction, price, volume);
+	m_pPortf->NotifyLegFilled(sendingIdx, symbol, offset, direction, price, volume, execId);
 }
 
-void CPortfolioTrendOrderPlacer::OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction)
+void CPortfolioTrendOrderPlacer::OnLegOrderCanceled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, int execId)
 {
-	m_pPortf->NotifyLegCanceled(sendingIdx, symbol, offset, direction);
+	m_pPortf->NotifyLegCanceled(sendingIdx, symbol, offset, direction, execId);
 }
 
 double CPortfolioTrendOrderPlacer::CostPrice()

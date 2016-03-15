@@ -2,7 +2,50 @@
 
 #include "Strategy.h"
 
+#include <boost/unordered_map.hpp>
+#include <queue>
+
 class CPortfolioQueueOrderPlacer;
+
+enum DQ_STATUS
+{
+	DQ_UNKNOWN = -1,
+	DQ_UNOPENED = 0,
+	DQ_IS_OPENING,
+	DQ_OPENED,
+	DQ_IS_CLOSING,
+	DQ_CLOSED
+};
+
+class CLevelOrderPlacer
+{
+public:
+	CLevelOrderPlacer(int lvlId, CPortfolioQueueOrderPlacer* pOrderPlacer);
+		
+	CPortfolioQueueOrderPlacer* GetOrderPlacer();
+
+	void SetStatus(DQ_STATUS status)
+	{
+		m_status = status;
+	}
+
+	DQ_STATUS GetStatus() { return m_status; }
+
+	void SetLevelPx(double px) { m_levelPx = px; }
+	double GetLevelPx() { return m_levelPx; }
+
+	bool IsStop(entity::Quote * pQuote);
+
+	void CancelPendingAndClosePosition(entity::Quote * pQuote);
+
+private:
+	int m_levelId;
+	double m_levelPx;
+	OrderPlacerPtr m_orderPlacer;
+	boost::atomic<DQ_STATUS> m_status;
+};
+
+typedef boost::shared_ptr<CLevelOrderPlacer> LevelOrderPlacerPtr;
 
 class CDualQueueStrategy : public CStrategy
 {
@@ -20,12 +63,14 @@ public:
 	virtual void AlreadyStarted();
 
 	virtual int OnPortfolioAddPosition(CPortfolio* pPortfolio, const trade::MultiLegOrder& openOrder, int actualTradedVol);
-	virtual void OnLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume);
-	virtual void OnLegCanceled(int sendingIdx, const string & symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction);
+	virtual void OnLegFilled(int sendingIdx, const string& symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, double price, int volume, int execId);
+	virtual void OnLegCanceled(int sendingIdx, const string & symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, int execId);
+
+	virtual void InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc);
 
 protected:
 
-	void OpenPosition(CPortfolioQueueOrderPlacer* pOrderPlacer, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, bool forceOpening);
+	void OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::PosiDirectionType direction, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, bool forceOpening);
 	
 	CPortfolioOrderPlacer* CreateOrderPlacer();
 
@@ -36,28 +81,41 @@ private:
 	void OnStrategyError(CPortfolio * portf, const string & errorMsg) const;
 	bool IfQuotingStable(entity::Quote* pQuote);
 
-	enum DQ_STATUS 
-	{
-		DQ_UNOPENED = 0,
-		DQ_IS_OPENING,
-		DQ_OPENED,
-		DQ_IS_CLOSING,
-		DQ_CLOSED
-	};
+	void CalculateContext(entity::Quote* pQuote);
+	bool OperatingConditionCheck(entity::Quote * pQuote);
+	entity::PosiDirectionType DecideOpenDirection(entity::Quote * pQuote);
+	bool EnsureAllPlacerStop(entity::Quote * pQuote);
+	CLevelOrderPlacer* GetReadyOrderPlacer();
+	bool IfLevelExists(entity::Quote* pQuote);
 
 	double m_lastAsk;
 	double m_lastBid;
 	int m_stableQuoteCount;
 	
 	bool m_stableQuote;
-	boost::atomic<DQ_STATUS> m_status;
 
 	boost::mutex m_mut;
+	boost::mutex m_mutLevels;
 
 	double m_priceTick;
 	int m_stableTickThreshold;
 	int m_minWorkingSize;
 	entity::PosiDirectionType m_direction;
+	int m_levelsNum;
+	double m_openThresholdTimes;
+	int m_stableMinutesThreshold;
+	boost::chrono::minutes m_stableMinutes;
+	boost::chrono::seconds m_stableSeconds;
+
+	double m_latestHigh;
+	boost::chrono::seconds m_latestHighTime;
+	double m_latestLow;
+	boost::chrono::seconds m_latestLowTime;
+
+
+	boost::unordered_map<int, LevelOrderPlacerPtr> m_levelOrderPlacers;
+	typedef boost::unordered_map<int, LevelOrderPlacerPtr>::iterator LevelOrderPlacersIter;
+	queue<int> m_readyQueue;
 
 	bool m_stopping;
 };
