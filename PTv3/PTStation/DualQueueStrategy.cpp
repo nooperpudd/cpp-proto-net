@@ -86,6 +86,8 @@ void CDualQueueStrategy::Apply(const entity::StrategyItem & strategyItem, CPortf
 	m_direction = strategyItem.dq_direction();
 	m_stableTickThreshold = strategyItem.dq_stabletickthreshold();
 	m_minWorkingSize = strategyItem.dq_minworkingsize();
+	//m_stableMinutesThreshold = strategyItem.dq_stableminutesthreshold();
+	m_stableMinutes = boost::chrono::minutes(m_stableMinutesThreshold);
 
 	logger.Debug(
 		boost::str(boost::format("Portfolio(%s) DualQueue: PxTick = %.2f, StableTickThreshold = %d, MinWorkingSize = %d")
@@ -151,6 +153,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 
 	if (pQuote->ask() > 0 && pQuote->bid() > 0)
 	{
+		CalculateContext(pQuote);
 
 		if (IsRunning() && !IsSuspending())
 		{
@@ -393,7 +396,7 @@ void CDualQueueStrategy::CalculateContext(entity::Quote* pQuote)
 	boost::chrono::seconds currentTime = ParseTimeString(pQuote->update_time());
 	if (DoubleLessEqual(last, m_latestHigh) && DoubleGreaterEqual(last, m_latestLow))
 	{	// between upper and lower
-		boost::chrono::seconds nearTime = m_latestHighTime < m_latestLowTime ? m_latestHighTime : m_latestLowTime;
+		boost::chrono::seconds nearTime = m_latestHighTime > m_latestLowTime ? m_latestHighTime : m_latestLowTime;
 		m_stableSeconds = currentTime - nearTime;
 	}
 	else
@@ -413,6 +416,10 @@ void CDualQueueStrategy::CalculateContext(entity::Quote* pQuote)
 
 bool CDualQueueStrategy::OperatingConditionCheck(entity::Quote * pQuote)
 {
+	LOG_DEBUG(logger, boost::str(boost::format("Last High: %.2f, Last Low: %.2f, Last: %.2f")
+		% m_latestHigh % m_latestLow % pQuote->last()));
+	LOG_DEBUG(logger, boost::str(boost::format("Stable seconds: %d Secs vs Threshold %d Mins") 
+		% m_stableSeconds % m_stableMinutes));
 	return m_stableSeconds > m_stableMinutes;
 }
 
