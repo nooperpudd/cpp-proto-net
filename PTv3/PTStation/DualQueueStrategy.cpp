@@ -153,8 +153,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 
 	if (pQuote->ask() > 0 && pQuote->bid() > 0)
 	{
-		CalculateContext(pQuote);
-
+		
 		if (IsRunning() && !IsSuspending())
 		{
 			if (m_stopping)
