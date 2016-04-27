@@ -1,13 +1,18 @@
 #include "stdafx.h"
 #include "HistConfiguration.h"
+#include "LogFactory.h"
 
 #include <boost/program_options.hpp>
 #include <fstream>
+
+#define CONFIG_FILE "config.ini"
 
 namespace po = boost::program_options;
 
 boost::shared_ptr<CHistConfiguration> CHistConfiguration::m_instance;
 boost::mutex CHistConfiguration::m_mutex;
+
+log4cpp::Category& CHistConfiguration::logger = CLogFactory::GetInstance().GetLogger("Configuration");
 
 enum { MAX_SUB_SYMBOL_COUNT = 10 };
 
@@ -52,19 +57,28 @@ bool CHistConfiguration::Load()
 		
 		po::variables_map vm;
 		std::ifstream file;
-		file.open("config.ini");
+		file.open(CONFIG_FILE);
+		logger.debug("Parsing %s for configurations", CONFIG_FILE);
 		po::store(po::parse_config_file(file, configDesc), vm);
 		po::notify(vm);
 		
+		Print();
 
 		return true;
 	}
 	catch (exception& e) {
-		cerr << "error: " << e.what() << endl;
+		logger.errorStream() << "error: " << e.what() << log4cpp::eol;
 	}
 	catch (...) {
-		cerr << "Exception of unknown type!" << endl;
+		logger.errorStream() << "Exception of unknown type!" << log4cpp::eol;
 	}
 	// must be something wrong, thus get here
 	return false;
+}
+
+void CHistConfiguration::Print()
+{
+	logger.infoStream() << "Server.trading: " << m_tradingAddress << log4cpp::eol;
+	logger.infoStream() << "Server.market_data: " << m_marketDataAddress << log4cpp::eol;
+
 }

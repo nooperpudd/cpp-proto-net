@@ -152,12 +152,16 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HistConfiguration.h" />
+    <ClInclude Include="LogFactory.h" />
+    <ClInclude Include="Scheduler.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="HistConfiguration.cpp" />
     <ClCompile Include="HistoryDataServer.cpp" />
+    <ClCompile Include="LogFactory.cpp" />
+    <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -167,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="config.ini" />
+    <None Include="hist-log4cpp.property" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

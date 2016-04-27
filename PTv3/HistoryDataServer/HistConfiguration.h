@@ -32,6 +32,9 @@ private:
 	static boost::shared_ptr<CHistConfiguration> m_instance;
 	static boost::mutex m_mutex;
 
+	static log4cpp::Category& logger;
+
+	void Print();
 
 	string m_tradingAddress;
 	string m_marketDataAddress;
@@ -39,8 +42,6 @@ private:
 	string m_acct;
 	string m_userId;
 	string m_passwd;
-
-	int m_symbolCount;
 
 	string m_startTimepoints;
 	string m_endTimepoints;

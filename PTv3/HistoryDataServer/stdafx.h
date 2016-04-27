@@ -23,3 +23,5 @@ using namespace std;
 #include <boost/chrono.hpp>
 #include <boost/foreach.hpp>
 #include <boost/thread.hpp>
+
+#include <log4cpp/Category.hh>
