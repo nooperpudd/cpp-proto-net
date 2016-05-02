@@ -28,6 +28,10 @@ public:
 	const string& GetPasswd() const
 	{ return m_passwd; }
 
+	const string& GetStartTimepoints() const { return m_startTimepoints; }
+	const string& GetEndTimepoints() const { return m_endTimepoints; }
+
+
 private:
 	static boost::shared_ptr<CHistConfiguration> m_instance;
 	static boost::mutex m_mutex;
