@@ -3,6 +3,7 @@
 #include "LogFactory.h"
 
 #include <boost/chrono/chrono_io.hpp>
+#include <boost/date_time/local_time_adjustor.hpp>
 
 log4cpp::Category& CScheduler::logger = CLogFactory::GetInstance().GetLogger("Scheduler");
 
@@ -27,14 +28,16 @@ void CScheduler::Run(const string& startTimpoints, const string& endTimepoints)
 	int tpEnds = ParseTimePoints(endTimepoints, m_endTimePoints);
 	logger.infoStream() << "Find " << tpEnds << " End time points." << log4cpp::eol;
 	
+	logger.infoStream() << "system_clock::now" << boost::chrono::system_clock::now() << log4cpp::eol;
+	
 	boost::chrono::system_clock::time_point nextStartPoint = FindNextChronoTimePointFromNow(m_startTimePoints, &m_nextStartTimePoint);
-	logger.infoStream() << "The next START time point: " << nextStartPoint << ". "
+	logger.infoStream() << "The next START time point: " << m_nextStartTimePoint << ". "
 		<< boost::chrono::time_fmt(boost::chrono::timezone::local, "%F %T")
 		<< nextStartPoint << log4cpp::eol;
 	m_startTimer.expires_at(nextStartPoint);
 
 	boost::chrono::system_clock::time_point nextEndPoint = FindNextChronoTimePointFromNow(m_endTimePoints, &m_nextEndTimePoint);
-	logger.infoStream() << "The next END time point: " << nextEndPoint << ". "
+	logger.infoStream() << "The next END time point: " << m_nextEndTimePoint << ". "
 		<< boost::chrono::time_fmt(boost::chrono::timezone::local, "%F %T")
 		<< nextEndPoint << log4cpp::eol;
 	m_endTimer.expires_at(nextEndPoint);
@@ -63,7 +66,7 @@ void CScheduler::OnEndTimeOut(const boost::system::error_code& e)
 	logger.infoStream() << "Reach No." << m_nextEndTimePoint << " END time point" << log4cpp::eol;
 
 	boost::chrono::system_clock::time_point nextEndPoint = FindNextChronoTimePointFromNowIndex(
-		m_startTimePoints, m_nextEndTimePoint, &m_nextEndTimePoint);
+		m_endTimePoints, m_nextEndTimePoint, &m_nextEndTimePoint);
 	logger.infoStream() << "The next END time point: " << m_nextEndTimePoint << ". "
 		<< boost::chrono::time_fmt(boost::chrono::timezone::local, "%F %T")
 		<< nextEndPoint << log4cpp::eol;
@@ -78,14 +81,21 @@ boost::chrono::system_clock::time_point CScheduler::FindNextChronoTimePointFromN
 	boost::posix_time::time_duration nowTime = now.time_of_day();
 	int nextIdx = 0;
 	for (vector<boost::posix_time::time_duration>::iterator iter = durationTimePoints.begin();
-	iter != durationTimePoints.end(); ++iter, ++nextIdx)
+		iter != durationTimePoints.end(); ++iter, ++nextIdx)
 	{
 		if (*iter > nowTime)
 			break;
 	}
-	*outNextIdx = nextIdx;
 
-	return FindNextChronoTimePointByIndex(durationTimePoints, nextIdx);
+	if(nextIdx < durationTimePoints.size())
+	{
+		*outNextIdx = nextIdx;
+		return FindNextChronoTimePointByIndex(durationTimePoints, nextIdx);
+	}
+
+	*outNextIdx = 0; // reset to nextIdx to the first one, and add 24 hours
+	boost::chrono::system_clock::time_point nextPoint = FindNextChronoTimePointByIndex(durationTimePoints, 0);
+	return nextPoint + boost::chrono::hours(24);
 }
 
 boost::chrono::system_clock::time_point CScheduler::FindNextChronoTimePointFromNowIndex(vector<boost::posix_time::time_duration>& durationTimePoints, int nowIndex, int* outNextIdx)
@@ -94,12 +104,10 @@ boost::chrono::system_clock::time_point CScheduler::FindNextChronoTimePointFromN
 	*outNextIdx = nowIndex + 1;
 	if (*outNextIdx < totalCount)
 		return FindNextChronoTimePointByIndex(durationTimePoints, *outNextIdx);
-	else
-	{
-		*outNextIdx = 0; // return to the first time point
-		boost::chrono::system_clock::time_point nextPoint = FindNextChronoTimePointByIndex(durationTimePoints, 0);
-		return nextPoint + boost::chrono::hours(24);
-	}
+	
+	*outNextIdx = 0; // return to the first time point
+	boost::chrono::system_clock::time_point nextPoint = FindNextChronoTimePointByIndex(durationTimePoints, 0);
+	return nextPoint + boost::chrono::hours(24);
 }
 
 boost::chrono::system_clock::time_point CScheduler::FindNextChronoTimePointByIndex(vector<boost::posix_time::time_duration>& durationTimePoints, int nextIdx)
@@ -107,9 +115,11 @@ boost::chrono::system_clock::time_point CScheduler::FindNextChronoTimePointByInd
 	// 3. construct ptime of next time point
 	boost::posix_time::time_duration nextTimepointDur = durationTimePoints[nextIdx];
 	boost::posix_time::ptime nextPTime = boost::posix_time::ptime(boost::gregorian::day_clock::local_day(), nextTimepointDur);
-
+	boost::posix_time::ptime utcNextPTime =
+		boost::date_time::local_adjustor<boost::posix_time::ptime, 8, boost::posix_time::no_dst>
+			 ::local_to_utc(nextPTime);
 	// 4. convert to chrono time_point type
-	time_t nextTTime = boost::posix_time::to_time_t(nextPTime);
+	time_t nextTTime = boost::posix_time::to_time_t(utcNextPTime);
 	boost::chrono::system_clock::time_point expireTimePoint = boost::chrono::system_clock::from_time_t(nextTTime);
 
 	return expireTimePoint;
