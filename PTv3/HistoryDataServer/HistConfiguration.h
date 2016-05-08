@@ -21,12 +21,19 @@ public:
 
 	bool Load();
 
+	const string& GetBroker() const
+	{
+		return m_broker;
+	}
 	const string& GetAcct() const
 	{ return m_acct; }
 	const string& GetUserId() const
 	{ return m_userId; }
 	const string& GetPasswd() const
 	{ return m_passwd; }
+
+	const string& GetTradingServerAddr() const { return m_tradingAddress; }
+	const string& GetMarketDataSvrAddr() const { return m_marketDataAddress; }
 
 	const string& GetStartTimepoints() const { return m_startTimepoints; }
 	const string& GetEndTimepoints() const { return m_endTimepoints; }
@@ -43,6 +50,7 @@ private:
 	string m_tradingAddress;
 	string m_marketDataAddress;
 
+	string m_broker;
 	string m_acct;
 	string m_userId;
 	string m_passwd;

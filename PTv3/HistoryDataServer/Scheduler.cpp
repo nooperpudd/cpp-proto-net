@@ -51,7 +51,10 @@ void CScheduler::Run(const string& startTimpoints, const string& endTimepoints)
 void CScheduler::OnStartTimeOut(const boost::system::error_code& e)
 {
 	logger.infoStream() << "Reach No." << m_nextStartTimePoint << " START time point" << log4cpp::eol;
-	
+
+	if (!m_onStartTimeOutHandler.empty())
+		m_onStartTimeOutHandler(m_nextEndTimePoint);
+
 	boost::chrono::system_clock::time_point nextStartPoint = FindNextChronoTimePointFromNowIndex(
 		m_startTimePoints, m_nextStartTimePoint, &m_nextStartTimePoint);
 	logger.infoStream() << "The next START time point: " << m_nextStartTimePoint << ". "
@@ -64,6 +67,9 @@ void CScheduler::OnStartTimeOut(const boost::system::error_code& e)
 void CScheduler::OnEndTimeOut(const boost::system::error_code& e)
 {
 	logger.infoStream() << "Reach No." << m_nextEndTimePoint << " END time point" << log4cpp::eol;
+
+	if (!m_onEndTimeOutHandler.empty())
+		m_onEndTimeOutHandler(m_nextEndTimePoint);
 
 	boost::chrono::system_clock::time_point nextEndPoint = FindNextChronoTimePointFromNowIndex(
 		m_endTimePoints, m_nextEndTimePoint, &m_nextEndTimePoint);

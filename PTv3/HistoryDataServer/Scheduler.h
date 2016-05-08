@@ -4,6 +4,8 @@
 
 #include <boost/asio/system_timer.hpp>
 
+typedef boost::function<void(int)> TimeOutHandlerFunc;
+
 class CScheduler
 {
 public:
@@ -11,6 +13,8 @@ public:
 	~CScheduler();
 
 	void Run(const string& startTimpoints, const string& endTimepoints);
+	void SetStartTimeOutHandler(TimeOutHandlerFunc& handler) { m_onStartTimeOutHandler = handler; }
+	void SetEndTimeoutHandler(TimeOutHandlerFunc& handler) { m_onEndTimeOutHandler = handler; }
 
 private:
 	void OnStartTimeOut(const boost::system::error_code& e);
@@ -30,5 +34,8 @@ private:
 	int m_nextStartTimePoint;
 	vector<boost::posix_time::time_duration> m_endTimePoints;
 	int m_nextEndTimePoint;
+
+	TimeOutHandlerFunc m_onStartTimeOutHandler;
+	TimeOutHandlerFunc m_onEndTimeOutHandler;
 };
 

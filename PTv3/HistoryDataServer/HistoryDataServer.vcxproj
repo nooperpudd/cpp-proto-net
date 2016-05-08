@@ -151,6 +151,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="FileSystemUtil.h" />
     <ClInclude Include="HistAvatar.h" />
     <ClInclude Include="HistConfiguration.h" />
     <ClInclude Include="HistQuoteRepositry.h" />
@@ -165,6 +166,7 @@
     <ClInclude Include="TradingConnection.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="FileSystemUtil.cpp" />
     <ClCompile Include="HistAvatar.cpp" />
     <ClCompile Include="HistConfiguration.cpp" />
     <ClCompile Include="HistoryDataServer.cpp" />
