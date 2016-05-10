@@ -61,7 +61,7 @@ private:
 
 	// memeber variables
 	CThostFtdcMdApi* m_pUserApi;
-	boost::thread m_thTrading;
+	boost::thread m_thQuoting;
 	bool m_isWorking;
 
 	boost::atomic<int> m_iRequestID;

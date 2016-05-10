@@ -16,6 +16,7 @@ void OnStartTimeOutHandler(int startTimePointIdx)
 {
 	g_AvatarInst.reset(new CHistAvatar);
 	g_AvatarInst->Start();
+	pLogger->info("Done %d start time point.", startTimePointIdx + 1);
 }
 
 void OnEndTimeOutHandler(int endTimePointIdx)
@@ -25,6 +26,7 @@ void OnEndTimeOutHandler(int endTimePointIdx)
 		g_AvatarInst->Stop();
 		g_AvatarInst.reset();
 	}
+	pLogger->info("Done %d end time point.", endTimePointIdx + 1);
 }
 
 int main(int argc, char* argv[])
@@ -42,6 +44,11 @@ int main(int argc, char* argv[])
 	}
 
 	CScheduler scheduler;
+	TimeOutHandlerFunc funcOnStart(&OnStartTimeOutHandler);
+	scheduler.SetStartTimeOutHandler(funcOnStart);
+	TimeOutHandlerFunc funcOnEnd(&OnEndTimeOutHandler);
+	scheduler.SetEndTimeoutHandler(funcOnEnd);
+
 	scheduler.Run(pConfig->GetStartTimepoints(), pConfig->GetEndTimepoints());
 	
 	pLogger->infoStream() << "History Data Server exit..." << log4cpp::eol;

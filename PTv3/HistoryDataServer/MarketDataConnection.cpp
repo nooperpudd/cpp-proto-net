@@ -38,7 +38,7 @@ void CMarketDataConnection::OnFrontDisconnected(int nReason)
 {
 	if (nReason == 0)
 	{
-		logger.info(boost::str(boost::format("%s Trade normally disconnected.") % m_investorId));
+		logger.info(boost::str(boost::format("%s Market Data normally disconnected.") % m_investorId));
 	}
 	else
 	{
@@ -84,7 +84,7 @@ void CMarketDataConnection::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUser
 	m_isLoggedIn = (pRspInfo->ErrorID == 0);
 	string loginInfo = boost::str(
 		boost::format(
-			"Trade login response (ReqId:%d): %s")
+			"Market Data login response (ReqId:%d): %s")
 		% nRequestID
 		% (m_isLoggedIn ? "Succeeded" : "Failed"));
 	logger.info(loginInfo);
@@ -97,17 +97,6 @@ void CMarketDataConnection::OnRspUserLogin(CThostFtdcRspUserLoginField* pRspUser
 		m_tradingDay = boost::gregorian::from_undelimited_string(ds);
 
 		logger.infoStream() << "Trading day: " << pRspUserLogin->TradingDay << log4cpp::eol;
-		logger.infoStream() << "Login Time: " << pRspUserLogin->LoginTime << log4cpp::eol;
-		logger.infoStream() << "Broker ID: " << pRspUserLogin->BrokerID << log4cpp::eol;
-		logger.infoStream() << "User ID: " << pRspUserLogin->UserID << log4cpp::eol;
-		logger.infoStream() << "System name: " << pRspUserLogin->SystemName << log4cpp::eol;
-		logger.infoStream() << "Front ID: " << pRspUserLogin->FrontID << log4cpp::eol;
-		logger.infoStream() << "Session ID: " << pRspUserLogin->SessionID << log4cpp::eol;
-		logger.infoStream() << "Maximum order ref: " << pRspUserLogin->MaxOrderRef << log4cpp::eol;
-		logger.infoStream() << "SHFE time: " << pRspUserLogin->SHFETime << log4cpp::eol;
-		logger.infoStream() << "DCE time: " << pRspUserLogin->DCETime << log4cpp::eol;
-		logger.infoStream() << "CZCE time: " << pRspUserLogin->CZCETime << log4cpp::eol;
-		logger.infoStream() << "FFEX time: " << pRspUserLogin->FFEXTime << log4cpp::eol;
 	}
 	else
 	{
@@ -156,12 +145,12 @@ bool CMarketDataConnection::Login(const string& frontAddr, const string& brokerI
 		// ×¢²áÊÂ¼þÀà
 		m_pUserApi->RegisterSpi(this);
 
-		logger.info("Try to connect trade server (%s) ...", frontAddr);
+		logger.info("Try to connect trade server (%s) ...", frontAddr.c_str());
 
 		// wait for connected event
 		{
 			boost::unique_lock<boost::mutex> lock(m_mutConnecting);
-			m_thTrading = boost::thread(&CMarketDataConnection::RunThreadFunc, this, frontAddr);
+			m_thQuoting = boost::thread(&CMarketDataConnection::RunThreadFunc, this, frontAddr);
 
 			if (!m_condConnecting.timed_wait(lock, boost::posix_time::seconds(CONNECT_TIMEOUT_SECONDS)))
 			{
@@ -217,7 +206,7 @@ void CMarketDataConnection::Logout()
 	if (m_isWorking)
 	{
 		m_pUserApi->Release();
-		m_thTrading.join();
+		m_thQuoting.join();
 	}
 	logger.info("%s Logged OUT Market Data.", m_investorId);
 }

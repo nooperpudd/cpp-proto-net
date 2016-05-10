@@ -96,6 +96,9 @@
       <AdditionalLibraryDirectories>D:\Dev\boost_1_60_0\stage\lib;D:\Dev\log4cpp\lib\vc140\debug</AdditionalLibraryDirectories>
       <AdditionalDependencies>log4cppD.lib;ws2_32.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /y ThostTraderApi\*.dll $(OutDir)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

@@ -170,7 +170,7 @@ bool CTradingConnection::Login(const string& frontAddr, const string& brokerId, 
 		m_pUserApi->SubscribePrivateTopic(THOST_TERT_QUICK);
 		m_pUserApi->SubscribePublicTopic(THOST_TERT_QUICK);
 
-		logger.info("Try to connect trade server (%s) ...", frontAddr);
+		logger.info("Try to connect trade server (%s) ...", frontAddr.c_str());
 
 		// wait for connected event
 		{
