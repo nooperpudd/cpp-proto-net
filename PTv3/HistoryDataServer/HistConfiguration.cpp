@@ -77,6 +77,17 @@ bool CHistConfiguration::Load()
 	return false;
 }
 
+int CHistConfiguration::GetSymbolInfos(vector<boost::tuple<string, string>>& symbolTuples)
+{
+	int count = m_symbols.size() <= m_timeFrames.size() ? m_symbols.size() : m_timeFrames.size();
+	for (int i = 0; i < count; ++i)
+	{
+		symbolTuples.push_back(boost::make_tuple(m_symbols[i], m_timeFrames[i]));
+	}
+
+	return symbolTuples.size();
+}
+
 void CHistConfiguration::Print()
 {
 	logger.infoStream() << "Server.trading: " << m_tradingAddress << log4cpp::eol;

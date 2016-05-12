@@ -39,6 +39,7 @@ bool CHistAvatar::Start()
 	logger.info("Logged IN Market Data Server successfully.");
 
 	logger.info("Subscribed Quoting for symbols.");
+	SubscribeQuotes();
 
 	return true;
 }
@@ -46,6 +47,7 @@ bool CHistAvatar::Start()
 void CHistAvatar::Stop()
 {
 	logger.info("Unsubscribed symbols quoting.");
+	UnsubscribeQuotes();
 
 	if(m_marketDataConnection.IsConnected())
 	{
@@ -58,4 +60,32 @@ void CHistAvatar::Stop()
 		m_tradingConnection.Logout();
 		logger.info("Logged out Trading Server.");
 	}
+}
+
+void CHistAvatar::SubscribeQuotes()
+{
+	CHistConfiguration* pConfig = CHistConfiguration::GetInstance();
+	vector<boost::tuple<string, string>> symbolItems;
+	int count = pConfig->GetSymbolInfos(symbolItems);
+	logger.info("Got %d symbols' subscription", count);
+
+	for (int i = 0; i < count; ++i)
+	{
+		const string& symb = symbolItems[i].get<0>();
+		const string& timeFrame = symbolItems[i].get<1>();
+		SymbolQuotingPtr symbolQuoting(new CSymbolQuoting(symb, timeFrame));
+		m_vecSymbolQuoting.push_back(symbolQuoting);
+		symbolQuoting->Subscribe(&m_quoteRepositry);
+	}
+}
+
+void CHistAvatar::UnsubscribeQuotes()
+{
+	for (SymbolQuotingVecIter iter = m_vecSymbolQuoting.begin();iter != m_vecSymbolQuoting.end(); ++iter)
+	{
+		SymbolQuotingPtr& symbolQuoting = *iter;
+		symbolQuoting->Unsubscribe(&m_quoteRepositry);
+	}
+
+	m_vecSymbolQuoting.clear();
 }

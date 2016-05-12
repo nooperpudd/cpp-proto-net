@@ -38,6 +38,7 @@ public:
 	const string& GetStartTimepoints() const { return m_startTimepoints; }
 	const string& GetEndTimepoints() const { return m_endTimepoints; }
 
+	int GetSymbolInfos(vector<boost::tuple<string, string>>& symbolTuples);
 
 private:
 	static boost::shared_ptr<CHistConfiguration> m_instance;
@@ -57,13 +58,6 @@ private:
 
 	string m_startTimepoints;
 	string m_endTimepoints;
-
-	class SubSymbolItem
-	{
-	public:
-		string Sybmol;
-		string TimeFrame;
-	};
 
 	vector<string> m_symbols;
 	vector<string> m_timeFrames;
