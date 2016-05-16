@@ -16,7 +16,8 @@
 log4cpp::Category& CMarketDataConnection::logger = CLogFactory::GetInstance().GetLogger("MarketDataConnection");
 
 CMarketDataConnection::CMarketDataConnection()
-	: m_pUserApi(NULL)
+	: m_pCallback(NULL)
+	, m_pUserApi(NULL)
 	, m_isWorking(false)
 	, m_isConnected(false)
 	, m_isLoggedIn(false)

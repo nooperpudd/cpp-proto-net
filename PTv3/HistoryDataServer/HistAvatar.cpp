@@ -7,6 +7,9 @@ log4cpp::Category& CHistAvatar::logger = CLogFactory::GetInstance().GetLogger("S
 
 CHistAvatar::CHistAvatar()
 {
+	// Connect MarketDataConnection and QuoteRepositry each other
+	m_marketDataConnection.Init(&m_quoteRepositry);
+	m_quoteRepositry.Init(&m_marketDataConnection);
 }
 
 

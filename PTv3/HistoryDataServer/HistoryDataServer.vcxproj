@@ -157,11 +157,14 @@
     <ClInclude Include="FileSystemUtil.h" />
     <ClInclude Include="HistAvatar.h" />
     <ClInclude Include="HistConfiguration.h" />
+    <ClInclude Include="HistQuoteFetcher.h" />
     <ClInclude Include="HistQuoteRepositry.h" />
+    <ClInclude Include="HistQuoteStore.h" />
     <ClInclude Include="HistTechDataRepo.h" />
     <ClInclude Include="HistTimeUtil.h" />
     <ClInclude Include="LogFactory.h" />
     <ClInclude Include="MarketDataConnection.h" />
+    <ClInclude Include="Quote.h" />
     <ClInclude Include="Scheduler.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="SymbolQuoting.h" />
@@ -173,11 +176,14 @@
     <ClCompile Include="HistAvatar.cpp" />
     <ClCompile Include="HistConfiguration.cpp" />
     <ClCompile Include="HistoryDataServer.cpp" />
+    <ClCompile Include="HistQuoteFetcher.cpp" />
     <ClCompile Include="HistQuoteRepositry.cpp" />
+    <ClCompile Include="HistQuoteStore.cpp" />
     <ClCompile Include="HistTechDataRepo.cpp" />
     <ClCompile Include="HistTimeUtil.cpp" />
     <ClCompile Include="LogFactory.cpp" />
     <ClCompile Include="MarketDataConnection.cpp" />
+    <ClCompile Include="Quote.cpp" />
     <ClCompile Include="Scheduler.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

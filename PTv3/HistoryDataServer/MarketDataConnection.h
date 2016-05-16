@@ -3,11 +3,32 @@
 
 #include <boost/atomic.hpp>
 
+#ifdef WIN32
+#define longlong __int64
+#else
+#define longlong long long
+#endif
+
+class CQuoteAgentCallback
+{
+public:
+	CQuoteAgentCallback(void) {}
+	virtual ~CQuoteAgentCallback(void) {}
+
+	virtual void OnSubscribeCompleted() = 0;
+
+	virtual void OnUnsubscribeCompleted() = 0;
+
+	virtual void OnQuoteReceived(CThostFtdcDepthMarketDataField* marketData, longlong timestamp) = 0;
+
+	virtual void OnConnected(bool reconnected) = 0;
+};
+
 class CMarketDataConnection : public CThostFtdcMdSpi
 {
 public:
 	CMarketDataConnection();
-	~CMarketDataConnection();
+	virtual ~CMarketDataConnection();
 
 	///错误应答
 	virtual void OnRspError(CThostFtdcRspInfoField* pRspInfo, int nRequestID, bool bIsLast);
@@ -40,15 +61,17 @@ public:
 	///深度行情通知
 	virtual void OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData);
 
+	void Init(CQuoteAgentCallback* pCallback) { m_pCallback = pCallback; }
+
 	bool Login(const string& frontAddr, const string& brokerId, const string& investorId, const string& userId, const string& password);
 	void Logout();
 	bool IsConnected() const
 	{ return m_isConnected; }
 
 	void SubscribeMarketData(char** symbolArr, int symCount);
-
 	void UnsubscribeMarketData(char** symbolArr, int symCount);
-
+	void SubscribesQuotes(vector<basic_string<char>> cses_){}
+	void UnSubscribesQuotes(vector<basic_string<char>> cses_){}
 private:
 	enum { CONNECT_TIMEOUT_SECONDS = 3 };
 
@@ -58,6 +81,8 @@ private:
 	void Login();
 
 	int RequestIDIncrement() { return ++m_iRequestID; }
+
+	CQuoteAgentCallback* m_pCallback;
 
 	// memeber variables
 	CThostFtdcMdApi* m_pUserApi;
