@@ -22,6 +22,11 @@ boost::chrono::seconds ParseTimeString(const char* time)
 	return finalVal;
 }
 
+boost::chrono::seconds ParseTimeString(const string& time)
+{
+	return ParseTimeString(time.c_str());
+}
+
 char TIME_POINT_DELIMITER[] = ",";
 
 int ParseTimePoints(const string& timePointExpr, vector<boost::posix_time::time_duration>& outTimePoints)
@@ -41,3 +46,14 @@ int ParseTimePoints(const string& timePointExpr, vector<boost::posix_time::time_
 	return outTimePoints.size();
 }
 
+string GetISOTimeString(const boost::chrono::seconds& timepoint)
+{
+	boost::chrono::seconds s = timepoint;
+	// separate minutes from seconds
+	boost::chrono::minutes m = boost::chrono::duration_cast<boost::chrono::minutes>(s);
+	s -= m;
+	// separate hours from minutes
+	boost::chrono::hours h = boost::chrono::duration_cast<boost::chrono::hours>(m);
+	m -= h;
+	return boost::str(boost::format("%02d:%02d:%02d") % h.count() % m.count() % s.count());
+}

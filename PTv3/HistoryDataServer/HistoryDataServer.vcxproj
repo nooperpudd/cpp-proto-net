@@ -157,6 +157,8 @@
     <ClInclude Include="FileSystemUtil.h" />
     <ClInclude Include="HistAvatar.h" />
     <ClInclude Include="HistConfiguration.h" />
+    <ClInclude Include="HistDataPersistence.h" />
+    <ClInclude Include="HistPriceBarGen.h" />
     <ClInclude Include="HistQuoteFetcher.h" />
     <ClInclude Include="HistQuoteRepositry.h" />
     <ClInclude Include="HistQuoteStore.h" />
@@ -175,7 +177,9 @@
     <ClCompile Include="FileSystemUtil.cpp" />
     <ClCompile Include="HistAvatar.cpp" />
     <ClCompile Include="HistConfiguration.cpp" />
+    <ClCompile Include="HistDataPersistence.cpp" />
     <ClCompile Include="HistoryDataServer.cpp" />
+    <ClCompile Include="HistPriceBarGen.cpp" />
     <ClCompile Include="HistQuoteFetcher.cpp" />
     <ClCompile Include="HistQuoteRepositry.cpp" />
     <ClCompile Include="HistQuoteStore.cpp" />

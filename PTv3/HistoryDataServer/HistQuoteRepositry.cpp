@@ -86,6 +86,14 @@ void CHistQuoteRepositry::DestoryFetcher(CHistQuoteFetcher* pFetcher)
 	}
 }
 
+void CHistQuoteRepositry::SubmitSubscribe()
+{
+	if(m_lazySubscribe && IsMarketReady() && m_sybmolsToSub.size() > 0)
+	{
+		m_pQuoteAgent->SubscribesQuotes(m_sybmolsToSub);
+	}
+}
+
 bool CHistQuoteRepositry::IsMarketReady()
 {
 	return m_pQuoteAgent->IsConnected();
@@ -93,7 +101,11 @@ bool CHistQuoteRepositry::IsMarketReady()
 
 void CHistQuoteRepositry::SubscribeQuote(const string& symbol)
 {
-	if (IsMarketReady())
+	if(m_lazySubscribe)
+	{
+		m_sybmolsToSub.push_back(symbol);
+	}
+	else if (IsMarketReady())
 	{
 		vector<string> symbols;
 		symbols.push_back(symbol);

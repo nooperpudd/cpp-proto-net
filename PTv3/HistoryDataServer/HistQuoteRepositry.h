@@ -11,7 +11,11 @@ public:
 	CHistQuoteRepositry();
 	~CHistQuoteRepositry();
 
-	void Init(CMarketDataConnection* pMarketDataConn) { m_pQuoteAgent = pMarketDataConn; }
+	void Init(CMarketDataConnection* pMarketDataConn, bool lazySubscribe = true)
+	{
+		m_pQuoteAgent = pMarketDataConn;
+		m_lazySubscribe = lazySubscribe;
+	}
 
 	// CQuoteAgentCallback override virtual functions
 	virtual void OnSubscribeCompleted() {}
@@ -23,6 +27,9 @@ public:
 	CHistQuoteFetcher* CreateFetcher(const string& symbol);
 
 	void DestoryFetcher(CHistQuoteFetcher* pFetcher);
+
+	void SubmitSubscribe();
+	bool IsLazySubscribe() const { return m_lazySubscribe; }
 
 private:
 	bool IsMarketReady();
@@ -38,5 +45,7 @@ private:
 	boost::mutex m_storeMapMutex;
 
 	CMarketDataConnection* m_pQuoteAgent;
+	bool m_lazySubscribe;
+	vector<string> m_sybmolsToSub;
 };
 

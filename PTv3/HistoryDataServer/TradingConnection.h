@@ -38,6 +38,7 @@ public:
 	}
 
 	const string& GetErrorMsg() const { return m_loginErr; }
+	const boost::gregorian::date& GetTradingDay() const { return m_tradingDay; }
 
 private:
 	static log4cpp::Category& logger;

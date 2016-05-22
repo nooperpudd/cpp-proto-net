@@ -78,8 +78,11 @@ void CHistAvatar::SubscribeQuotes()
 		const string& timeFrame = symbolItems[i].get<1>();
 		SymbolQuotingPtr symbolQuoting(new CSymbolQuoting(symb, timeFrame));
 		m_vecSymbolQuoting.push_back(symbolQuoting);
+		symbolQuoting->Init(m_tradingConnection.GetTradingDay());
 		symbolQuoting->Subscribe(&m_quoteRepositry);
 	}
+
+	m_quoteRepositry.SubmitSubscribe();
 }
 
 void CHistAvatar::UnsubscribeQuotes()
