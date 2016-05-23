@@ -70,8 +70,8 @@ public:
 
 	void SubscribeMarketData(char** symbolArr, int symCount);
 	void UnsubscribeMarketData(char** symbolArr, int symCount);
-	void SubscribesQuotes(vector<basic_string<char>> cses_){}
-	void UnSubscribesQuotes(vector<basic_string<char>> cses_){}
+	void SubscribesQuotes(vector<string>& symbols);
+	void UnSubscribesQuotes(vector<string>& symbols);
 private:
 	enum { CONNECT_TIMEOUT_SECONDS = 3 };
 

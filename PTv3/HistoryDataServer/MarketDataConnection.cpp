@@ -121,8 +121,8 @@ void CMarketDataConnection::OnRspUnSubMarketData(CThostFtdcSpecificInstrumentFie
 
 void CMarketDataConnection::OnRtnDepthMarketData(CThostFtdcDepthMarketDataField* pDepthMarketData)
 {
-	// TODO:
-
+	longlong timestamp = boost::chrono::steady_clock::now().time_since_epoch().count();
+	m_pCallback->OnQuoteReceived(pDepthMarketData, timestamp);
 }
 
 bool CMarketDataConnection::Login(const string& frontAddr, const string& brokerId, const string& investorId, const string& userId, const string& password)
@@ -240,6 +240,30 @@ void CMarketDataConnection::UnsubscribeMarketData(char** symbolArr, int symCount
 			logger.infoStream() << "The result of UnSubscribeMarketData " << iResult << log4cpp::eol;
 		}
 	}
+}
+
+void CMarketDataConnection::SubscribesQuotes(vector<string>& symbols)
+{
+	int size = symbols.size();
+	boost::shared_array<char*> symbolArray(new char*[size]);
+	for (int i = 0; i < size; ++i)
+	{
+		symbolArray[i] = const_cast<char*>(symbols[i].c_str());
+	}
+	
+	SubscribeMarketData(symbolArray.get(), size);
+}
+
+void CMarketDataConnection::UnSubscribesQuotes(vector<string>& symbols)
+{
+	int size = symbols.size();
+	boost::shared_array<char*> symbolArray(new char*[size]);
+	for (int i = 0; i < size; ++i)
+	{
+		symbolArray[i] = const_cast<char*>(symbols[i].c_str());
+	}
+
+	UnsubscribeMarketData(symbolArray.get(), size);
 }
 
 bool CMarketDataConnection::IsErrorRspInfo(CThostFtdcRspInfoField* pRspInfo)

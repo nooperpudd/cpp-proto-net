@@ -48,14 +48,14 @@ bool CHistConfiguration::Load()
 		{
 			string symbConfigName = boost::str(boost::format("Symbol%d.symbol") % (i + 1));
 			string timeFrameConfigName = boost::str(boost::format("Symbol%d.time_frames") % (i + 1));
-			po::options_description symbDesc("Symbol1");
+			po::options_description symbDesc(boost::str(boost::format("Symbol%d") % (i + 1)));
 			symbDesc.add_options()
 				(symbConfigName.c_str(), po::value<string>(&m_symbols[i]))
 				(timeFrameConfigName.c_str(), po::value<string>(&m_timeFrames[i]))
 				;
 			configDesc.add(symbDesc);
 		}
-		
+
 		po::variables_map vm;
 		std::ifstream file;
 		file.open(CONFIG_FILE);
@@ -63,6 +63,12 @@ bool CHistConfiguration::Load()
 		po::store(po::parse_config_file(file, configDesc), vm);
 		po::notify(vm);
 		
+		// shrink to actual size
+		while(m_symbols.back().empty())
+			m_symbols.pop_back();
+		while (m_timeFrames.back().empty())
+			m_timeFrames.pop_back();
+
 		Print();
 
 		return true;

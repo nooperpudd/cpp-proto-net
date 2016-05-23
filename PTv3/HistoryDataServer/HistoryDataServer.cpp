@@ -43,6 +43,8 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
+	OnStartTimeOutHandler(0);
+	
 	CScheduler scheduler;
 	TimeOutHandlerFunc funcOnStart(&OnStartTimeOutHandler);
 	scheduler.SetStartTimeOutHandler(funcOnStart);
@@ -50,7 +52,7 @@ int main(int argc, char* argv[])
 	scheduler.SetEndTimeoutHandler(funcOnEnd);
 
 	scheduler.Run(pConfig->GetStartTimepoints(), pConfig->GetEndTimepoints());
-	
+
 	pLogger->infoStream() << "History Data Server exit..." << log4cpp::eol;
     return 0;
 }
