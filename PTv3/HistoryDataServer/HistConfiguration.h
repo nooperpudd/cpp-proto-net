@@ -48,6 +48,8 @@ private:
 
 	void Print();
 
+	bool m_launchOnStart;
+
 	string m_tradingAddress;
 	string m_marketDataAddress;
 

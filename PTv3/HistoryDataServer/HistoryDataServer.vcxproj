@@ -164,6 +164,7 @@
     <ClInclude Include="HistQuoteStore.h" />
     <ClInclude Include="HistTechDataRepo.h" />
     <ClInclude Include="HistTimeUtil.h" />
+    <ClInclude Include="HistTradingTimeSpan.h" />
     <ClInclude Include="LogFactory.h" />
     <ClInclude Include="MarketDataConnection.h" />
     <ClInclude Include="Quote.h" />
@@ -185,6 +186,7 @@
     <ClCompile Include="HistQuoteStore.cpp" />
     <ClCompile Include="HistTechDataRepo.cpp" />
     <ClCompile Include="HistTimeUtil.cpp" />
+    <ClCompile Include="HistTradingTimeSpan.cpp" />
     <ClCompile Include="LogFactory.cpp" />
     <ClCompile Include="MarketDataConnection.cpp" />
     <ClCompile Include="Quote.cpp" />

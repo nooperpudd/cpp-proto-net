@@ -66,6 +66,15 @@
     <ClInclude Include="Quote.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="HistDataPersistence.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HistPriceBarGen.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="HistTradingTimeSpan.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -114,6 +123,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Quote.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HistDataPersistence.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HistPriceBarGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="HistTradingTimeSpan.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

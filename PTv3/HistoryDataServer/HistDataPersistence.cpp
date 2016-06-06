@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "HistDataPersistence.h"
 #include "LogFactory.h"
+#include "FileSystemUtil.h"
 
 #define FIELD_WIDTH 12
 #define HIST_DATA_FOLDER "HistData"
@@ -34,6 +35,11 @@ bool CHistDataPersistence::Open()
 {
 	if (!m_Name.empty())
 	{
+		if (!CreateFolderIfNotExists(HIST_DATA_FOLDER))
+		{
+			logger.errorStream() << "Cannot create folder " << HIST_DATA_FOLDER << log4cpp::eol;
+			return false;
+		}
 		string filePath = boost::str(boost::format("%s/%s.txt")
 			% HIST_DATA_FOLDER % m_Name);
 		m_ofstream.open(filePath, std::ofstream::out | std::ofstream::app);

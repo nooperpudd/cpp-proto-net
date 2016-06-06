@@ -14,8 +14,15 @@ boost::shared_ptr<CHistAvatar> g_AvatarInst;
 
 void OnStartTimeOutHandler(int startTimePointIdx)
 {
-	g_AvatarInst.reset(new CHistAvatar);
-	g_AvatarInst->Start();
+	if(g_AvatarInst.get() == NULL)
+	{
+		g_AvatarInst.reset(new CHistAvatar);
+		g_AvatarInst->Start();
+	}else
+	{
+		pLogger->warn("Already sarted.");
+	}
+
 	pLogger->info("Done %d start time point.", startTimePointIdx + 1);
 }
 

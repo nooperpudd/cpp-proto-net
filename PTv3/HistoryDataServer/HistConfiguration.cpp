@@ -42,6 +42,7 @@ bool CHistConfiguration::Load()
 			("Login.passwd", po::value<string>(&m_passwd))
 			("Schedule.start", po::value<string>(&m_startTimepoints))
 			("Schedule.end", po::value<string>(&m_endTimepoints))
+			("launchOnStart", po::value<bool>(&m_launchOnStart))
 			;
 			
 		for (int i = 0; i < MAX_SUB_SYMBOL_COUNT; ++i)

@@ -60,7 +60,7 @@ void CSymbolQuoting::OnQuoteRecevied(boost::chrono::steady_clock::time_point& ti
 
 void CSymbolQuoting::OnBarFinalized(int barIdx, double open, double high, double low, double close, const string& timestamp)
 {
-	logger.info("%s - barIdx: %d, close: %.2f, timestatmp: %s", m_symbol, barIdx, close, timestamp.c_str());
+	logger.info("%s - barIdx: %d, close: %.2f, timestatmp: %s", m_symbol.c_str(), barIdx, close, timestamp.c_str());
 	m_histDataWriter.Write(timestamp, open, high, low, close);
 }
 

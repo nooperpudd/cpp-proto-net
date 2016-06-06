@@ -26,58 +26,8 @@
 #define IH_PREFIX "IH"
 
 
+
 log4cpp::Category& CHistPriceBarGen::logger = CLogFactory::GetInstance().GetLogger("HistDataPersistence");
-
-bool isSymbolIF(const string& symbol)
-{
-	return boost::starts_with(symbol, IF_PREFIX) ||
-		boost::starts_with(symbol, IC_PREFIX) ||
-		boost::starts_with(symbol, IH_PREFIX);
-}
-
-CHistTradingTimeSpan::CHistTradingTimeSpan(const char* timeBegin, const char* timeEnd, int precision) 
-	: m_offset(0), m_precision(precision)
-{
-	m_Start = ParseTimeString(timeBegin);
-	m_End = ParseTimeString(timeEnd);
-
-	m_endIndex = GetIndexFromTime(m_Start, m_End, precision);
-}
-
-int CHistTradingTimeSpan::GetIndex(const boost::chrono::seconds& timePoint) const
-{
-	if (timePoint < m_End)
-		return GetIndexFromTime(m_Start, timePoint, m_precision) + m_offset;
-	else
-		return EndIndex() - 1;
-}
-
-int CHistTradingTimeSpan::GetIndex(const boost::chrono::seconds& timePoint, string* outTimestamp) const
-{
-	if (timePoint < m_End)
-	{
-		int idx = GetIndexFromTime(m_Start, timePoint, m_precision);
-		*outTimestamp = GetISOTimeString(m_Start + boost::chrono::seconds(idx * m_precision));
-		return  idx + m_offset;
-	}
-	else
-	{
-		*outTimestamp = GetISOTimeString(m_End);
-		return EndIndex();
-	}
-}
-
-int CHistTradingTimeSpan::GetIndexFromTime(const boost::chrono::seconds& baseTp, const boost::chrono::seconds& timePoint, int precision)
-{
-	boost::chrono::seconds diff = timePoint - baseTp;
-	if (diff > boost::chrono::seconds::zero())
-	{
-		int idx = diff.count() / precision;
-		return idx;
-	}
-
-	return 0;
-}
 
 CHistPriceBarGen::CHistPriceBarGen()
 	: m_precision(0)
@@ -97,34 +47,27 @@ CHistPriceBarGen::~CHistPriceBarGen()
 	RaiseBarFinalizedEvent();
 }
 
-
 void CHistPriceBarGen::Init(const string& symbol, int precision)
 {
 	m_symbol = symbol;
 	m_precision = precision;
 
-	bool isIF = isSymbolIF(symbol);
-	if (isIF)
+	vector<string> marketSectionStartVec, marketSectionEndVec;
+	int sectionCount = GetMarketSectionTimePoints(symbol, marketSectionStartVec, marketSectionEndVec);
+
+	for (int i = 0; i < sectionCount; ++i)
 	{
-		TradingTimeSpanPtr if_span_1(new CHistTradingTimeSpan(IF_START_1, IF_END_1, precision));
-		m_vecTimeSpan.push_back(if_span_1);
-		TradingTimeSpanPtr if_span_2(new CHistTradingTimeSpan(IF_START_2, IF_END_2, precision));
-		m_vecTimeSpan.push_back(if_span_2);
-		if_span_2->SetOffset(if_span_1->EndIndex());
-		m_barCount = if_span_2->EndIndex();
+		TradingTimeSpanPtr span(new CHistTradingTimeSpan(
+			marketSectionStartVec[i].c_str(), marketSectionEndVec[i].c_str(), precision));
+		m_vecTimeSpan.push_back(span);
+
+		if(i > 0)
+		{
+			span->SetOffset(m_vecTimeSpan[i - 1]->EndIndex());
+		}
 	}
-	else
-	{
-		TradingTimeSpanPtr non_if_span_1(new CHistTradingTimeSpan(NON_IF_START_1, NON_IF_END_1, precision));
-		m_vecTimeSpan.push_back(non_if_span_1);
-		TradingTimeSpanPtr non_if_span_2(new CHistTradingTimeSpan(NON_IF_START_2, NON_IF_END_2, precision));
-		m_vecTimeSpan.push_back(non_if_span_2);
-		non_if_span_2->SetOffset(non_if_span_1->EndIndex());
-		TradingTimeSpanPtr non_if_span_3(new CHistTradingTimeSpan(NON_IF_START_3, NON_IF_END_3, precision));
-		m_vecTimeSpan.push_back(non_if_span_3);
-		non_if_span_3->SetOffset(non_if_span_2->EndIndex());
-		m_barCount = non_if_span_3->EndIndex();
-	}
+
+	m_barCount = m_vecTimeSpan[sectionCount - 1]->EndIndex();
 }
 
 void CHistPriceBarGen::Calculate(CQuote* pQuote)
