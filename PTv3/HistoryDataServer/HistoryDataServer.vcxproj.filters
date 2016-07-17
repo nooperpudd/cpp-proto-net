@@ -75,6 +75,15 @@
     <ClInclude Include="HistTradingTimeSpan.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MarketDataUdp.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="QuoteAgentCallback.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UdpListener.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -132,6 +141,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="HistTradingTimeSpan.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MarketDataUdp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

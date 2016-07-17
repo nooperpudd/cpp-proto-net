@@ -2,6 +2,11 @@
 #include "HistQuoteRepositry.h"
 #include "LogFactory.h"
 #include "HistQuoteFetcher.h"
+#ifdef UDP_QUOTE
+#include "MarketDataUdp.h"
+#else
+#include "MarketDataConnection.h"
+#endif
 
 log4cpp::Category& CHistQuoteRepositry::logger = CLogFactory::GetInstance().GetLogger("QuoteRepositry");
 

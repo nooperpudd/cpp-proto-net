@@ -47,6 +47,8 @@ private:
 	void RunThreadFunc(string address);
 	void Login();
 	void ReqSettlementInfoConfirm();
+	
+	void FakeLogin();
 
 	int RequestIDIncrement() { return ++m_iRequestID; }
 

@@ -1,7 +1,12 @@
 #pragma once
 
 #include "TradingConnection.h"
+#ifdef UDP_QUOTE
+#include "MarketDataUdp.h"
+#else
 #include "MarketDataConnection.h"
+#endif
+
 #include "HistQuoteRepositry.h"
 #include "HistTechDataRepo.h"
 #include "SymbolQuoting.h"
@@ -21,8 +26,12 @@ private:
 	void UnsubscribeQuotes();
 
 	CTradingConnection m_tradingConnection;
+#ifdef UDP_QUOTE
+	CMarketDataUdp m_marketDataConnection;
+#else
 	CMarketDataConnection m_marketDataConnection;
-
+#endif
+	
 	CHistQuoteRepositry m_quoteRepositry;
 	CHistTechDataRepo m_techDataRepositry;
 

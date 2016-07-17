@@ -59,5 +59,7 @@ private:
 	typedef vector<TradingTimeSpanPtr> TimeSpanVec;
 	typedef TimeSpanVec::iterator TimeSpanVecIter;
 	TimeSpanVec m_vecTimeSpan;
+
+	CHistTradingTimeSpan* m_currentTimeSpan;
 };
 

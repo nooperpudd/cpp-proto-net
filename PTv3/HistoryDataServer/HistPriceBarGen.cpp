@@ -37,6 +37,7 @@ CHistPriceBarGen::CHistPriceBarGen()
 	, m_high(0)
 	, m_low(0)
 	, m_close(0)
+	, m_currentTimeSpan(NULL)
 {
 }
 
@@ -103,6 +104,21 @@ void CHistPriceBarGen::Calculate(CQuote* pQuote)
 		}
 
 		RaiseBarChangeEvent(barIdx, timestamp);
+
+		if(m_currentTimeSpan != NULL)
+		{
+			// In case the last bar of current span
+			if(barIdx == m_currentTimeSpan->EndIndex() - 1)
+			{
+				if(pQuote->update_millisec() > 500)
+				{
+					// force finalize the bar
+					m_close = pQuote->last();
+					RaiseBarFinalizedEvent();
+					m_currentIdx = barIdx;
+				}
+			}
+		}
 	}
 	else if (barIdx >= m_barCount)
 	{
@@ -136,13 +152,18 @@ int CHistPriceBarGen::GetIndex(const string& quoteTime)
 {
 	boost::chrono::seconds quoteTimePoint = ParseTimeString(quoteTime);
 
-	for (TimeSpanVecIter iter = m_vecTimeSpan.begin();
-	iter != m_vecTimeSpan.end(); ++iter)
+	if(m_currentTimeSpan == NULL || !m_currentTimeSpan->InScope(quoteTimePoint))
 	{
-		if ((*iter)->InScope(quoteTimePoint))
+		for (TimeSpanVecIter iter = m_vecTimeSpan.begin();
+			iter != m_vecTimeSpan.end(); ++iter)
 		{
-			return (*iter)->GetIndex(quoteTimePoint);
+			m_currentTimeSpan = (*iter).get();
 		}
+	}
+
+	if(m_currentTimeSpan != NULL)
+	{
+		return m_currentTimeSpan->GetIndex(quoteTimePoint);
 	}
 
 	// input quote time is NOT in valid trading time

@@ -172,6 +172,10 @@ bool CTradingConnection::Login(const string& frontAddr, const string& brokerId, 
 
 		logger.info("Try to connect trade server (%s) ...", frontAddr.c_str());
 
+#ifdef UDP_QUOTE
+		logger.info("NOW FAKE Loging in TradingConnection.");
+		FakeLogin();
+#else
 		// wait for connected event
 		{
 			boost::unique_lock<boost::mutex> lock(m_mutConnecting);
@@ -224,7 +228,7 @@ bool CTradingConnection::Login(const string& frontAddr, const string& brokerId, 
 				return false;
 			}
 		}
-
+#endif
 		return true;
 	}
 	catch (std::exception& ex)
@@ -324,4 +328,17 @@ void CTradingConnection::ReqSettlementInfoConfirm()
 	int iResult = m_pUserApi->ReqSettlementInfoConfirm(&req, RequestIDIncrement());
 
 	logger.infoStream() << "--->>> [" << m_investorId << "] 请求投资者结算结果确认: " << iResult << ((iResult == 0) ? ", 成功" : ", 失败");
+}
+
+void CTradingConnection::FakeLogin()
+{
+	FRONT_ID = "123456";
+	SESSION_ID = "654321";
+
+	m_maxOrderRef = 1;
+	//string ds(pRspUserLogin->TradingDay);
+	string ds("20160710");
+	m_tradingDay = boost::gregorian::from_undelimited_string(ds);
+	string emptyStr;
+	//m_orderProcessor->OnRspUserLogin(true, emptyStr, m_maxOrderRef);
 }

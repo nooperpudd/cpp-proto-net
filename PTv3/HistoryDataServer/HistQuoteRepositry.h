@@ -1,8 +1,13 @@
 #pragma once
-#include "MarketDataConnection.h"
 #include "HistQuoteStore.h"
+#include "QuoteAgentCallback.h"
 
+#ifdef UDP_QUOTE
+class CMarketDataUdp;
+#else
 class CMarketDataConnection;
+#endif
+
 class CHistQuoteFetcher;
 
 class CHistQuoteRepositry : public CQuoteAgentCallback
@@ -11,7 +16,11 @@ public:
 	CHistQuoteRepositry();
 	~CHistQuoteRepositry();
 
+#ifdef UDP_QUOTE
+	void Init(CMarketDataUdp* pMarketDataConn, bool lazySubscribe = true)
+#else
 	void Init(CMarketDataConnection* pMarketDataConn, bool lazySubscribe = true)
+#endif
 	{
 		m_pQuoteAgent = pMarketDataConn;
 		m_lazySubscribe = lazySubscribe;
@@ -43,8 +52,12 @@ private:
 
 	QuoteStoreMap m_quoteStoreMap;
 	boost::mutex m_storeMapMutex;
-
+#ifdef UDP_QUOTE
+	CMarketDataUdp* m_pQuoteAgent;
+#else
 	CMarketDataConnection* m_pQuoteAgent;
+#endif
+	
 	bool m_lazySubscribe;
 	vector<string> m_sybmolsToSub;
 };
