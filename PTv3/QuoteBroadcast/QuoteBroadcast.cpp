@@ -73,11 +73,13 @@ int main(int argc, char* argv[])
 		while (broadcasting)
 		{
 			int eof = 0;
+			boost::chrono::steady_clock::time_point actual(expected);
 			for (vector<TickDataReaderPtr>::iterator iter = tickDataReaders.begin();
 				iter != tickDataReaders.end(); ++iter)
 			{
 				CThostFtdcDepthMarketDataField* pMktDataField = NULL;
-				READ_TICK_STATUS status = (*iter)->Read(expected, &pMktDataField);
+				
+				READ_TICK_STATUS status = (*iter)->Read(expected, &pMktDataField, actual);
 				if (status == DATA_READY)
 				{
 					send_buf.fill('\0');
@@ -99,7 +101,9 @@ int main(int argc, char* argv[])
 			if (eof == tickDataReaders.size())
 				break;
 
-			expected += boost::chrono::milliseconds(500);
+			expected = actual + boost::chrono::milliseconds(500);
+			if (expected.time_since_epoch() >= boost::chrono::hours(24))
+				expected = boost::chrono::steady_clock::time_point(boost::chrono::seconds::zero());
 			boost::this_thread::sleep(interval);
 		}
 

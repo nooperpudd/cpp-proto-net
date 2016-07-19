@@ -23,7 +23,7 @@ public:
 
 	bool Open(const string& sybmol, const string& date);
 	const char* Symbol(){ return mktDataField.InstrumentID; }
-	READ_TICK_STATUS Read(boost::chrono::steady_clock::time_point expected, CThostFtdcDepthMarketDataField** pOutMarketData);
+	READ_TICK_STATUS Read(boost::chrono::steady_clock::time_point expected, CThostFtdcDepthMarketDataField** pOutMarketData, boost::chrono::steady_clock::time_point& actual);
 
 private:
 

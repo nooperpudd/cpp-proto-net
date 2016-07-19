@@ -68,7 +68,7 @@ bool CTickDataReader::Open(const string& sybmol, const string& date)
 	return m_tickDataFile.good();
 }
 
-READ_TICK_STATUS CTickDataReader::Read(boost::chrono::steady_clock::time_point expected, CThostFtdcDepthMarketDataField** pOutMarketData)
+READ_TICK_STATUS CTickDataReader::Read(boost::chrono::steady_clock::time_point expected, CThostFtdcDepthMarketDataField** pOutMarketData, boost::chrono::steady_clock::time_point& actual)
 {
 	if (m_tickDataFile.good())
 	{
@@ -104,7 +104,13 @@ READ_TICK_STATUS CTickDataReader::Read(boost::chrono::steady_clock::time_point e
 			m_tpTimestamp = GetTimepointFromString(timestamp, millisec);
 			diff = boost::chrono::duration_cast < boost::chrono::milliseconds >
 				(m_tpTimestamp - expected);
-			diff_ms = diff.count();
+			if (diff > -boost::chrono::hours(23))
+				diff_ms = diff.count();
+			else
+			{
+				expected = m_tpTimestamp;
+				diff_ms = 0;
+			}
 		}
 
 		if (parseSucc)
@@ -126,6 +132,7 @@ READ_TICK_STATUS CTickDataReader::Read(boost::chrono::steady_clock::time_point e
 			{
 				mktDataField.UpdateMillisec = GetMilliSecPartOfTimepoint(expected);
 				*pOutMarketData = &mktDataField;
+				actual = m_tpTimestamp;
 				m_tpTimestamp = boost::chrono::steady_clock::time_point();	// reset
 				return DATA_READY;
 			}
