@@ -86,6 +86,15 @@ void CHistPriceBarGen::Calculate(CQuote* pQuote)
 			m_currentIdx = barIdx;
 			m_currentTimestamp = timestamp;
 			m_close = m_low = m_high = m_open = last;
+
+			if (m_currentTimeSpan != NULL)
+			{
+				// In case the last bar of current span
+				if (barIdx == m_currentTimeSpan->EndIndex() - 1)
+				{
+					boost::thread(&CHistPriceBarGen::TriggerFinalizeLastBar, this);
+				}
+			}
 		}
 		else if (barIdx == m_currentIdx)
 		{
@@ -104,30 +113,11 @@ void CHistPriceBarGen::Calculate(CQuote* pQuote)
 		}
 
 		RaiseBarChangeEvent(barIdx, timestamp);
-
-		if(m_currentTimeSpan != NULL)
-		{
-			// In case the last bar of current span
-			if(barIdx == m_currentTimeSpan->EndIndex() - 1)
-			{
-				if(pQuote->update_millisec() > 500)
-				{
-					// force finalize the bar
-					m_close = pQuote->last();
-					RaiseBarFinalizedEvent();
-					m_currentIdx = barIdx;
-				}
-			}
-		}
 	}
 	else if (barIdx >= m_barCount)
 	{
-		if (barIdx > m_currentIdx)
-		{
-			m_close = pQuote->last();
-			RaiseBarFinalizedEvent();
-			m_currentIdx = barIdx;
-		}
+		logger.warn("Encounter weird quote Idx %d (%s,%d %.2f). Ignored", 
+			barIdx, pQuote->update_time().c_str(), pQuote->update_millisec(), pQuote->last());
 	}
 }
 
@@ -135,13 +125,18 @@ int CHistPriceBarGen::GetIndex(const string& quoteTime, string* timestamp)
 {
 	boost::chrono::seconds quoteTimePoint = ParseTimeString(quoteTime);
 
-	for (TimeSpanVecIter iter = m_vecTimeSpan.begin();
-	iter != m_vecTimeSpan.end(); ++iter)
+	if (m_currentTimeSpan == NULL || !m_currentTimeSpan->InScope(quoteTimePoint))
 	{
-		if ((*iter)->InScope(quoteTimePoint))
+		for (TimeSpanVecIter iter = m_vecTimeSpan.begin();
+		iter != m_vecTimeSpan.end(); ++iter)
 		{
-			return (*iter)->GetIndex(quoteTimePoint, timestamp);
+			m_currentTimeSpan = (*iter).get();
 		}
+	}
+
+	if (m_currentTimeSpan != NULL)
+	{
+		return m_currentTimeSpan->GetIndex(quoteTimePoint, timestamp);
 	}
 
 	// input quote time is NOT in valid trading time
@@ -176,4 +171,14 @@ void CHistPriceBarGen::RaiseBarFinalizedEvent() const
 	{
 		m_onBarFinalized(m_currentIdx, m_open, m_high, m_low, m_close, m_currentTimestamp);
 	}
+}
+
+void CHistPriceBarGen::TriggerFinalizeLastBar() const
+{
+	int secondsToWait = m_precision + 60;
+	logger.info("Wait %d seconds to finialize the last bar", secondsToWait);
+	// Sleep for one more 1 mintues
+	boost::this_thread::sleep_for(boost::chrono::seconds(secondsToWait));
+	logger.info("Trigger to finialize the last bar.");
+	RaiseBarFinalizedEvent();
 }

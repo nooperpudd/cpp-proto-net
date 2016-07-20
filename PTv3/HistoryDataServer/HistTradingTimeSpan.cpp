@@ -94,11 +94,13 @@ int GetMarketSectionTimePoints(const string& symbol, vector<string>& startTimePo
 	else if(boost::starts_with(symbol, "rb")) // rb1610
 	{
 		startTimePoints.push_back(COMMOD_START_1);
+		startTimePoints.push_back(COMMOD_START_2);
 		startTimePoints.push_back(COMMOD_START_3);
 		startTimePoints.push_back(COMMOD_START_4);
 		startTimePoints.push_back(COMMOD_START_5);
 
-		endTimePoints.push_back("23:00:00");
+		endTimePoints.push_back(COMMOD_END_1);
+		endTimePoints.push_back(COMMOD_END_2);
 		endTimePoints.push_back(COMMOD_END_3);
 		endTimePoints.push_back(COMMOD_END_4);
 		endTimePoints.push_back(COMMOD_END_5);

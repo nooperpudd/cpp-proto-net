@@ -40,6 +40,7 @@ private:
 	}
 
 	void RaiseBarFinalizedEvent() const;
+	void TriggerFinalizeLastBar() const;
 
 	string m_symbol;
 	int m_precision;
