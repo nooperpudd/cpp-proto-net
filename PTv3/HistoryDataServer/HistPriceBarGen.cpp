@@ -90,7 +90,7 @@ void CHistPriceBarGen::Calculate(CQuote* pQuote)
 			if (m_currentTimeSpan != NULL)
 			{
 				// In case the last bar of current span
-				if (barIdx == m_currentTimeSpan->EndIndex() - 1)
+				if (barIdx == m_currentTimeSpan->EndIndex() - 1 && m_currentTimeSpan->TrueEnd())
 				{
 					boost::thread(&CHistPriceBarGen::TriggerFinalizeLastBar, this);
 				}
@@ -128,9 +128,13 @@ int CHistPriceBarGen::GetIndex(const string& quoteTime, string* timestamp)
 	if (m_currentTimeSpan == NULL || !m_currentTimeSpan->InScope(quoteTimePoint))
 	{
 		for (TimeSpanVecIter iter = m_vecTimeSpan.begin();
-		iter != m_vecTimeSpan.end(); ++iter)
+			iter != m_vecTimeSpan.end(); ++iter)
 		{
-			m_currentTimeSpan = (*iter).get();
+			if((*iter)->InScope(quoteTimePoint))
+			{
+				m_currentTimeSpan = (*iter).get();
+				break;
+			}
 		}
 	}
 
@@ -152,7 +156,11 @@ int CHistPriceBarGen::GetIndex(const string& quoteTime)
 		for (TimeSpanVecIter iter = m_vecTimeSpan.begin();
 			iter != m_vecTimeSpan.end(); ++iter)
 		{
-			m_currentTimeSpan = (*iter).get();
+			if ((*iter)->InScope(quoteTimePoint))
+			{
+				m_currentTimeSpan = (*iter).get();
+				break;
+			}
 		}
 	}
 

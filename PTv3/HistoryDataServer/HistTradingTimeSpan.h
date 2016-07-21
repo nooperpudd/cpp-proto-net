@@ -16,6 +16,9 @@ public:
 	int StartIndex() const { return m_offset; }
 	int EndIndex() const { return m_offset + m_endIndex; }
 
+	bool TrueEnd() const { return m_trueEnd; }
+	void SetTrueEnd(bool trueEnd) { m_trueEnd = trueEnd; }
+
 	bool InScope (const boost::chrono::seconds& timePoint) const
 	{
 		return timePoint >= m_Start && timePoint < m_End;
@@ -35,6 +38,8 @@ private:
 	int m_endIndex;
 	int m_precision;
 
+	static boost::chrono::hours DayHours;
+	bool m_trueEnd;
 };
 
 int GetMarketSectionTimePoints(const string& symbol, vector<string>& startTimePoints, vector<string>& endTimePoints);

@@ -55,7 +55,7 @@ void CMarketDataUdp::OnUdpDataReceived(char* pData, std::size_t nSize)
 {
 	boost::mutex::scoped_lock lock(m_mutSymbol);
 	CThostFtdcDepthMarketDataField *pDepthMarketData = reinterpret_cast<CThostFtdcDepthMarketDataField*>(pData);
-	logger.debug(boost::str(boost::format("Symbol coming %s") % pDepthMarketData->InstrumentID));
+	//logger.debug(boost::str(boost::format("Symbol coming %s") % pDepthMarketData->InstrumentID));
 	boost::unordered_set<string>::iterator iterFound = m_symbols.find(pDepthMarketData->InstrumentID);
 	if (iterFound != m_symbols.end())
 	{
