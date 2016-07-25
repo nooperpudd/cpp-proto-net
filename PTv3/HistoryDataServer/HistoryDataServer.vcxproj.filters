@@ -150,5 +150,6 @@
   <ItemGroup>
     <None Include="config.ini" />
     <None Include="hist-log4cpp.property" />
+    <None Include="Makefile" />
   </ItemGroup>
 </Project>

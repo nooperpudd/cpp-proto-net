@@ -1,5 +1,4 @@
 #pragma once
-#include "../PTStation/FakeDealer.h"
 
 class CQuote
 {

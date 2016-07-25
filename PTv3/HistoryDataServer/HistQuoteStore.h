@@ -13,7 +13,8 @@ public:
 	CHistQuoteStore(const string& symbol);
 	~CHistQuoteStore(void);
 
-	const string& Symbol(){ return m_symbol; }
+	const string& Symbol() const
+	{ return m_symbol; }
 
 	CHistQuoteFetcher* GetFetcher();
 	int ReclaimFetcher(CHistQuoteFetcher* pFetcher);
