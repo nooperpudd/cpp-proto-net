@@ -16,7 +16,7 @@ log4cpp::Category& CHistConfiguration::logger = CLogFactory::GetInstance().GetLo
 
 enum { MAX_SUB_SYMBOL_COUNT = 10 };
 
-CHistConfiguration::CHistConfiguration()
+CHistConfiguration::CHistConfiguration(): m_launchOnStart(false)
 {
 	m_symbols.resize(MAX_SUB_SYMBOL_COUNT);
 	m_timeFrames.resize(MAX_SUB_SYMBOL_COUNT);
@@ -84,7 +84,7 @@ bool CHistConfiguration::Load()
 	return false;
 }
 
-int CHistConfiguration::GetSymbolInfos(vector<boost::tuple<string, string>>& symbolTuples)
+int CHistConfiguration::GetSymbolInfos(vector<boost::tuple<string, string> >& symbolTuples)
 {
 	int count = m_symbols.size() <= m_timeFrames.size() ? m_symbols.size() : m_timeFrames.size();
 	for (int i = 0; i < count; ++i)

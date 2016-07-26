@@ -28,7 +28,7 @@ bool CHistAvatar::Start()
 
 	if(!m_tradingConnection.Login(tradingAddr, brokerId, investorId, userId, passwd))
 	{
-		logger.error("Failed to login Trading Server %s.", tradingAddr);
+		logger.error("Failed to login Trading Server %s.", tradingAddr.c_str());
 		return false;
 	}
 	logger.info("Logged IN Trading Server successfully.");
@@ -36,7 +36,7 @@ bool CHistAvatar::Start()
 	const string& marketDataAddr = pConfig->GetMarketDataSvrAddr();
 	if(!m_marketDataConnection.Login(marketDataAddr, brokerId, investorId, userId, passwd))
 	{
-		logger.error("Failed to login MarketData Server %s.", marketDataAddr);
+		logger.error("Failed to login MarketData Server %s.", marketDataAddr.c_str());
 		return false;
 	}
 	logger.info("Logged IN Market Data Server successfully.");
@@ -68,7 +68,7 @@ void CHistAvatar::Stop()
 void CHistAvatar::SubscribeQuotes()
 {
 	CHistConfiguration* pConfig = CHistConfiguration::GetInstance();
-	vector<boost::tuple<string, string>> symbolItems;
+	vector<boost::tuple<string, string> > symbolItems;
 	int count = pConfig->GetSymbolInfos(symbolItems);
 	logger.info("Got %d symbols' subscription", count);
 

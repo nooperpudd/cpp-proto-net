@@ -1,4 +1,7 @@
 #pragma once
+
+#include <boost/tuple/tuple.hpp>
+
 class CHistConfiguration
 {
 private:
@@ -38,7 +41,7 @@ public:
 	const string& GetStartTimepoints() const { return m_startTimepoints; }
 	const string& GetEndTimepoints() const { return m_endTimepoints; }
 
-	int GetSymbolInfos(vector<boost::tuple<string, string>>& symbolTuples);
+	int GetSymbolInfos(vector<boost::tuple<string, string> >& symbolTuples);
 
 private:
 	static boost::shared_ptr<CHistConfiguration> m_instance;

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HistQuoteFetcher.h"
 #include "HistQuoteStore.h"
 #include "LogFactory.h"

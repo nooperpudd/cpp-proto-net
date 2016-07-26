@@ -203,13 +203,13 @@ bool CMarketDataConnection::Login(const string& frontAddr, const string& brokerI
 
 void CMarketDataConnection::Logout()
 {
-	logger.info("%s Begin logging OUT Market Data...", m_investorId);
+	logger.info("%s Begin logging OUT Market Data...", m_investorId.c_str());
 	if (m_isWorking)
 	{
 		m_pUserApi->Release();
 		m_thQuoting.join();
 	}
-	logger.info("%s Logged OUT Market Data.", m_investorId);
+	logger.info("%s Logged OUT Market Data.", m_investorId.c_str());
 }
 
 void CMarketDataConnection::SubscribeMarketData(char** symbolArr, int symCount)
