@@ -248,13 +248,13 @@ bool CTradingConnection::Login(const string& frontAddr, const string& brokerId, 
 
 void CTradingConnection::Logout()
 {
-	logger.info("%s Begin logging OUT...", m_investorId);
+	logger.info("%s Begin logging OUT...", m_investorId.c_str());
 	if (m_isWorking)
 	{
 		m_pUserApi->Release();
 		m_thTrading.join();
 	}
-	logger.info("%s Logged OUT.", m_investorId);
+	logger.info("%s Logged OUT.", m_investorId.c_str());
 }
 
 bool CTradingConnection::IsErrorRspInfo(CThostFtdcRspInfoField* pRspInfo)

@@ -118,6 +118,12 @@ boost::chrono::system_clock::time_point CScheduler::FindNextChronoTimePointFromN
 	return nextPoint + boost::chrono::hours(24);
 }
 
+std::time_t convert_to_time_t(boost::posix_time::ptime pt)
+{
+	boost::posix_time::time_duration dur = pt - boost::posix_time::ptime(boost::gregorian::date(1970, 1, 1));
+	return std::time_t(dur.total_seconds());
+}
+
 boost::chrono::system_clock::time_point CScheduler::FindNextChronoTimePointByIndex(vector<boost::posix_time::time_duration>& durationTimePoints, int nextIdx)
 {
 	// 3. construct ptime of next time point
@@ -127,7 +133,7 @@ boost::chrono::system_clock::time_point CScheduler::FindNextChronoTimePointByInd
 		boost::date_time::local_adjustor<boost::posix_time::ptime, 8, boost::posix_time::no_dst>
 			 ::local_to_utc(nextPTime);
 	// 4. convert to chrono time_point type
-	time_t nextTTime = boost::posix_time::to_time_t(utcNextPTime);
+	time_t nextTTime = convert_to_time_t(utcNextPTime);
 	boost::chrono::system_clock::time_point expireTimePoint = boost::chrono::system_clock::from_time_t(nextTTime);
 
 	return expireTimePoint;
