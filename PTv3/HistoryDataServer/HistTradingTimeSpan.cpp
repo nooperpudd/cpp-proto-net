@@ -41,7 +41,7 @@ CHistTradingTimeSpan::CHistTradingTimeSpan(const char* timeBegin, const char* ti
 	m_Start = ParseTimeString(timeBegin);
 	m_End = ParseTimeString(timeEnd);
 
-	m_endIndex = GetIndexFromTime(m_Start, m_End, precision, false);
+	m_endIndex = GetIndexFromTime(m_Start, m_End, precision);
 
 	if (m_End == DayHours)
 		m_trueEnd = false;
@@ -75,13 +75,11 @@ int CHistTradingTimeSpan::GetIndex(const boost::chrono::seconds& timePoint, stri
 	}
 }
 
-int CHistTradingTimeSpan::GetIndexFromTime(const boost::chrono::seconds& baseTp, const boost::chrono::seconds& timePoint, int precision, bool advance1s)
+int CHistTradingTimeSpan::GetIndexFromTime(const boost::chrono::seconds& baseTp, const boost::chrono::seconds& timePoint, int precision)
 {
 	boost::chrono::seconds diff = timePoint - baseTp;
 	if (diff > boost::chrono::seconds::zero())
 	{
-		if (advance1s)
-			diff -= boost::chrono::seconds(1);
 		int idx = diff.count() / precision;
 		return idx;
 	}

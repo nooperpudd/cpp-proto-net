@@ -28,7 +28,7 @@ public:
 	// return is 0 based
 	int GetIndex(const boost::chrono::seconds& timePoint, string* outTimestamp) const;
 
-	static int GetIndexFromTime(const boost::chrono::seconds& baseTp, const boost::chrono::seconds& timePoint, int precision, bool advance1s = true);
+	static int GetIndexFromTime(const boost::chrono::seconds& baseTp, const boost::chrono::seconds& timePoint, int precision);
 	 
 private:
 
