@@ -44,10 +44,18 @@ void CScheduler::Run(const string& startTimpoints, const string& endTimepoints)
 		<< nextEndPoint << log4cpp::eol;
 	m_endTimer.expires_at(nextEndPoint);
 
+	if (!m_onBeforeWaitingHandler.empty())
+		m_onBeforeWaitingHandler(NowDuringTimePeriod(m_nextStartTimePoint, m_nextEndTimePoint), m_nextStartTimePoint);
+
 	m_startTimer.async_wait(boost::bind(&CScheduler::OnStartTimeOut, this, _1));
 	m_endTimer.async_wait(boost::bind(&CScheduler::OnEndTimeOut, this, _1));
 
 	io_service.run();
+}
+
+bool CScheduler::NowDuringTimePeriod(int startTimePoint, int endTimePoint)
+{
+	return startTimePoint == endTimePoint;
 }
 
 void CScheduler::OnStartTimeOut(const boost::system::error_code& e)

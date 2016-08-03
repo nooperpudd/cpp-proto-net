@@ -36,6 +36,12 @@ void OnEndTimeOutHandler(int endTimePointIdx)
 	pLogger->info("Done %d end time point.", endTimePointIdx + 1);
 }
 
+void BeforeWaitingHandler(bool startAtOnce, int startTimePointIndx)
+{
+	if (startAtOnce)
+		OnStartTimeOutHandler(startTimePointIndx);
+}
+
 int main(int argc, char* argv[])
 {
 	if (!CLogFactory::GetInstance().Initialize())
@@ -50,13 +56,13 @@ int main(int argc, char* argv[])
 		return -1;
 	}
 
-	OnStartTimeOutHandler(0);
-	
 	CScheduler scheduler;
 	TimeOutHandlerFunc funcOnStart(&OnStartTimeOutHandler);
 	scheduler.SetStartTimeOutHandler(funcOnStart);
 	TimeOutHandlerFunc funcOnEnd(&OnEndTimeOutHandler);
 	scheduler.SetEndTimeoutHandler(funcOnEnd);
+	BeforeWaitingHandlerFunc funcBeforeWaitng(&BeforeWaitingHandler);
+	scheduler.SetBeforeWaitingHandler(funcBeforeWaitng);
 
 	scheduler.Run(pConfig->GetStartTimepoints(), pConfig->GetEndTimepoints());
 

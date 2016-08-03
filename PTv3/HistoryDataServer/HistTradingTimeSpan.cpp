@@ -49,7 +49,7 @@ CHistTradingTimeSpan::CHistTradingTimeSpan(const char* timeBegin, const char* ti
 
 int CHistTradingTimeSpan::GetIndex(const boost::chrono::seconds& timePoint) const
 {
-	if (timePoint <= m_End)
+	if (timePoint < m_End)
 		return GetIndexFromTime(m_Start, timePoint, m_precision) + m_offset;
 	else
 		return EndIndex() - 1;
@@ -59,7 +59,7 @@ boost::chrono::hours CHistTradingTimeSpan::DayHours(24);
 
 int CHistTradingTimeSpan::GetIndex(const boost::chrono::seconds& timePoint, string* outTimestamp) const
 {
-	if (timePoint <= m_End)
+	if (timePoint < m_End)
 	{
 		int idx = GetIndexFromTime(m_Start, timePoint, m_precision);
 		boost::chrono::seconds timestampSeconds = m_Start + boost::chrono::seconds((idx + 1) * m_precision);
@@ -71,7 +71,7 @@ int CHistTradingTimeSpan::GetIndex(const boost::chrono::seconds& timePoint, stri
 	else
 	{
 		*outTimestamp = GetISOTimeString(m_End);
-		return EndIndex();
+		return EndIndex() - 1;
 	}
 }
 

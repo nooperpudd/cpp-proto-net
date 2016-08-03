@@ -21,7 +21,7 @@ public:
 
 	bool InScope (const boost::chrono::seconds& timePoint) const
 	{
-		return timePoint >= m_Start && timePoint < m_End;
+		return timePoint >= m_Start && timePoint <= m_End;
 	}
 	// return is 0 based. if incoming time point equals to m_End, regard it as last point before m_End
 	int GetIndex(const boost::chrono::seconds& timePoint) const;

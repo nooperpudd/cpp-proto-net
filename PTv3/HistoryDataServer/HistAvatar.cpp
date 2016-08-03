@@ -52,17 +52,11 @@ void CHistAvatar::Stop()
 	logger.info("Unsubscribed symbols quoting.");
 	UnsubscribeQuotes();
 
-	if(m_marketDataConnection.IsConnected())
-	{
-		m_marketDataConnection.Logout();
-		logger.info("Logged out Market Data Server.");
-	}
+	m_marketDataConnection.Logout();
+	logger.info("Logged out Market Data Server.");
 
-	if(m_tradingConnection.IsConnected())
-	{
-		m_tradingConnection.Logout();
-		logger.info("Logged out Trading Server.");
-	}
+	m_tradingConnection.Logout();
+	logger.info("Logged out Trading Server.");
 }
 
 void CHistAvatar::SubscribeQuotes()
