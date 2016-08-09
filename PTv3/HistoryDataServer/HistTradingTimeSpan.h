@@ -40,6 +40,7 @@ private:
 
 	static boost::chrono::hours DayHours;
 	bool m_trueEnd;
+	bool m_sharpAligning;
 };
 
 int GetMarketSectionTimePoints(const string& symbol, vector<string>& startTimePoints, vector<string>& endTimePoints);

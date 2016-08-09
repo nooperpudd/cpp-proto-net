@@ -7,7 +7,7 @@
 #include <boost/algorithm/string.hpp>
 
 
-log4cpp::Category& CHistPriceBarGen::logger = CLogFactory::GetInstance().GetLogger("HistDataPersistence");
+log4cpp::Category& CHistPriceBarGen::logger = CLogFactory::GetInstance().GetLogger("HistPriceBarGen");
 
 CHistPriceBarGen::CHistPriceBarGen()
 	: m_precision(0)
