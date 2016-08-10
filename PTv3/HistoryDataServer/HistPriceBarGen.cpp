@@ -104,7 +104,12 @@ void CHistPriceBarGen::Calculate(CQuote* pQuote)
 int CHistPriceBarGen::GetIndex(const string& quoteTime, string* timestamp)
 {
 	boost::chrono::seconds quoteTimePoint = ParseTimeString(quoteTime);
-
+#ifndef _DEBUG
+	boost::posix_time::ptime now(boost::posix_time::second_clock::local_time());
+	int nowTimeSeconds = now.time_of_day().total_seconds();
+	if (abs(quoteTimePoint.count() - nowTimeSeconds) > 3600)
+		return -1;	// Ignore Quote once timestamp is more than 1 hour away from now time.
+#endif
 	if (m_currentTimeSpan == NULL || !m_currentTimeSpan->InScope(quoteTimePoint))
 	{
 		for (TimeSpanVecIter iter = m_vecTimeSpan.begin();
