@@ -18,6 +18,7 @@ CHistPriceBarGen::CHistPriceBarGen()
 	, m_low(0)
 	, m_close(0)
 	, m_currentTimeSpan(NULL)
+	, m_currentTimeRange(NULL)
 {
 }
 
@@ -47,6 +48,8 @@ void CHistPriceBarGen::Init(const string& symbol, int precision)
 			span->SetOffset(m_vecTimeSpan[i - 1]->EndIndex());
 		}
 	}
+
+	m_barCount = PopulateTimeRange(precision);
 
 	m_barCount = m_vecTimeSpan[sectionCount - 1]->EndIndex();
 }
@@ -110,22 +113,24 @@ int CHistPriceBarGen::GetIndex(const string& quoteTime, string* timestamp)
 	if (abs(quoteTimePoint.count() - nowTimeSeconds) > 3600)
 		return -1;	// Ignore Quote once timestamp is more than 1 hour away from now time.
 #endif
-	if (m_currentTimeSpan == NULL || !m_currentTimeSpan->InScope(quoteTimePoint))
+
+	if (m_currentTimeRange == NULL || !m_currentTimeRange->InScope(quoteTimePoint))
 	{
-		for (TimeSpanVecIter iter = m_vecTimeSpan.begin();
-			iter != m_vecTimeSpan.end(); ++iter)
+		for (TimeRangeVecIter iter = m_vecTimeRanges.begin();
+			iter != m_vecTimeRanges.end(); ++iter)
 		{
 			if((*iter)->InScope(quoteTimePoint))
 			{
-				m_currentTimeSpan = (*iter).get();
+				m_currentTimeRange = (*iter).get();
 				break;
 			}
 		}
 	}
 
-	if (m_currentTimeSpan != NULL)
+	if (m_currentTimeRange != NULL)
 	{
-		return m_currentTimeSpan->GetIndex(quoteTimePoint, timestamp);
+		*timestamp = m_currentTimeRange->Timestamp();
+		return m_currentTimeRange->Index();
 	}
 
 	// input quote time is NOT in valid trading time
@@ -174,4 +179,65 @@ void CHistPriceBarGen::TriggerFinalizeLastBar() const
 	boost::this_thread::sleep_for(boost::chrono::seconds(secondsToWait));
 	logger.info("Trigger to finialize the last bar.");
 	RaiseBarFinalizedEvent();
+}
+
+int CHistPriceBarGen::PopulateTimeRange(int precision)
+{
+	boost::chrono::seconds step(precision);
+	int index = 0;
+	CHistTimeRange* crossingRange = NULL;
+	for (TimeSpanVecIter iter = m_vecTimeSpan.begin();
+		iter != m_vecTimeSpan.end(); ++iter)
+	{
+		boost::chrono::seconds pos = (*iter)->Start();
+		boost::chrono::seconds spanEnd = (*iter)->End();
+
+		if(crossingRange != NULL)
+		{
+			boost::chrono::seconds gap = step - (crossingRange->End() - crossingRange->Begin());
+			if(pos + gap <= spanEnd) // should be the most cases
+			{
+				boost::chrono::seconds rangeEnd = pos + gap;
+				crossingRange->SetEnd(rangeEnd);
+				pos = rangeEnd;
+				// than clear crossingRange
+				crossingRange = NULL;
+			}
+			else // occasionally be this case -- pos + gap > spanEnd
+			{
+				crossingRange->SetEnd(spanEnd);
+				continue;
+			}
+		}
+
+		while(pos < spanEnd)
+		{
+			TimeRangePtr range;
+			if(pos + step <= spanEnd)
+			{
+				boost::chrono::seconds rangeEnd = pos + step;
+				range = boost::make_shared<CHistTimeRange>(index, pos, rangeEnd);
+				
+				if(rangeEnd == spanEnd)
+				{
+					range->SetSpanEnd(true);
+				}
+			}
+			else // pos + step > spanEnd
+			{
+				range = boost::make_shared<CHistTimeRange>(index, pos, spanEnd);
+				crossingRange = range.get();
+			}
+			m_vecTimeRanges.push_back(range);
+			pos = range->End();
+			++index;
+		}
+	}
+
+	if (crossingRange != NULL)
+	{
+		crossingRange->SetSpanEnd(true);
+	}
+
+	return m_vecTimeRanges.size();
 }

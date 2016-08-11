@@ -91,6 +91,11 @@ int CHistTradingTimeSpan::GetIndexFromTime(const boost::chrono::seconds& baseTp,
 	return 0;
 }
 
+void CHistTimeRange::BuildTimeStamp(boost::chrono::seconds timeSeconds)
+{
+	m_timestamp = GetISOTimeString(timeSeconds);
+}
+
 int GetMarketSectionTimePoints(const string& symbol, vector<string>& startTimePoints, vector<string>& endTimePoints)
 {
 	if(isSymbolIF(symbol))
