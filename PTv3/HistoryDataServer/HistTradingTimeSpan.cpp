@@ -35,48 +35,11 @@ bool isSymbolIF(const string& symbol)
 		boost::starts_with(symbol, IH_PREFIX);
 }
 
-CHistTradingTimeSpan::CHistTradingTimeSpan(const char* timeBegin, const char* timeEnd, int precision) 
-	: m_offset(0), m_precision(precision), m_trueEnd(true), m_sharpAligning(true)
+CHistTradingTimeSpan::CHistTradingTimeSpan(const char* timeBegin, const char* timeEnd, bool trueEnd) 
+	: m_trueEnd(trueEnd)
 {
 	m_Start = ParseTimeString(timeBegin);
 	m_End = ParseTimeString(timeEnd);
-
-	m_endIndex = GetIndexFromTime(m_Start, m_End, precision);
-	boost::chrono::seconds span = m_End - m_Start;
-	m_sharpAligning = span.count() % precision == 0;
-	
-	if (m_End == DayHours
-		|| strcmp(timeEnd, COMMOD_END_3) == 0
-		|| strcmp(timeEnd, COMMOD_END_4) == 0)
-		m_trueEnd = false;
-}
-
-int CHistTradingTimeSpan::GetIndex(const boost::chrono::seconds& timePoint) const
-{
-	if (m_sharpAligning ? timePoint < m_End : timePoint <= m_End)
-		return GetIndexFromTime(m_Start, timePoint, m_precision) + m_offset;
-	else
-		return EndIndex() - 1;
-}
-
-boost::chrono::hours CHistTradingTimeSpan::DayHours(24);
-
-int CHistTradingTimeSpan::GetIndex(const boost::chrono::seconds& timePoint, string* outTimestamp) const
-{
-	if (m_sharpAligning ? timePoint < m_End : timePoint <= m_End)
-	{
-		int idx = GetIndexFromTime(m_Start, timePoint, m_precision);
-		boost::chrono::seconds timestampSeconds = m_Start + boost::chrono::seconds((idx + 1) * m_precision);
-		if (timestampSeconds >= DayHours)
-			timestampSeconds -= DayHours;
-		*outTimestamp = GetISOTimeString(timestampSeconds);
-		return  idx + m_offset;
-	}
-	else
-	{
-		*outTimestamp = GetISOTimeString(m_End);
-		return EndIndex() - 1;
-	}
 }
 
 int CHistTradingTimeSpan::GetIndexFromTime(const boost::chrono::seconds& baseTp, const boost::chrono::seconds& timePoint, int precision)
@@ -91,61 +54,45 @@ int CHistTradingTimeSpan::GetIndexFromTime(const boost::chrono::seconds& baseTp,
 	return 0;
 }
 
+boost::chrono::hours CHistTimeRange::DayHours(24);
+
 void CHistTimeRange::BuildTimeStamp(boost::chrono::seconds timeSeconds)
 {
+	if (timeSeconds >= DayHours)
+		timeSeconds -= DayHours;
 	m_timestamp = GetISOTimeString(timeSeconds);
 }
 
-int GetMarketSectionTimePoints(const string& symbol, vector<string>& startTimePoints, vector<string>& endTimePoints)
+int GetMarketSectionTimePoints(const string& symbol, TimeSpanVec& timeSpanVec)
 {
 	if(isSymbolIF(symbol))
 	{
-		startTimePoints.push_back(IF_START_1);
-		startTimePoints.push_back(IF_START_2);
-
-		endTimePoints.push_back(IF_END_1);
-		endTimePoints.push_back(IF_END_2);
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(IF_START_1, IF_END_1, false));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(IF_START_2, IF_END_2, true));
 	}
 	else if(boost::starts_with(symbol, "rb")) // rb1610
 	{
-		startTimePoints.push_back(COMMOD_START_1);
-		startTimePoints.push_back(COMMOD_START_3);
-		startTimePoints.push_back(COMMOD_START_4);
-		startTimePoints.push_back(COMMOD_START_5);
-
-		endTimePoints.push_back("23:00:00");
-		endTimePoints.push_back(COMMOD_END_3);
-		endTimePoints.push_back(COMMOD_END_4);
-		endTimePoints.push_back(COMMOD_END_5);
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_1, "23:00:00", true));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_3, COMMOD_END_3, false));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_4, COMMOD_END_4, false));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_5, COMMOD_END_5, true));
 	}
 	else if(boost::starts_with(symbol, "ag"))
 	{
-		startTimePoints.push_back(COMMOD_START_1);
-		startTimePoints.push_back(COMMOD_START_2);
-		startTimePoints.push_back(COMMOD_START_3);
-		startTimePoints.push_back(COMMOD_START_4);
-		startTimePoints.push_back(COMMOD_START_5);
-
-		endTimePoints.push_back(COMMOD_END_1);
-		endTimePoints.push_back("2:30:00");
-		endTimePoints.push_back(COMMOD_END_3);
-		endTimePoints.push_back(COMMOD_END_4);
-		endTimePoints.push_back(COMMOD_END_5);
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_1, COMMOD_END_1, false));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_2, "2:30:00", true));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_3, COMMOD_END_3, false));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_4, COMMOD_END_4, false));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_5, COMMOD_END_5, true));
 	}
 	else
 	{
-		startTimePoints.push_back(COMMOD_START_1);
-		startTimePoints.push_back(COMMOD_START_2);
-		startTimePoints.push_back(COMMOD_START_3);
-		startTimePoints.push_back(COMMOD_START_4);
-		startTimePoints.push_back(COMMOD_START_5);
-
-		endTimePoints.push_back(COMMOD_END_1);
-		endTimePoints.push_back(COMMOD_END_2);
-		endTimePoints.push_back(COMMOD_END_3);
-		endTimePoints.push_back(COMMOD_END_4);
-		endTimePoints.push_back(COMMOD_END_5);
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_1, COMMOD_END_1, false));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_2, COMMOD_END_2, true));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_3, COMMOD_END_3, false));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_4, COMMOD_END_4, false));
+		timeSpanVec.push_back(boost::make_shared<CHistTradingTimeSpan>(COMMOD_START_5, COMMOD_END_5, true));
 	}
 
-	return startTimePoints.size();
+	return timeSpanVec.size();
 }

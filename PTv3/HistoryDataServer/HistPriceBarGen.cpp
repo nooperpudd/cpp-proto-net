@@ -4,9 +4,6 @@
 #include "HistTimeUtil.h"
 #include "Quote.h"
 
-#include <boost/algorithm/string.hpp>
-
-
 log4cpp::Category& CHistPriceBarGen::logger = CLogFactory::GetInstance().GetLogger("HistPriceBarGen");
 
 CHistPriceBarGen::CHistPriceBarGen()
@@ -17,7 +14,6 @@ CHistPriceBarGen::CHistPriceBarGen()
 	, m_high(0)
 	, m_low(0)
 	, m_close(0)
-	, m_currentTimeSpan(NULL)
 	, m_currentTimeRange(NULL)
 {
 }
@@ -35,23 +31,10 @@ void CHistPriceBarGen::Init(const string& symbol, int precision)
 	m_precision = precision;
 
 	vector<string> marketSectionStartVec, marketSectionEndVec;
-	int sectionCount = GetMarketSectionTimePoints(symbol, marketSectionStartVec, marketSectionEndVec);
-
-	for (int i = 0; i < sectionCount; ++i)
-	{
-		TradingTimeSpanPtr span(new CHistTradingTimeSpan(
-			marketSectionStartVec[i].c_str(), marketSectionEndVec[i].c_str(), precision));
-		m_vecTimeSpan.push_back(span);
-
-		if(i > 0)
-		{
-			span->SetOffset(m_vecTimeSpan[i - 1]->EndIndex());
-		}
-	}
-
+	int sectionCount = GetMarketSectionTimePoints(symbol, m_vecTimeSpan);
+	logger.infoStream() << symbol << " has " << sectionCount << " timespans." << log4cpp::eol;
 	m_barCount = PopulateTimeRange(precision);
-
-	m_barCount = m_vecTimeSpan[sectionCount - 1]->EndIndex();
+	logger.info("%s has %d bars for precision %d seconds", symbol.c_str(), m_barCount, precision);
 }
 
 void CHistPriceBarGen::Calculate(CQuote* pQuote)
@@ -70,13 +53,10 @@ void CHistPriceBarGen::Calculate(CQuote* pQuote)
 			m_currentTimestamp = timestamp;
 			m_close = m_low = m_high = m_open = last;
 
-			if (m_currentTimeSpan != NULL)
+			if (m_currentTimeRange != NULL && m_currentTimeRange->NotifyEnd())
 			{
 				// In case the last bar of current span
-				if (barIdx == m_currentTimeSpan->EndIndex() - 1 && m_currentTimeSpan->TrueEnd())
-				{
-					boost::thread(&CHistPriceBarGen::TriggerFinalizeLastBar, this);
-				}
+				boost::thread(&CHistPriceBarGen::TriggerFinalizeLastBar, this);
 			}
 		}
 		else if (barIdx == m_currentIdx)
@@ -131,32 +111,6 @@ int CHistPriceBarGen::GetIndex(const string& quoteTime, string* timestamp)
 	{
 		*timestamp = m_currentTimeRange->Timestamp();
 		return m_currentTimeRange->Index();
-	}
-
-	// input quote time is NOT in valid trading time
-	return -1;
-}
-
-int CHistPriceBarGen::GetIndex(const string& quoteTime)
-{
-	boost::chrono::seconds quoteTimePoint = ParseTimeString(quoteTime);
-
-	if(m_currentTimeSpan == NULL || !m_currentTimeSpan->InScope(quoteTimePoint))
-	{
-		for (TimeSpanVecIter iter = m_vecTimeSpan.begin();
-			iter != m_vecTimeSpan.end(); ++iter)
-		{
-			if ((*iter)->InScope(quoteTimePoint))
-			{
-				m_currentTimeSpan = (*iter).get();
-				break;
-			}
-		}
-	}
-
-	if(m_currentTimeSpan != NULL)
-	{
-		return m_currentTimeSpan->GetIndex(quoteTimePoint);
 	}
 
 	// input quote time is NOT in valid trading time
@@ -231,6 +185,12 @@ int CHistPriceBarGen::PopulateTimeRange(int precision)
 			m_vecTimeRanges.push_back(range);
 			pos = range->End();
 			++index;
+		}
+
+		if((*iter)->TrueEnd())
+		{
+			TimeRangePtr& priorRange = m_vecTimeRanges.at(index - 2);
+			priorRange->SetNotifyEnd(true);
 		}
 	}
 

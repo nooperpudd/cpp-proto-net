@@ -57,17 +57,9 @@ private:
 	BarChangeFunc m_onBarChanged;
 	BarChangeFunc m_onBarFinalized;
 
-	typedef boost::shared_ptr<CHistTradingTimeSpan> TradingTimeSpanPtr;
-	typedef vector<TradingTimeSpanPtr> TimeSpanVec;
-	typedef TimeSpanVec::iterator TimeSpanVecIter;
 	TimeSpanVec m_vecTimeSpan;
-
-	typedef boost::shared_ptr<CHistTimeRange> TimeRangePtr;
-	typedef vector<TimeRangePtr> TimeRangeVec;
-	typedef TimeRangeVec::iterator TimeRangeVecIter;
 	TimeRangeVec m_vecTimeRanges;
-	CHistTimeRange* m_currentTimeRange;
 
-	CHistTradingTimeSpan* m_currentTimeSpan;
+	CHistTimeRange* m_currentTimeRange;
 };
 
