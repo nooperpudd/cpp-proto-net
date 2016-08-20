@@ -189,7 +189,7 @@ int CHistPriceBarGen::PopulateTimeRange(int precision)
 
 		if((*iter)->TrueEnd())
 		{
-			TimeRangePtr& priorRange = m_vecTimeRanges.at(index - 2);
+			TimeRangePtr& priorRange = m_vecTimeRanges.at(index - 1);
 			priorRange->SetNotifyEnd(true);
 		}
 	}
