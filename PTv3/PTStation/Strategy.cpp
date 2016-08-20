@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Strategy.h"
 #include "Portfolio.h"
 #include "SettingChangeTrace.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ProtobufPacket.h"
 
 ProtobufPacketImpl::ProtobufPacketImpl( int serviceId, protobuf::Message* message )

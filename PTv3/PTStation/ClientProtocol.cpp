@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ClientProtocol.h"
 #include "ProtobufProtocol.h"
 #include "ProtocolIDs.h"

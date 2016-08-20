@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HistDataReader.h"
 #include "TechStrategyDefs.h"
 #include "PriceBarGen.h"

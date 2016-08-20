@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TaCalculator.h"
 #include "OHLCRecordSet.h"
 

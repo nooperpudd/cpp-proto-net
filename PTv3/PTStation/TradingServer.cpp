@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TradingServer.h"
 #include "ProtocolIDs.h"
 #include "RequestedServices.h"

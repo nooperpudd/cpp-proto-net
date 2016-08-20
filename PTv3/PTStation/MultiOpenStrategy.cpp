@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "MultiOpenStrategy.h"
 #include "Portfolio.h"
 #include "globalmembers.h"

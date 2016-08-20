@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TechDataRepo.h"
 #include "FileOperations.h"
 #include "TechStrategyDefs.h"

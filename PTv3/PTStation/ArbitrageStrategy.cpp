@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ArbitrageStrategy.h"
 #include "ArbitrageTrigger.h"
 #include "PriceBarDataProxy.h"

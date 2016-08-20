@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "FileOperations.h"
 #ifdef USE_NET_LIBS
 #include "globalmembers.h"

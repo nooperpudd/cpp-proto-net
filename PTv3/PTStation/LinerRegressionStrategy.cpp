@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "LinerRegressionStrategy.h"
 #include "globalmembers.h"
 #include "SymbolTimeUtil.h"

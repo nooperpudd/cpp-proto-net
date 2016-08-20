@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HistSlopeTrigger.h"
 #include "DoubleCompare.h"
 #include "globalmembers.h"

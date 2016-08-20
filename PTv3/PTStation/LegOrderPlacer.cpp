@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "LegOrderPlacer.h"
 #include "PortfolioOrderPlacer.h"
 #include "globalmembers.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TechAnalyStrategy.h"
 #include "PriceBarDataSource.h"
 #include "AvatarClient.h"

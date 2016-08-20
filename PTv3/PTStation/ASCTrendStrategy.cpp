@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ASCTrendStrategy.h"
 #include "PriceBarDataProxy.h"
 #include "globalmembers.h"

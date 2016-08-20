@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "FakeDealer.h"
 #include <time.h>
 #include <stdlib.h>

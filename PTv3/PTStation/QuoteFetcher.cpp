@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "QuoteFetcher.h"
 #include "QuoteStore.h"
 #include "globalmembers.h"

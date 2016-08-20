@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ShmQuoteFeed.h"
 
 #include <boost/chrono.hpp>

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TaIndicatorSet.h"
 #include "globalmembers.h"
 #include "TechStrategyDefs.h"

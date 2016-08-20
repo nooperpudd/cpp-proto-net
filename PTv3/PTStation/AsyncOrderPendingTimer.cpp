@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "AsyncOrderPendingTimer.h"
 #include "OrderProcessor.h"
 #include "Portfolio.h"

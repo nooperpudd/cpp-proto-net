@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "IcebergStrategy.h"
 #include "globalmembers.h"
 #include "SettingChangeTrace.h"

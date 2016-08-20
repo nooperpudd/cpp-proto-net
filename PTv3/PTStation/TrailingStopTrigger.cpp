@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TrailingStopTrigger.h"
 #include "globalmembers.h"
 

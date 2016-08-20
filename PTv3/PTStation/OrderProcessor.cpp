@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "OrderProcessor.h"
 #include "globalmembers.h"
 #include "orderhelper.h"

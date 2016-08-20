@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "PriceBarDataSource.h"
 #include "HistDataReader.h"
 #include "globalmembers.h"

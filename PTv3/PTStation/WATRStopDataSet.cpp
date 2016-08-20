@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "WATRStopDataSet.h"
 #include "globalmembers.h"
 #include "OHLCRecordSet.h"

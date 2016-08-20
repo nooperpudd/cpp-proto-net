@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ScalperStrategy.h"
 #include "ScalperTrigger.h"
 #include "Portfolio.h"

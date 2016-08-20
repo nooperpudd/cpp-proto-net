@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "AvatarClient.h"
 #include "StrategyFactory.h"
 #include "ArbitrageMultiStrategy.h"

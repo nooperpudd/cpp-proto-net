@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ScalperTrigger.h"
 #include "globalmembers.h"
 #include "SettingChangeTrace.h"

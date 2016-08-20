@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "PortfolioOrderHelper.h"
 #include "BuildOrderException.h"
 #include <boost/foreach.hpp>

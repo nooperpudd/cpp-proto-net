@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "SymbolInfoRepositry.h"
 
 const char EX_SHFE[] = "SHFE";

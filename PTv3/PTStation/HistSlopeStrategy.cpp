@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "HistSlopeStrategy.h"
 #include "HistSlopeTrigger.h"
 #include "TrailingStopTrigger.h"

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "QuoteAgent.h"
 #include "globalmembers.h"
 

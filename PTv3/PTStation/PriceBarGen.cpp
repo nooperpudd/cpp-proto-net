@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "PriceBarGen.h"
 #include "TechStrategyDefs.h"
 #include "globalmembers.h"

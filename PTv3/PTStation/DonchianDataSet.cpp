@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "DonchianDataSet.h"
 #include "OHLCRecordSet.h"
 #include "globalmembers.h"

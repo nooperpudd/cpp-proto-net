@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "AvatarFactory.h"
 #include "AvatarClient.h"
 #include "AvatarMultiClient.h"

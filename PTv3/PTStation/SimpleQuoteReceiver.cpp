@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "SimpleQuoteReceiver.h"
 #ifdef _DEBUG
 #include "SymbolTimeUtil.h"

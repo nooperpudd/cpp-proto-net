@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "orderhelper.h"
 
 const char* SUBMIT_STATUS_TEXT[] = {"NOT_SUBMITTED", "INSERT_SUBMITTED", "CANCEL_SUBMITTED",

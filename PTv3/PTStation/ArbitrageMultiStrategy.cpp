@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ArbitrageMultiStrategy.h"
 #include "PriceBarDataProxy.h"
 #include "Portfolio.h"

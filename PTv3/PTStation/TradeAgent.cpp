@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TradeAgent.h"
 #include "FileOperations.h"
 #include "globalmembers.h"

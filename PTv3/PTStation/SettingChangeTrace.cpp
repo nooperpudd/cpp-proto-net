@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "SettingChangeTrace.h"
 #include "globalmembers.h"
 #include "DoubleCompare.h"

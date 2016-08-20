@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "RequestedServices.h"
 #include "AvatarClient.h"
 #include "ProtobufPacket.h"

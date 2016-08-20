@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "charsetconvert.h"
 
 #if defined(WIN32)

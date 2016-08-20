@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "OHLCRecordSet.h"
 #include "TechStrategyDefs.h"
 #include "globalmembers.h"

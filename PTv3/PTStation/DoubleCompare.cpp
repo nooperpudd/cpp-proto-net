@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "DoubleCompare.h"
 
 bool DoubleGreaterEqual( double a, double b )

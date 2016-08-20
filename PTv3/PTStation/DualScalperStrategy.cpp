@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "DualScalperStrategy.h"
 #include "ManualOrderPlacer.h"
 #include "globalmembers.h"

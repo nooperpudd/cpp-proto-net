@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "TradingTimeSpan.h"
 #include "TechStrategyDefs.h"
 #include "SymbolTimeUtil.h"

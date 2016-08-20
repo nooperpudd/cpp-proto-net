@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "Configuration.h"
 
 #include <boost/date_time.hpp>

@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "DoubleCompare.h"
 #include "Portfolio.h"
 #include "PortfolioArbitrageOrderPlacer.h"

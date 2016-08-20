@@ -1,4 +1,4 @@
-#include "StdAfx.h"
+#include "stdafx.h"
 #include "ASCTrendTrigger.h"
 #include "DoubleCompare.h"
 #include "globalmembers.h"
