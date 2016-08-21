@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\entity">
+      <UniqueIdentifier>{eabecdd2-6992-4e2f-a30c-8df24a8e3b4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\entity">
+      <UniqueIdentifier>{ef4632f7-d50f-42a9-9911-b06376dcbd37}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
@@ -24,6 +30,33 @@
     <ClInclude Include="targetver.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="STStrategyBox.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="STPriceBarDataSource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="STHistDataReader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LogFactory.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\enum.pb.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\message.pb.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\packet.pb.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\quote.pb.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
+    <ClInclude Include="entity\trade.pb.h">
+      <Filter>Header Files\entity</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -32,5 +65,35 @@
     <ClCompile Include="StrategyTester.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="STStrategyBox.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="STPriceBarDataSource.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="STHistDataReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LogFactory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="entity\enum.pb.cc">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="entity\message.pb.cc">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="entity\packet.pb.cc">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="entity\quote.pb.cc">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+    <ClCompile Include="entity\trade.pb.cc">
+      <Filter>Source Files\entity</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="strategy-log4cpp.property" />
   </ItemGroup>
 </Project>

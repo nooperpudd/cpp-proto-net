@@ -1,0 +1,12 @@
+log4cpp.rootCategory=DEBUG, consoleAppender, rollingAppender
+
+log4cpp.appender.consoleAppender=ConsoleAppender
+log4cpp.appender.consoleAppender.layout=PatternLayout
+log4cpp.appender.consoleAppender.layout.ConversionPattern=%d{%H:%M:%S,%l} %c [%p] %m%n
+
+log4cpp.appender.rollingAppender=RollingFileAppender
+log4cpp.appender.rollingAppender.fileName=./log/strategy-test.txt
+log4cpp.appender.rollingAppender.maxFileSize=1024000
+log4cpp.appender.rollingAppender.maxBackupIndex=10
+log4cpp.appender.rollingAppender.layout=PatternLayout
+log4cpp.appender.rollingAppender.layout.ConversionPattern=%d{%m-%d %H:%M:%S,%l} %c <%t> [%p] %m%n

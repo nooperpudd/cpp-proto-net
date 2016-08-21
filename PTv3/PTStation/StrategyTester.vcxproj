@@ -71,6 +71,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
+    <OutDir>$(SolutionDir)Bin\$(Configuration)\Server\</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -86,15 +87,19 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>WIN32;BOOST_ASIO_DISABLE_STD_CHRONO;BOOST_CHRONO_DONT_PROVIDES_DEPRECATED_IO_SINCE_V2_0_0;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;BOOST_ASIO_DISABLE_STD_CHRONO;BOOST_CHRONO_DONT_PROVIDES_DEPRECATED_IO_SINCE_V2_0_0;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;USE_NET_LIBS;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>D:\Dev\boost_1_60_0;D:\Dev\log4cpp\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\Dev\boost_1_60_0;D:\Dev\log4cpp\include;D:\Dev\PushFramework_2.2.1\include;D:\Dev\protobuf-2.5.0\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>D:\Dev\boost_1_60_0\stage\lib;D:\Dev\log4cpp\lib\vc140\debug</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Dev\boost_1_60_0\stage\lib;D:\Dev\log4cpp\lib\vc140\debug;D:\Dev\protobuf-2.5.0\lib_vc140\debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>log4cppD.lib;ws2_32.lib;libprotobuf.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy /y strategy-log4cpp.property $(OutDir)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -126,6 +131,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>D:\Dev\boost_1_60_0\stage\lib;D:\Dev\log4cpp\lib\vc140\release</AdditionalLibraryDirectories>
+      <AdditionalDependencies>log4cppLIB.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -149,17 +155,48 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="entity\enum.pb.h" />
+    <ClInclude Include="entity\message.pb.h" />
+    <ClInclude Include="entity\packet.pb.h" />
+    <ClInclude Include="entity\quote.pb.h" />
+    <ClInclude Include="entity\trade.pb.h" />
+    <ClInclude Include="LogFactory.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="STHistDataReader.h" />
+    <ClInclude Include="STPriceBarDataSource.h" />
+    <ClInclude Include="STStrategyBox.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="entity\enum.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="entity\message.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="entity\packet.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="entity\quote.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="entity\trade.pb.cc">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="LogFactory.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="STHistDataReader.cpp" />
+    <ClCompile Include="STPriceBarDataSource.cpp" />
     <ClCompile Include="StrategyTester.cpp" />
+    <ClCompile Include="STStrategyBox.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="strategy-log4cpp.property" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
