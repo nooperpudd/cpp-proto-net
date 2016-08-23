@@ -72,6 +72,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
     <OutDir>$(SolutionDir)Bin\$(Configuration)\Server\</OutDir>
+    <IntDir>$(Configuration)\Tester\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -161,9 +162,11 @@
     <ClInclude Include="entity\quote.pb.h" />
     <ClInclude Include="entity\trade.pb.h" />
     <ClInclude Include="LogFactory.h" />
+    <ClInclude Include="MATrendStrategyBox.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="STHistDataReader.h" />
     <ClInclude Include="STPriceBarDataSource.h" />
+    <ClInclude Include="StrategyOperation.h" />
     <ClInclude Include="STStrategyBox.h" />
     <ClInclude Include="targetver.h" />
   </ItemGroup>
@@ -184,6 +187,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">NotUsing</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="LogFactory.cpp" />
+    <ClCompile Include="MATrendStrategyBox.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

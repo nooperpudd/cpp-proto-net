@@ -1,8 +1,10 @@
 #include "stdafx.h"
 #include "STStrategyBox.h"
+#include "StrategyOperation.h"
 
 
-CSTStrategyBox::CSTStrategyBox()
+CSTStrategyBox::CSTStrategyBox(CStrategyOperation* pStrategyOperation)
+	: m_pStrategyOperation(pStrategyOperation)
 {
 }
 
@@ -27,4 +29,21 @@ void CSTStrategyBox::Apply(const entity::StrategyItem& strategyItem)
 		}
 
 	}
+}
+
+void CSTStrategyBox::Test(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
+{
+	OnTest(pQuote);
+}
+
+void CSTStrategyBox::OpenPostion(const string& symbol, double price, int vol, const string& timestamp) const
+{
+	if (m_pStrategyOperation != NULL)
+		m_pStrategyOperation->OpenPosition(symbol, price, vol, timestamp);
+}
+
+void CSTStrategyBox::ClosePostion(const string& symbol, double price, int vol, const string& timestamp) const
+{
+	if (m_pStrategyOperation != NULL)
+		m_pStrategyOperation->ClosePosition(symbol, price, vol, timestamp);
 }
