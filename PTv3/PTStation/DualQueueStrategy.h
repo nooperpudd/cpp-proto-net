@@ -37,6 +37,9 @@ public:
 	bool IsStop(entity::Quote * pQuote);
 
 	void CancelPendingAndClosePosition(entity::Quote * pQuote);
+    void CancelPendingOpenOrder();
+    void HandlePendingCloseOrder(boost::chrono::steady_clock::time_point& timestamp, entity::Quote * pQuote);
+
 
 private:
 	int m_levelId;
@@ -86,7 +89,8 @@ private:
 	entity::PosiDirectionType DecideOpenDirection(entity::Quote * pQuote);
 	bool EnsureAllPlacerStop(entity::Quote * pQuote);
 	CLevelOrderPlacer* GetReadyOrderPlacer();
-	bool IfLevelExists(entity::Quote* pQuote);
+	bool IfLevelExists(double comparingPx);
+    void HandlePendingCloseOrder(boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote);
 
 	double m_lastAsk;
 	double m_lastBid;
@@ -118,5 +122,7 @@ private:
 	queue<int> m_readyQueue;
 
 	bool m_stopping;
+    bool m_orderQueued;
 };
+
 
