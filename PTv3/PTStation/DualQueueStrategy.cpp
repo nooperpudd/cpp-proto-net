@@ -5,7 +5,6 @@
 #include "Portfolio.h"
 #include "DoubleCompare.h"
 #include "TechAnalyStrategy.h"
-#include "PortfolioArbitrageOrderPlacer.h"
 #include "SymbolTimeUtil.h"
 
 void PrintQuote(entity::Quote* pQuote)
@@ -17,6 +16,7 @@ void PrintQuote(entity::Quote* pQuote)
 
 CLevelOrderPlacer::CLevelOrderPlacer(int lvlId, CPortfolioQueueOrderPlacer* pOrderPlacer)
 	: m_levelId(lvlId)
+	, m_levelPx(0)
 	, m_orderPlacer(pOrderPlacer)
 	, m_status(DQ_UNOPENED)
 {
@@ -73,6 +73,7 @@ CDualQueueStrategy::CDualQueueStrategy()
 	: m_priceTick(0)
 	, m_stableTickThreshold(6)
 	, m_levelsNum(4)
+	, m_profitCount(0)
 	, m_stableMinutesThreshold(5)
 	, m_openThresholdTimes(2)
 	, m_latestHigh(-9999)
@@ -171,8 +172,9 @@ void CDualQueueStrategy::Stop()
 void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, boost::chrono::steady_clock::time_point & timestamp)
 {
 	boost::mutex::scoped_lock l(m_mut);
-
-	if (pQuote->ask() > 0 && pQuote->bid() > 0)
+	double ask = pQuote->ask();
+	double bid = pQuote->bid();
+	if ( ask > 0 && bid > 0)
 	{
 		
 		if (IsRunning() && !IsSuspending())
@@ -188,8 +190,6 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 			}
 			else
 			{
-                CalculateContext(pQuote);
-
                 if(!m_orderQueued)
                 {
                     // If orders are not queued at levels, send orders
@@ -200,7 +200,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                         CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
                         if(lvlOrdPlacer != NULL)
                         {
-                            OpenPosition(lvlOrdPlacer, entity::LONG, pQuote->bid() - (i * m_priceTick), timestamp, false);
+                            OpenPosition(lvlOrdPlacer, entity::LONG, pQuote->bid() - (i * m_priceTick), timestamp, pQuote);
                         }
                     }
 
@@ -210,7 +210,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                         CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
                         if(lvlOrdPlacer != NULL)
                         {
-                            OpenPosition(lvlOrdPlacer, entity::SHORT, pQuote->ask() + (i * m_priceTick), timestamp, false);
+                            OpenPosition(lvlOrdPlacer, entity::SHORT, pQuote->ask() + (i * m_priceTick), timestamp, pQuote);
                         }
                     }
                 }
@@ -220,13 +220,13 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                     HandlePendingCloseOrder(timestamp, pQuote);
 
                     // Shift queued orders up/down
-                    if(m_bid > m_lastBid) // bid is going up
+                    if(bid > m_lastBid) // bid is going up
                     {
                         // find out the lowest buy order
-                        double buyPx = m_bid;
+                        double buyPx = bid;
                         while(buyPx > m_lastBid + 0.1)
                         {
-                            CLevelOrderPlacer* lowestOrdPlacer = FindLowestOrderPlacer(m_bid - (m_levelsNum * m_priceTick));
+                            CLevelOrderPlacer* lowestOrdPlacer = FindLowestOrderPlacer(bid - (m_levelsNum * m_priceTick));
                             if(lowestOrdPlacer != NULL)
                             {
                                 // Cancel Order and replace at buyPx
@@ -235,7 +235,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                             buyPx -= m_priceTick;
                         }
 
-                        double sellPx = m_ask;
+                        double sellPx = ask;
                         while(sellPx > m_lastAsk + 0.1)
                         {
                             if(!IfLevelExists(sellPx))
@@ -243,20 +243,20 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                                 CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
                                 if(lvlOrdPlacer != NULL)
                                 {
-                                    OpenPosition(lvlOrdPlacer, entity::SHORT, sellPx, timestamp, false);
+                                    OpenPosition(lvlOrdPlacer, entity::SHORT, sellPx, timestamp, pQuote);
                                 }
                             }
                             sellPx -= m_priceTick;
                         } 
                     }
 
-                    if(m_ask < m_lastAsk)
+                    if(ask < m_lastAsk)
                     {
                         // find out the highest buy order
-                        double sellPx = m_ask;
+                        double sellPx = ask;
                         while(sellPx < m_lastAsk - 0.1)
                         {
-                            CLevelOrderPlacer* highestOrdPlacer = FindHighestOrderPlacer(m_ask + (m_levelsNum * m_priceTick));
+                            CLevelOrderPlacer* highestOrdPlacer = FindHighestOrderPlacer(ask + (m_levelsNum * m_priceTick));
                             if(highestOrdPlacer != NULL)
                             {
                                 // Cancel Order and replace at buyPx
@@ -265,7 +265,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                             sellPx += m_priceTick;
                         }
 
-                        double buyPx = m_bid;
+                        double buyPx = bid;
                         while(buyPx < m_lastBid - 0.1)
                         {
                             if(!IfLevelExists(buyPx))
@@ -273,13 +273,16 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                                 CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
                                 if(lvlOrdPlacer != NULL)
                                 {
-                                    OpenPosition(lvlOrdPlacer, entity::LONG, buyPx, timestamp, false);
+                                    OpenPosition(lvlOrdPlacer, entity::LONG, buyPx, timestamp, pQuote);
                                 }
                             }
                             buyPx += m_priceTick;
                         } 
                     }
                 }
+
+				// Save lastAsk and lastBid
+				CalculateContext(pQuote);
 			}
 		}
 
@@ -357,31 +360,39 @@ void CDualQueueStrategy::GetStrategyUpdate(entity::PortfolioUpdateItem * pPortfU
 }
 
 
-void CDualQueueStrategy::OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::PosiDirectionType direction, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, bool forceOpening)
+void CDualQueueStrategy::OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::PosiDirectionType direction, double openPx, boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote)
 {
 	if (direction > entity::NET)
 	{
 		double lmtPrice[2];
 		if (direction == entity::LONG)
 		{
-			lmtPrice[0] = pQuote->bid();
-			lmtPrice[1] = pQuote->ask();
+			lmtPrice[0] = openPx;
+			lmtPrice[1] = openPx + m_profitCount * m_priceTick;
 		}
 		else if (direction == entity::SHORT)
 		{
-			lmtPrice[0] = pQuote->ask();
-			lmtPrice[1] = pQuote->bid();
+			lmtPrice[0] = openPx;
+			lmtPrice[1] = openPx - m_profitCount * m_priceTick;
 		}
 		
-		LOG_DEBUG(logger, boost::str(boost::format("Double Queue - %s Open position @ %.2f (%s)")
-			% GetPosiDirectionText(m_direction) % lmtPrice[0] % pQuote->update_time()));
+		if(pQuote != NULL)
+		{
+			LOG_DEBUG(logger, boost::str(boost::format("Double Queue - %s Open position @ %.2f (%s)")
+				% GetPosiDirectionText(direction) % lmtPrice[0] % pQuote->update_time()));
+		}
+		else
+		{
+			LOG_DEBUG(logger, boost::str(boost::format("Double Queue - %s Open position @ %.2f (Replace Order)")
+				% GetPosiDirectionText(direction) % lmtPrice[0]));
+		}
 
-		string openComment = boost::str(boost::format("ÅÅ¶Ó %s ¿ª²Ö @ %.2f") % GetPosiDirectionText(direction) % lmtPrice[0]);
+		string openComment = boost::str(boost::format("排队 %s 开仓 @ %.2f") % GetPosiDirectionText(direction) % lmtPrice[0]);
 
-		pLevelPlacer->SetLevelPx(pQuote->bid());
+		pLevelPlacer->SetLevelPx(openPx);
 		pLevelPlacer->GetOrderPlacer()->SetMlOrderStatus(openComment);
 		pLevelPlacer->SetStatus(DQ_IS_OPENING);
-		pLevelPlacer->GetOrderPlacer()->QueueOrder(m_direction, lmtPrice[0], lmtPrice[1], timestamp);
+		pLevelPlacer->GetOrderPlacer()->QueueOrder(direction, lmtPrice[0], lmtPrice[1], timestamp);
 		ResetForceOpen();
 	}
 }
@@ -422,12 +433,54 @@ void CDualQueueStrategy::OnLegCanceled(int sendingIdx, const string & symbol, tr
 {
 	boost::mutex::scoped_lock l(m_mutLevels);
 
-	if(m_stopping)
+	if(execId > 0)
 	{
 		DQ_STATUS status = DQ_UNKNOWN;
 		if (offset == trade::OF_OPEN && sendingIdx == 0)
 		{
 			status = DQ_UNOPENED;
+
+			if(!m_stopping)
+			{
+				boost::chrono::steady_clock::time_point nowTime;
+				// Resend the order at position near ask/bid
+				if(direction == trade::BUY)
+				{
+					double buyPx = m_lastBid - m_priceTick;
+					while (IfLevelExists(buyPx))
+						buyPx -= m_priceTick;
+					if(buyPx > 0) // still a valid price
+					{
+						boost::unordered_map<int, LevelOrderPlacerPtr>::iterator iter = m_levelOrderPlacers.find(execId);
+						if (iter != m_levelOrderPlacers.end())
+						{
+							CLevelOrderPlacer* lvlOrdPlacer = (iter->second).get();
+							if (lvlOrdPlacer != NULL)
+							{
+								OpenPosition(lvlOrdPlacer, entity::LONG, buyPx, nowTime, NULL);
+							}
+						}
+					}
+				}
+				else if(direction == trade::SELL)
+				{
+					double sellPx = m_lastAsk + m_priceTick;
+					while (IfLevelExists(sellPx))
+						sellPx += m_priceTick;
+					if (sellPx > 0) // still a valid price
+					{
+						boost::unordered_map<int, LevelOrderPlacerPtr>::iterator iter = m_levelOrderPlacers.find(execId);
+						if (iter != m_levelOrderPlacers.end())
+						{
+							CLevelOrderPlacer* lvlOrdPlacer = (iter->second).get();
+							if (lvlOrdPlacer != NULL)
+							{
+								OpenPosition(lvlOrdPlacer, entity::SHORT, sellPx, nowTime, NULL);
+							}
+						}
+					}
+				}
+			}
 		}
 		else if ((offset == trade::OF_CLOSE || offset == trade::OF_CLOSE_TODAY) && sendingIdx == 1)
 		{

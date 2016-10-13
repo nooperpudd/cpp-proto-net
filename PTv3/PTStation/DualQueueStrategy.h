@@ -73,7 +73,7 @@ public:
 
 protected:
 
-	void OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::PosiDirectionType direction, entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp, bool forceOpening);
+	void OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::PosiDirectionType direction, double openPx, boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote);
 	
 	CPortfolioOrderPlacer* CreateOrderPlacer();
 
@@ -91,7 +91,8 @@ private:
 	CLevelOrderPlacer* GetReadyOrderPlacer();
 	bool IfLevelExists(double comparingPx);
     void HandlePendingCloseOrder(boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote);
-
+	CLevelOrderPlacer* FindLowestOrderPlacer(double lowestPx);
+	CLevelOrderPlacer* FindHighestOrderPlacer(double highestPx);
 	double m_lastAsk;
 	double m_lastBid;
 	int m_stableQuoteCount;
@@ -106,6 +107,7 @@ private:
 	int m_minWorkingSize;
 	entity::PosiDirectionType m_direction;
 	int m_levelsNum;
+	int m_profitCount;
 	double m_openThresholdTimes;
 	int m_stableMinutesThreshold;
 	boost::chrono::minutes m_stableMinutes;
