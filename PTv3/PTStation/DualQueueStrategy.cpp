@@ -7,6 +7,8 @@
 #include "TechAnalyStrategy.h"
 #include "SymbolTimeUtil.h"
 
+#include <sstream>
+
 void PrintQuote(entity::Quote* pQuote)
 {
 	string quoteTxt = boost::str(boost::format("Display Quote: A:%.2f(%d), B:%.2f(%d)")
@@ -19,6 +21,7 @@ CLevelOrderPlacer::CLevelOrderPlacer(int lvlId, CPortfolioQueueOrderPlacer* pOrd
 	, m_levelPx(0)
 	, m_orderPlacer(pOrderPlacer)
 	, m_status(DQ_UNOPENED)
+	, m_direction(entity::NET)
 {
 }
 
@@ -67,6 +70,11 @@ void CLevelOrderPlacer::HandlePendingCloseOrder(boost::chrono::steady_clock::tim
 
     if (queueOrderPlacer->IsClosing())
 		queueOrderPlacer->OnQuoteReceived(timestamp, pQuote);
+}
+
+void CLevelOrderPlacer::GetStatus(string* status)
+{
+	*status = boost::str(boost::format("{id:%d,px:%.2f,l/s:%s,status:%d}") % m_levelId % m_levelPx % m_direction % m_status );
 }
 
 CDualQueueStrategy::CDualQueueStrategy()
@@ -356,7 +364,28 @@ void CDualQueueStrategy::GetStrategyUpdate(entity::PortfolioUpdateItem * pPortfU
 {
 	CStrategy::GetStrategyUpdate(pPortfUpdateItem);
 	pPortfUpdateItem->set_dq_stablequote(m_stableQuote);
-	//pPortfUpdateItem->set_dq_status(static_cast<entity::LegStatus>(m_status.load()));
+	string dqStatus;
+	GetLevelOrderPlacerStatus(&dqStatus);
+	pPortfUpdateItem->set_dq_status(dqStatus);
+}
+
+void CDualQueueStrategy::GetLevelOrderPlacerStatus(string* outStatus)
+{
+	std::ostringstream statusStream("[");
+
+	for (LevelOrderPlacersIter iter = m_levelOrderPlacers.begin(); iter != m_levelOrderPlacers.end(); ++iter)
+	{
+		if(iter != m_levelOrderPlacers.begin())
+			statusStream << ",";
+
+		string lvlStatus;
+		iter->second->GetStatus(*lvlStatus);
+		statusStream << lvlStatus;
+	}
+
+	statusStream << "]";
+
+	*outStatus = statusStream.str();
 }
 
 
@@ -364,6 +393,8 @@ void CDualQueueStrategy::OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::P
 {
 	if (direction > entity::NET)
 	{
+		pLevelPlacer->SetDirection(direction);
+
 		double lmtPrice[2];
 		if (direction == entity::LONG)
 		{
