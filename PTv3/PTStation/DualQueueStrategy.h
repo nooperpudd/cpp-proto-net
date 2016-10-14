@@ -31,6 +31,9 @@ public:
 
 	DQ_STATUS GetStatus() { return m_status; }
 
+	void SetDirection(entity::PosiDirectionType direction) { m_direction = direction; }
+	entity::PosiDirectionType GetDirection() { return m_direction; }
+
 	void SetLevelPx(double px) { m_levelPx = px; }
 	double GetLevelPx() { return m_levelPx; }
 
@@ -39,13 +42,14 @@ public:
 	void CancelPendingAndClosePosition(entity::Quote * pQuote);
     void CancelPendingOpenOrder();
     void HandlePendingCloseOrder(boost::chrono::steady_clock::time_point& timestamp, entity::Quote * pQuote);
-
+	void GetStatus(string* status);
 
 private:
 	int m_levelId;
 	double m_levelPx;
 	OrderPlacerPtr m_orderPlacer;
 	boost::atomic<DQ_STATUS> m_status;
+	entity::PosiDirectionType m_direction;
 };
 
 typedef boost::shared_ptr<CLevelOrderPlacer> LevelOrderPlacerPtr;
@@ -83,7 +87,7 @@ protected:
 private:
 	void OnStrategyError(CPortfolio * portf, const string & errorMsg) const;
 	bool IfQuotingStable(entity::Quote* pQuote);
-
+	void GetLevelOrderPlacerStatus(string* outStatus);
 	void CalculateContext(entity::Quote* pQuote);
 	bool OperatingConditionCheck(entity::Quote * pQuote);
 	entity::PosiDirectionType DecideOpenDirection(entity::Quote * pQuote);
