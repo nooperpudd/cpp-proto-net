@@ -379,7 +379,7 @@ void CDualQueueStrategy::GetLevelOrderPlacerStatus(string* outStatus)
 			statusStream << ",";
 
 		string lvlStatus;
-		iter->second->GetStatus(*lvlStatus);
+		iter->second->GetStatus(&lvlStatus);
 		statusStream << lvlStatus;
 	}
 
@@ -418,7 +418,7 @@ void CDualQueueStrategy::OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::P
 				% GetPosiDirectionText(direction) % lmtPrice[0]));
 		}
 
-		string openComment = boost::str(boost::format("æŽ’é˜Ÿ %s å¼€ä»“ @ %.2f") % GetPosiDirectionText(direction) % lmtPrice[0]);
+		string openComment = boost::str(boost::format("ÅÅ¶Ó %s ¿ª²Ö @ %.2f") % GetPosiDirectionText(direction) % lmtPrice[0]);
 
 		pLevelPlacer->SetLevelPx(openPx);
 		pLevelPlacer->GetOrderPlacer()->SetMlOrderStatus(openComment);

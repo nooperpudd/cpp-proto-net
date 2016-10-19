@@ -3800,12 +3800,17 @@ class PortfolioUpdateItem : public ::google::protobuf::Message {
   inline bool dq_stablequote() const;
   inline void set_dq_stablequote(bool value);
 
-  // optional .entity.LegStatus DQ_Status = 232;
+  // optional string DQ_Status = 232;
   inline bool has_dq_status() const;
   inline void clear_dq_status();
   static const int kDQStatusFieldNumber = 232;
-  inline ::entity::LegStatus dq_status() const;
-  inline void set_dq_status(::entity::LegStatus value);
+  inline const ::std::string& dq_status() const;
+  inline void set_dq_status(const ::std::string& value);
+  inline void set_dq_status(const char* value);
+  inline void set_dq_status(const char* value, size_t size);
+  inline ::std::string* mutable_dq_status();
+  inline ::std::string* release_dq_status();
+  inline void set_allocated_dq_status(::std::string* dq_status);
 
   // optional double HS_FastAngle = 301;
   inline bool has_hs_fastangle() const;
@@ -4091,16 +4096,15 @@ class PortfolioUpdateItem : public ::google::protobuf::Message {
   double mu_fallback_;
   double mu_bounce_;
   double ic_pricegap_;
-  ::google::protobuf::int32 ic_sizegap_;
-  int dq_status_;
+  ::std::string* dq_status_;
   double hs_fastangle_;
   double hs_slowangle_;
+  ::google::protobuf::int32 ic_sizegap_;
+  int hs_fastslopedirection_;
   double hs_fastmacdhist_;
   double hs_fastmacdhistdiff_;
   double hs_slowmacdhist_;
   double hs_slowmacdhistdiff_;
-  int hs_fastslopedirection_;
-  int hs_slowslopedirection_;
   double wt_fastline_;
   double wt_slowline_;
   double lr_weightmidpoint_;
@@ -4115,6 +4119,7 @@ class PortfolioUpdateItem : public ::google::protobuf::Message {
   double rt_lowerboundclose_;
   double rt_lastcostpx_;
   double rt_recentstoplosspx_;
+  int hs_slowslopedirection_;
 
   mutable int _cached_size_;
   ::google::protobuf::uint32 _has_bits_[(51 + 31) / 32];
@@ -12565,7 +12570,7 @@ inline void PortfolioUpdateItem::set_dq_stablequote(bool value) {
   dq_stablequote_ = value;
 }
 
-// optional .entity.LegStatus DQ_Status = 232;
+// optional string DQ_Status = 232;
 inline bool PortfolioUpdateItem::has_dq_status() const {
   return (_has_bits_[0] & 0x10000000u) != 0;
 }
@@ -12576,16 +12581,63 @@ inline void PortfolioUpdateItem::clear_has_dq_status() {
   _has_bits_[0] &= ~0x10000000u;
 }
 inline void PortfolioUpdateItem::clear_dq_status() {
-  dq_status_ = 0;
+  if (dq_status_ != &::google::protobuf::internal::kEmptyString) {
+    dq_status_->clear();
+  }
   clear_has_dq_status();
 }
-inline ::entity::LegStatus PortfolioUpdateItem::dq_status() const {
-  return static_cast< ::entity::LegStatus >(dq_status_);
+inline const ::std::string& PortfolioUpdateItem::dq_status() const {
+  return *dq_status_;
 }
-inline void PortfolioUpdateItem::set_dq_status(::entity::LegStatus value) {
-  assert(::entity::LegStatus_IsValid(value));
+inline void PortfolioUpdateItem::set_dq_status(const ::std::string& value) {
   set_has_dq_status();
-  dq_status_ = value;
+  if (dq_status_ == &::google::protobuf::internal::kEmptyString) {
+    dq_status_ = new ::std::string;
+  }
+  dq_status_->assign(value);
+}
+inline void PortfolioUpdateItem::set_dq_status(const char* value) {
+  set_has_dq_status();
+  if (dq_status_ == &::google::protobuf::internal::kEmptyString) {
+    dq_status_ = new ::std::string;
+  }
+  dq_status_->assign(value);
+}
+inline void PortfolioUpdateItem::set_dq_status(const char* value, size_t size) {
+  set_has_dq_status();
+  if (dq_status_ == &::google::protobuf::internal::kEmptyString) {
+    dq_status_ = new ::std::string;
+  }
+  dq_status_->assign(reinterpret_cast<const char*>(value), size);
+}
+inline ::std::string* PortfolioUpdateItem::mutable_dq_status() {
+  set_has_dq_status();
+  if (dq_status_ == &::google::protobuf::internal::kEmptyString) {
+    dq_status_ = new ::std::string;
+  }
+  return dq_status_;
+}
+inline ::std::string* PortfolioUpdateItem::release_dq_status() {
+  clear_has_dq_status();
+  if (dq_status_ == &::google::protobuf::internal::kEmptyString) {
+    return NULL;
+  } else {
+    ::std::string* temp = dq_status_;
+    dq_status_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+    return temp;
+  }
+}
+inline void PortfolioUpdateItem::set_allocated_dq_status(::std::string* dq_status) {
+  if (dq_status_ != &::google::protobuf::internal::kEmptyString) {
+    delete dq_status_;
+  }
+  if (dq_status) {
+    set_has_dq_status();
+    dq_status_ = dq_status;
+  } else {
+    clear_has_dq_status();
+    dq_status_ = const_cast< ::std::string*>(&::google::protobuf::internal::kEmptyString);
+  }
 }
 
 // optional double HS_FastAngle = 301;
