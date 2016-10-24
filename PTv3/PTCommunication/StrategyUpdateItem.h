@@ -357,10 +357,10 @@ private:
 public ref class DualQueueStrategyUpdateItem : StrategyUpdateItem
 {
 public:
-	DualQueueStrategyUpdateItem(bool stableQuote, entity::LegStatus status)
+	DualQueueStrategyUpdateItem(bool stableQuote, String^ status)
 	{
 		_stableQuote = stableQuote;
-		_status = static_cast<LegStatus>(status);
+		_status = status;
 	}
 
 	property StrategyType Kind
@@ -371,13 +371,13 @@ public:
 		}
 	}
 
-	property LegStatus Status
+	property String^ Status
 	{
-		LegStatus get()
+		String^ get()
 		{
 			return _status;
 		}
-		void set(LegStatus val)
+		void set(String^ val)
 		{
 			_status = val;
 		}
@@ -396,7 +396,7 @@ public:
 	}
 
 private:
-	LegStatus _status;
+	String^ _status;
 	bool _stableQuote;
 
 };

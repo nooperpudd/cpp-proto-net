@@ -371,12 +371,13 @@ void CDualQueueStrategy::GetStrategyUpdate(entity::PortfolioUpdateItem * pPortfU
 
 void CDualQueueStrategy::GetLevelOrderPlacerStatus(string* outStatus)
 {
-	std::ostringstream statusStream("[");
+	std::ostringstream statusStream;
+	statusStream << "[";
 
 	for (LevelOrderPlacersIter iter = m_levelOrderPlacers.begin(); iter != m_levelOrderPlacers.end(); ++iter)
 	{
-		if(iter != m_levelOrderPlacers.begin())
-			statusStream << ",";
+		if (iter != m_levelOrderPlacers.begin())
+			statusStream << ";";
 
 		string lvlStatus;
 		iter->second->GetStatus(&lvlStatus);

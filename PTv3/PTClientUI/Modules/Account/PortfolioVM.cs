@@ -1458,7 +1458,7 @@ namespace PortfolioTrading.Modules.Account
                     item.StrategyUpdate as PTEntity.DualQueueStrategyUpdateItem;
 
                 DQ_StableQuote = strategyUpdate.StableQuote;
-                DQ_Status = DisplayLegStatus(strategyUpdate.Status);
+                DQ_Status = DeserializeStatus(strategyUpdate.Status);
                 if (LegCount > 0)
                 {
                     LegVM legVm = GetLeg(0);
@@ -1491,30 +1491,19 @@ namespace PortfolioTrading.Modules.Account
             }
         }
 
-        private static string DisplayLegStatus(PTEntity.LegStatus status)
+        private static string DeserializeStatus(string statusStr)
         {
-            string ret = "";
-            switch (status)
+            List<OrderLevel> orderLevels = new List<OrderLevel>();
+            int startPos = statusStr.IndexOf('[');
+            int endPos = statusStr.LastIndexOf(']');
+            string content = statusStr.Substring(startPos, endPos - startPos);
+            string[] items = content.Split(';');
+            foreach (var item in items)
             {
-                case LegStatus.UNOPENED:
-                    ret = "空仓";
-                    break;
-                case LegStatus.IS_OPENING:
-                    ret = "正开仓";
-                    break;
-                case LegStatus.OPENED:
-                    ret = "已开仓";
-                    break;
-                case LegStatus.IS_CLOSING:
-                    ret = "正平仓";
-                    break;
-                case LegStatus.CLOSED:
-                    ret = "已平仓";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(status), status, null);
+                OrderLevel ol = OrderLevel.BuildFromJSON(item);
+                orderLevels.Add(ol);
             }
-            return ret;
+            return string.Join(" | ", orderLevels);
         }
 
         private static decimal ToDecimal(double val)

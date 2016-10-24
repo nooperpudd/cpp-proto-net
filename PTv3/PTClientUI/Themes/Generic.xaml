@@ -925,7 +925,8 @@
             </Grid.Resources>
             <Border BorderThickness="0, 1, 1, 1"/>
             <Grid>
-                <Grid.ColumnDefinitions>
+                <TextBlock TextWrapping="Wrap" Text="{Binding DQ_Status}"></TextBlock>
+                <!--<Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />
                 </Grid.ColumnDefinitions>
@@ -956,7 +957,7 @@
                     <DockPanel>
                         <TextBlock Margin="4, 2">开平</TextBlock>
                         <TextBlock Margin="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
-                                               Text="{Binding DQ_Status}"/>
+                                               Text="稳定"/>
                     </DockPanel>
                 </Border>
                 <Border Grid.Column="1" Grid.Row="0" BorderBrush="Blue" BorderThickness="0, 0, 1, 1">
@@ -971,7 +972,7 @@
                         <TextBlock Margin="2" HorizontalAlignment="Right" VerticalAlignment="Bottom" 
                                                Text="{Binding DQ_BidSize}"/>
                     </DockPanel>
-                </Border>
+                </Border>-->
             </Grid>
         </Grid>
     </DataTemplate>
