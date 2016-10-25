@@ -925,7 +925,12 @@
             </Grid.Resources>
             <Border BorderThickness="0, 1, 1, 1"/>
             <Grid>
-                <TextBlock TextWrapping="Wrap" Text="{Binding DQ_Status}"></TextBlock>
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <TextBlock TextWrapping="Wrap" Text="{Binding DQ_LongStatus}"></TextBlock>
+                <TextBlock Grid.Row="1" TextWrapping="Wrap" Text="{Binding DQ_ShortStatus}"></TextBlock>
                 <!--<Grid.ColumnDefinitions>
                     <ColumnDefinition />
                     <ColumnDefinition />

@@ -1054,21 +1054,39 @@ namespace PortfolioTrading.Modules.Account
         #endregion
 
         #region DQ_Status
-        private string _dq_status = "空仓";
+        private string _dq_long_status = "空仓";
 
-        public string DQ_Status
+        public string DQ_LongStatus
         {
-            get { return _dq_status; }
+            get { return _dq_long_status; }
             set
             {
-                if (_dq_status != value)
+                if (_dq_long_status != value)
                 {
-                    _dq_status = value;
-                    RaisePropertyChanged("DQ_Status");
+                    _dq_long_status = value;
+                    RaisePropertyChanged("DQ_LongStatus");
                 }
             }
         }
         #endregion
+
+        #region DQ_Status
+        private string _dq_short_status = "空仓";
+
+        public string DQ_ShortStatus
+        {
+            get { return _dq_short_status; }
+            set
+            {
+                if (_dq_short_status != value)
+                {
+                    _dq_short_status = value;
+                    RaisePropertyChanged("DQ_ShortStatus");
+                }
+            }
+        }
+        #endregion
+
 
         #region DQ_AskSize
         private int _dq_askSize;
@@ -1458,7 +1476,10 @@ namespace PortfolioTrading.Modules.Account
                     item.StrategyUpdate as PTEntity.DualQueueStrategyUpdateItem;
 
                 DQ_StableQuote = strategyUpdate.StableQuote;
-                DQ_Status = DeserializeStatus(strategyUpdate.Status);
+                string longSideStatus, shortSideStatus;
+                DeserializeStatus(strategyUpdate.Status, out longSideStatus, out shortSideStatus);
+                DQ_LongStatus = longSideStatus;
+                DQ_ShortStatus = shortSideStatus;
                 if (LegCount > 0)
                 {
                     LegVM legVm = GetLeg(0);
@@ -1491,9 +1512,10 @@ namespace PortfolioTrading.Modules.Account
             }
         }
 
-        private static string DeserializeStatus(string statusStr)
+        private void DeserializeStatus(string statusStr, out string longSideStatus, out string shortSideStatus)
         {
-            List<OrderLevel> orderLevels = new List<OrderLevel>();
+            List<OrderLevel> longOrderLevels = new List<OrderLevel>();
+            List<OrderLevel> shortOrderLevels = new List<OrderLevel>();
             int startPos = statusStr.IndexOf('[');
             int endPos = statusStr.LastIndexOf(']');
             string content = statusStr.Substring(startPos, endPos - startPos);
@@ -1501,9 +1523,15 @@ namespace PortfolioTrading.Modules.Account
             foreach (var item in items)
             {
                 OrderLevel ol = OrderLevel.BuildFromJSON(item);
-                orderLevels.Add(ol);
+                if(ol.Direction == PosiDirectionType.LONG)
+                    longOrderLevels.Add(ol);
+                else if (ol.Direction == PosiDirectionType.SHORT)
+                    shortOrderLevels.Add(ol);
             }
-            return string.Join(" | ", orderLevels);
+            var l = longOrderLevels.Select(ol => ol.GetDisplayText());
+            var s = shortOrderLevels.Select(ol => ol.GetDisplayText());
+            longSideStatus = string.Join(" | ", l);
+            shortSideStatus = string.Join(" | ", s);
         }
 
         private static decimal ToDecimal(double val)
