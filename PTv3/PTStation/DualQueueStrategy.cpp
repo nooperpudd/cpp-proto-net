@@ -144,6 +144,7 @@ void CDualQueueStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pO
 		pOrderPlacer->Initialize(pPortf, pOrderProc);
 		LevelOrderPlacerPtr levelOrderPlacer(new CLevelOrderPlacer(execId, pOrderPlacer));
 		m_levelOrderPlacers.insert(make_pair(execId, levelOrderPlacer));
+		m_readyQueue.push(execId);
 	}
 }
 
@@ -201,7 +202,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                 if(!m_orderQueued)
                 {
                     // If orders are not queued at levels, send orders
-                    
+					LOG_INFO(logger, "DualQueue - Queue orders >>>>");
                     // Send Long orders
                     for(int i = 1; i <= m_levelsNum; ++i)
                     {
@@ -221,6 +222,8 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                             OpenPosition(lvlOrdPlacer, entity::SHORT, pQuote->ask() + (i * m_priceTick), timestamp, pQuote);
                         }
                     }
+
+					m_orderQueued = true;
                 }
 				else
                 {
@@ -230,6 +233,8 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                     // Shift queued orders up/down
                     if(bid > m_lastBid) // bid is going up
                     {
+						LOG_INFO(logger, 
+							boost::str(boost::format("DualQueue - bid is going UP %.2f -> %.2f") % m_lastBid % bid));
                         // find out the lowest buy order
                         double buyPx = bid;
                         while(buyPx > m_lastBid + 0.1)
@@ -238,6 +243,8 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                             if(lowestOrdPlacer != NULL)
                             {
                                 // Cancel Order and replace at buyPx
+								LOG_INFO(logger,
+									boost::str(boost::format("DualQueue - Cancel LONG order @%.2f") % lowestOrdPlacer->GetLevelPx()));
                                 lowestOrdPlacer->CancelPendingOpenOrder();
                             }
                             buyPx -= m_priceTick;
@@ -251,6 +258,8 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                                 CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
                                 if(lvlOrdPlacer != NULL)
                                 {
+									LOG_INFO(logger,
+										boost::str(boost::format("DualQueue - Re-queue SHORT order @%.2f") % sellPx));
                                     OpenPosition(lvlOrdPlacer, entity::SHORT, sellPx, timestamp, pQuote);
                                 }
                             }
@@ -260,6 +269,9 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 
                     if(ask < m_lastAsk)
                     {
+						LOG_INFO(logger,
+							boost::str(boost::format("DualQueue - ask is going DOWN %.2f -> %.2f") % m_lastAsk % ask));
+
                         // find out the highest buy order
                         double sellPx = ask;
                         while(sellPx < m_lastAsk - 0.1)
@@ -268,6 +280,8 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                             if(highestOrdPlacer != NULL)
                             {
                                 // Cancel Order and replace at buyPx
+								LOG_INFO(logger,
+									boost::str(boost::format("DualQueue - Cancel SHORT order @%.2f") % highestOrdPlacer->GetLevelPx()));
                                 highestOrdPlacer->CancelPendingOpenOrder();
                             }
                             sellPx += m_priceTick;
@@ -281,6 +295,8 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                                 CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
                                 if(lvlOrdPlacer != NULL)
                                 {
+									LOG_INFO(logger,
+										boost::str(boost::format("DualQueue - Re-queue LONG order @%.2f") % buyPx));
                                     OpenPosition(lvlOrdPlacer, entity::LONG, buyPx, timestamp, pQuote);
                                 }
                             }
@@ -463,8 +479,6 @@ void CDualQueueStrategy::OnLegFilled(int sendingIdx, const string & symbol, trad
 
 void CDualQueueStrategy::OnLegCanceled(int sendingIdx, const string & symbol, trade::OffsetFlagType offset, trade::TradeDirectionType direction, int execId)
 {
-	boost::mutex::scoped_lock l(m_mutLevels);
-
 	if(execId > 0)
 	{
 		DQ_STATUS status = DQ_UNKNOWN;
@@ -629,6 +643,8 @@ bool CDualQueueStrategy::EnsureAllPlacerStop(entity::Quote * pQuote)
 
 CLevelOrderPlacer* CDualQueueStrategy::GetReadyOrderPlacer()
 {
+	boost::mutex::scoped_lock l(m_mutLevels);
+
 	if(!m_readyQueue.empty())
 	{
 		int readyId = m_readyQueue.front();
@@ -645,8 +661,6 @@ CLevelOrderPlacer* CDualQueueStrategy::GetReadyOrderPlacer()
 
 bool CDualQueueStrategy::IfLevelExists(double comparingPx)
 {
-	boost::mutex::scoped_lock l(m_mutLevels);
-
 	for (LevelOrderPlacersIter iter = m_levelOrderPlacers.begin(); iter != m_levelOrderPlacers.end(); ++iter)
 	{
 		double levelPx = iter->second->GetLevelPx();

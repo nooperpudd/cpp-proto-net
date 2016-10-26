@@ -52,7 +52,7 @@ namespace PortfolioTrading.Modules.Account
 
             int startPos = jsonStr.IndexOf('{');
             int endPos = jsonStr.LastIndexOf('}');
-            string content = jsonStr.Substring(startPos, endPos - startPos);
+            string content = jsonStr.Substring(startPos + 1, endPos - startPos - 1);
             string[] props = content.Split(',');
             foreach (var p in props)
             {

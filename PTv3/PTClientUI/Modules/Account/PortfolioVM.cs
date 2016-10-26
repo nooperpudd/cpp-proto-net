@@ -1518,7 +1518,7 @@ namespace PortfolioTrading.Modules.Account
             List<OrderLevel> shortOrderLevels = new List<OrderLevel>();
             int startPos = statusStr.IndexOf('[');
             int endPos = statusStr.LastIndexOf(']');
-            string content = statusStr.Substring(startPos, endPos - startPos);
+            string content = statusStr.Substring(startPos + 1, endPos - startPos - 1);
             string[] items = content.Split(';');
             foreach (var item in items)
             {
