@@ -81,7 +81,7 @@ CDualQueueStrategy::CDualQueueStrategy()
 	: m_priceTick(0)
 	, m_stableTickThreshold(6)
 	, m_levelsNum(4)
-	, m_profitCount(0)
+	, m_profitCount(1)
 	, m_stableMinutesThreshold(5)
 	, m_openThresholdTimes(2)
 	, m_latestHigh(-9999)
@@ -250,8 +250,9 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                             buyPx -= m_priceTick;
                         }
 
-                        double sellPx = ask;
-                        while(sellPx > m_lastAsk + 0.1)
+						double nShifts = m_levelsNum * m_priceTick;
+                        double sellPx = ask + nShifts;
+                        while(sellPx > m_lastAsk + nShifts + 0.1)
                         {
                             if(!IfLevelExists(sellPx))
                             {
@@ -287,8 +288,9 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                             sellPx += m_priceTick;
                         }
 
-                        double buyPx = bid;
-                        while(buyPx < m_lastBid - 0.1)
+						double nShifts = m_levelsNum * m_priceTick;
+                        double buyPx = bid - nShifts;
+                        while(buyPx < m_lastBid - nShifts - 0.1)
                         {
                             if(!IfLevelExists(buyPx))
                             {
@@ -484,6 +486,8 @@ void CDualQueueStrategy::OnLegCanceled(int sendingIdx, const string & symbol, tr
 		DQ_STATUS status = DQ_UNKNOWN;
 		if (offset == trade::OF_OPEN && sendingIdx == 0)
 		{
+			LOG_DEBUG(logger, boost::str(boost::format("Double Queue - %s %s Open Order(Level Id: %d) Cancelled")
+				% symbol % (direction == trade::BUY ? "BUY" : "SELL") % execId ));
 			status = DQ_UNOPENED;
 
 			if(!m_stopping)
@@ -504,6 +508,7 @@ void CDualQueueStrategy::OnLegCanceled(int sendingIdx, const string & symbol, tr
 							if (lvlOrdPlacer != NULL)
 							{
 								OpenPosition(lvlOrdPlacer, entity::LONG, buyPx, nowTime, NULL);
+								return;
 							}
 						}
 					}
@@ -522,6 +527,7 @@ void CDualQueueStrategy::OnLegCanceled(int sendingIdx, const string & symbol, tr
 							if (lvlOrdPlacer != NULL)
 							{
 								OpenPosition(lvlOrdPlacer, entity::SHORT, sellPx, nowTime, NULL);
+								return;
 							}
 						}
 					}
@@ -683,9 +689,12 @@ CLevelOrderPlacer* CDualQueueStrategy::FindLowestOrderPlacer(double lowestPx)
 {
     for (LevelOrderPlacersIter iter = m_levelOrderPlacers.begin(); iter != m_levelOrderPlacers.end(); ++iter)
 	{
-		double levelPx = iter->second->GetLevelPx();
-		if (lowestPx - levelPx > m_priceTick/10)
-			return (iter->second).get();
+		if(iter->second->GetStatus() == DQ_IS_OPENING)
+		{
+			double levelPx = iter->second->GetLevelPx();
+			if (lowestPx - levelPx > m_priceTick / 10)
+				return (iter->second).get();
+		}
 	}
 
     return NULL;
@@ -695,9 +704,12 @@ CLevelOrderPlacer* CDualQueueStrategy::FindHighestOrderPlacer(double highestPx)
 {
     for (LevelOrderPlacersIter iter = m_levelOrderPlacers.begin(); iter != m_levelOrderPlacers.end(); ++iter)
 	{
-		double levelPx = iter->second->GetLevelPx();
-		if (levelPx - highestPx> m_priceTick/10)
-			return (iter->second).get();
+		if (iter->second->GetStatus() == DQ_IS_OPENING)
+		{
+			double levelPx = iter->second->GetLevelPx();
+			if (levelPx - highestPx > m_priceTick / 10)
+				return (iter->second).get();
+		}
 	}
 
     return NULL;

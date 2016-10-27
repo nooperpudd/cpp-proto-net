@@ -35,7 +35,7 @@ public:
 	entity::PosiDirectionType GetDirection() { return m_direction; }
 
 	void SetLevelPx(double px) { m_levelPx = px; }
-	double GetLevelPx() { return m_levelPx; }
+	double GetLevelPx() const { return m_levelPx; }
 
 	bool IsStop(entity::Quote * pQuote);
 
