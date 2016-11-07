@@ -40,16 +40,19 @@ public:
 	bool IsStop(entity::Quote * pQuote);
 
 	void CancelPendingAndClosePosition(entity::Quote * pQuote);
-    void CancelPendingOpenOrder();
+    void CancelPendingOpenOrder(entity::Quote * pQuote);
     void HandlePendingCloseOrder(boost::chrono::steady_clock::time_point& timestamp, entity::Quote * pQuote);
 	void GetStatus(string* status);
 
+	bool Prepare();
+	entity::Quote* CancelQuote() const { return m_pQuote; }
 private:
 	int m_levelId;
 	double m_levelPx;
 	OrderPlacerPtr m_orderPlacer;
 	boost::atomic<DQ_STATUS> m_status;
 	entity::PosiDirectionType m_direction;
+	entity::Quote * m_pQuote;
 };
 
 typedef boost::shared_ptr<CLevelOrderPlacer> LevelOrderPlacerPtr;
@@ -85,6 +88,7 @@ protected:
 	virtual void OnStop();
 
 private:
+	void OnOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded, entity::PosiDirectionType direction);
 	void OnStrategyError(CPortfolio * portf, const string & errorMsg) const;
 	bool IfQuotingStable(entity::Quote* pQuote);
 	void GetLevelOrderPlacerStatus(string* outStatus);

@@ -255,7 +255,7 @@ void CMultiOpenStrategy::HandlePortfolioDone(PortfolioDoneMsgPtr msgPtr)
 	}
 }
 
-void CMultiOpenStrategy::OnPortfolioDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
+void CMultiOpenStrategy::OnPortfolioDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded, entity::PosiDirectionType direction)
 {
 	PortfolioDoneMsgPtr msg(new PortfolioDoneMsg(execId, doneState, offsetFlag, volumeTraded));
 	m_portfTradedEvtPump.Enqueue(msg);
@@ -289,7 +289,7 @@ void CMultiOpenStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pO
 		iter != m_strategyExecutors.end(); ++iter)
 	{
 		(*iter)->InitOrderPlacer(pPortf, pOrderProc, 
-			boost::bind(&CMultiOpenStrategy::OnPortfolioDone, this, _1, _2, _3, _4));
+			boost::bind(&CMultiOpenStrategy::OnPortfolioDone, this, _1, _2, _3, _4, _5));
 	}
 }
 

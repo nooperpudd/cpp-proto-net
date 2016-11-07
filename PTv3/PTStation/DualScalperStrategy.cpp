@@ -181,13 +181,13 @@ void CDualScalperStrategy::OnBindedRoutes()
 	assert(m_longOrderPlacer != NULL);
 	m_longOrderPlacer->SetUserId(m_longSideUserId);
 	m_longOrderPlacer->SetPortfolioTradedEventHandler(
-		PortfolioTradedEvent(boost::bind(&CDualScalperStrategy::OnLongOrderPlacerDone, this, _1, _2, _3, _4)));
+		PortfolioTradedEvent(boost::bind(&CDualScalperStrategy::OnLongOrderPlacerDone, this, _1, _2, _3, _4, _5)));
 
 	m_shortOrderPlacer = dynamic_cast<CDualScalperOrderPlacer*>(GetRoute(m_shortSideUserId));
 	assert(m_shortOrderPlacer != NULL);
 	m_shortOrderPlacer->SetUserId(m_shortSideUserId);
 	m_shortOrderPlacer->SetPortfolioTradedEventHandler(
-		PortfolioTradedEvent(boost::bind(&CDualScalperStrategy::OnShortOrderPlacerDone, this, _1, _2, _3, _4)));
+		PortfolioTradedEvent(boost::bind(&CDualScalperStrategy::OnShortOrderPlacerDone, this, _1, _2, _3, _4, _5)));
 }
 
 void CDualScalperStrategy::OpenPosition(entity::Quote* pQuote, boost::chrono::steady_clock::time_point& timestamp)
@@ -402,7 +402,7 @@ void CDualScalperStrategy::AlreadyStarted()
 	m_stopping = false;
 }
 
-void CDualScalperStrategy::OnLongOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
+void CDualScalperStrategy::OnLongOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded, entity::PosiDirectionType direction)
 {
 	if (doneState == PortfolioError)
 	{
@@ -412,7 +412,7 @@ void CDualScalperStrategy::OnLongOrderPlacerDone(int execId, PortfolioFinishStat
 	}
 }
 
-void CDualScalperStrategy::OnShortOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded)
+void CDualScalperStrategy::OnShortOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded, entity::PosiDirectionType direction)
 {
 	if (doneState == PortfolioError)
 	{

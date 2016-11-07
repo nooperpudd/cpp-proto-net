@@ -67,7 +67,7 @@ protected:
 	int GetCurrentPreparedQuantity();
 	void InitializeExecutors();
 	bool GetReadyExecutor(CStrategyExecutor** pOutExector);
-	void OnPortfolioDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded);
+	void OnPortfolioDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded, entity::PosiDirectionType direction);
 	void HandlePortfolioDone(PortfolioDoneMsgPtr msgPtr);
 	void PutErrorList(CStrategyExecutor* pErrExecutor);
 	COrderProcessor* GetEffectiveProcessor();
