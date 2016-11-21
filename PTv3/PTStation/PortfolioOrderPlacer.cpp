@@ -1024,9 +1024,10 @@ void CPortfolioOrderPlacer::AfterPortfolioDone(PortfolioFinishState portfState)
 	// set first leg for next start
 	SetFirstLeg();
 
-	OnPortfolioDone(portfState);
-
+	// set isWorking false particularly for DualQueueStrategy
 	m_isWorking.store(false, boost::memory_order_release);
+
+	OnPortfolioDone(portfState);
 }
 
 void CPortfolioOrderPlacer::OnOrderPlaceFailed( const string& errMsg )

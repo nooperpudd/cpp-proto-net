@@ -31,6 +31,8 @@ public:
 
 	DQ_STATUS GetStatus() { return m_status; }
 
+	int Id() const { return m_levelId; }
+
 	void SetDirection(entity::PosiDirectionType direction) { m_direction = direction; }
 	entity::PosiDirectionType GetDirection() { return m_direction; }
 
@@ -45,14 +47,19 @@ public:
 	void GetStatus(string* status);
 
 	bool Prepare();
-	entity::Quote* CancelQuote() const { return m_pQuote; }
+	double CancelQuoteAsk() const { return m_cancelQuoteAsk; }
+	double CancelQuoteBid() const { return m_cancelQuoteBid; }
+	void Reset() { m_cancelQuoteAsk = -1; m_cancelQuoteBid = -1; };
+
 private:
 	int m_levelId;
 	double m_levelPx;
 	OrderPlacerPtr m_orderPlacer;
 	boost::atomic<DQ_STATUS> m_status;
 	entity::PosiDirectionType m_direction;
-	entity::Quote * m_pQuote;
+	
+	double m_cancelQuoteAsk;
+	double m_cancelQuoteBid;
 };
 
 typedef boost::shared_ptr<CLevelOrderPlacer> LevelOrderPlacerPtr;

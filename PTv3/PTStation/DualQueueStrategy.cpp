@@ -22,7 +22,8 @@ CLevelOrderPlacer::CLevelOrderPlacer(int lvlId, CPortfolioQueueOrderPlacer* pOrd
 	, m_orderPlacer(pOrderPlacer)
 	, m_status(DQ_UNOPENED)
 	, m_direction(entity::NET)
-	, m_pQuote(NULL)
+	, m_cancelQuoteAsk(-1)
+	, m_cancelQuoteBid(-1)
 {
 }
 
@@ -55,12 +56,15 @@ void CLevelOrderPlacer::CancelPendingAndClosePosition(entity::Quote * pQuote)
 
 void CLevelOrderPlacer::CancelPendingOpenOrder(entity::Quote * pQuote)
 {
-	m_pQuote = pQuote;
+	m_cancelQuoteAsk = pQuote->ask();
+	m_cancelQuoteBid = pQuote->bid();
 
     CPortfolioQueueOrderPlacer* queueOrderPlacer = GetOrderPlacer();
 	if (queueOrderPlacer == NULL)
 		return;
 
+	logger.Debug(boost::str(boost::format("Cancelling pending order (Level Id: %d) ... IsOpening: %d")
+		% m_levelId % queueOrderPlacer->IsOpening()));
 	if (queueOrderPlacer->IsOpening())
 		queueOrderPlacer->CancelPendingOrder();
 }
@@ -149,9 +153,9 @@ CPortfolioOrderPlacer * CDualQueueStrategy::CreateOrderPlacer()
 
 void CDualQueueStrategy::InitOrderPlacer(CPortfolio* pPortf, COrderProcessor* pOrderProc)
 {
-	for (int i = 0; i < m_levelsNum * 3; ++i)
+	for (int i = m_levelsNum * 3; i > 0; --i)
 	{
-		int execId = i + 1;
+		int execId = i;
 		CPortfolioQueueOrderPlacer *pOrderPlacer = new CPortfolioQueueOrderPlacer(execId);
 		pOrderPlacer->Initialize(pPortf, pOrderProc);
 		pOrderPlacer->SetPortfolioTradedEventHandler(
@@ -185,8 +189,8 @@ bool CDualQueueStrategy::OnStart()
 			logger.Warning(boost::str(boost::format("OrderPlacer Level %d is NOT ready yet") % iter->first));
 			break;
 		}
-
-		m_readyQueue.push(iter->first);
+		int lvlId = iter->first;
+		m_readyQueue.push(lvlId);
 	}
 
 	return allReady;
@@ -276,7 +280,8 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                             {
                                 // Cancel Order and replace at buyPx
 								LOG_INFO(logger,
-									boost::str(boost::format("DualQueue - Cancel LONG order @%.2f") % lowestOrdPlacer->GetLevelPx()));
+									boost::str(boost::format("DualQueue - Cancel LONG order @%.2f [Level Id: %d]") 
+										% lowestOrdPlacer->GetLevelPx() % lowestOrdPlacer->Id()));
                                 lowestOrdPlacer->CancelPendingOpenOrder(pQuote);
                             }
                             buyPx -= m_priceTick;
@@ -314,7 +319,8 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                             {
                                 // Cancel Order and replace at buyPx
 								LOG_INFO(logger,
-									boost::str(boost::format("DualQueue - Cancel SHORT order @%.2f") % highestOrdPlacer->GetLevelPx()));
+									boost::str(boost::format("DualQueue - Cancel SHORT order @%.2f [Level Id: %d]") 
+										% highestOrdPlacer->GetLevelPx() % highestOrdPlacer->Id()));
                                 highestOrdPlacer->CancelPendingOpenOrder(pQuote);
                             }
                             sellPx += m_priceTick;
@@ -460,13 +466,13 @@ void CDualQueueStrategy::OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::P
 		
 		if(pQuote != NULL)
 		{
-			LOG_DEBUG(logger, boost::str(boost::format("Double Queue - %s Open position @ %.2f (%s)")
-				% GetPosiDirectionText(direction) % lmtPrice[0] % pQuote->update_time()));
+			LOG_DEBUG(logger, boost::str(boost::format("Double Queue - %s Open position @ %.2f (%s) [Level Id: %d]")
+				% GetPosiDirectionText(direction) % lmtPrice[0] % pQuote->update_time() % pLevelPlacer->Id()));
 		}
 		else
 		{
-			LOG_DEBUG(logger, boost::str(boost::format("Double Queue - %s Open position @ %.2f (Replace Order)")
-				% GetPosiDirectionText(direction) % lmtPrice[0]));
+			LOG_DEBUG(logger, boost::str(boost::format("Double Queue - %s Open position @ %.2f (Replace Order) [Level Id: %d]")
+				% GetPosiDirectionText(direction) % lmtPrice[0] % pLevelPlacer->Id()));
 		}
 
 		string openComment = boost::str(boost::format("ÅÅ¶Ó %s ¿ª²Ö @ %.2f") % GetPosiDirectionText(direction) % lmtPrice[0]);
@@ -532,34 +538,46 @@ void CDualQueueStrategy::OnOrderPlacerDone(int execId, PortfolioFinishState done
 					CLevelOrderPlacer* lvlOrdPlacer = (iter->second).get();
 					if (lvlOrdPlacer != NULL)
 					{
-						entity::Quote* cancelQuote = lvlOrdPlacer->CancelQuote();
+						double cancelBid = lvlOrdPlacer->CancelQuoteBid();
+						double cancelAsk = lvlOrdPlacer->CancelQuoteAsk();
 						boost::chrono::steady_clock::time_point nowTime(boost::chrono::steady_clock::now());
 
 						// Resend the order at position near ask/bid
 						if (direction == entity::LONG)
 						{
-							double buyPx = cancelQuote->bid() - m_priceTick;
+							double buyPx = cancelBid - m_priceTick;
+							
 							while (IfLevelExists(buyPx))
 								buyPx -= m_priceTick;
-							if (buyPx > 0) // still a valid price
+							if (buyPx > 0 && DoubleGreaterEqual(buyPx, cancelBid - m_levelsNum * m_priceTick)) // still a valid price
 							{
 								LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Replace LONG order @%.2f (Level Id: %d)")
 									% buyPx % execId));
 								OpenPosition(lvlOrdPlacer, entity::LONG, buyPx, nowTime, NULL);
-								return;
+							}
+							else
+							{
+								LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Push back Level Id: %d to queue") % execId));
+								boost::mutex::scoped_lock l(m_mutLevels);
+								m_readyQueue.push(execId);
 							}
 						}
 						else if (direction == entity::SHORT)
 						{
-							double sellPx = cancelQuote->ask() + m_priceTick;
+							double sellPx = cancelAsk + m_priceTick;
 							while (IfLevelExists(sellPx))
 								sellPx += m_priceTick;
-							if (sellPx > 0) // still a valid price
+							if (sellPx > 0 && DoubleLessEqual(sellPx, cancelAsk + m_levelsNum * m_priceTick)) // still a valid price
 							{
 								LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Replace SHORT order @%.2f (Level Id: %d)")
 									% sellPx % execId));
 								OpenPosition(lvlOrdPlacer, entity::SHORT, sellPx, nowTime, NULL);
-								return;
+							}
+							else
+							{
+								LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Push back Level Id: %d to queue") % execId));
+								boost::mutex::scoped_lock l(m_mutLevels);
+								m_readyQueue.push(execId);
 							}
 						}
 					}
