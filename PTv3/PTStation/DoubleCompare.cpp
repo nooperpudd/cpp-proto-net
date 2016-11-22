@@ -18,3 +18,13 @@ bool DoubleEqual( double a, double b )
 	double diff = a - b;
 	return diff < DOUBLE_PRECISION && diff > -DOUBLE_PRECISION;
 }
+
+bool DoubleGreater(double a, double b)
+{
+	return (a - b) > DOUBLE_PRECISION;
+}
+
+bool DoubleLess(double a, double b)
+{
+	return (a - b) < -DOUBLE_PRECISION;
+}

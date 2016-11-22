@@ -273,7 +273,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 							boost::str(boost::format("DualQueue - bid is going UP %.2f -> %.2f") % m_lastBid % bid));
                         // find out the lowest buy order
                         double buyPx = bid;
-                        while(buyPx > m_lastBid + 0.1)
+                        while(DoubleGreater(buyPx, m_lastBid))
                         {
                             CLevelOrderPlacer* lowestOrdPlacer = FindLowestOrderPlacer(bid - (m_levelsNum * m_priceTick));
                             if(lowestOrdPlacer != NULL)
@@ -289,7 +289,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 
 						double nShifts = m_levelsNum * m_priceTick;
                         double sellPx = ask + nShifts;
-                        while(sellPx > m_lastAsk + nShifts + 0.1)
+                        while(DoubleGreater(sellPx, m_lastAsk + nShifts))
                         {
                             if(!IfLevelExists(sellPx))
                             {
@@ -312,7 +312,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 
                         // find out the highest buy order
                         double sellPx = ask;
-                        while(sellPx < m_lastAsk - 0.1)
+						while(DoubleLess(sellPx, m_lastAsk))
                         {
                             CLevelOrderPlacer* highestOrdPlacer = FindHighestOrderPlacer(ask + (m_levelsNum * m_priceTick));
                             if(highestOrdPlacer != NULL)
@@ -328,7 +328,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
 
 						double nShifts = m_levelsNum * m_priceTick;
                         double buyPx = bid - nShifts;
-                        while(buyPx < m_lastBid - nShifts - 0.1)
+                        while(DoubleLess(buyPx, m_lastBid - nShifts))
                         {
                             if(!IfLevelExists(buyPx))
                             {
@@ -759,12 +759,14 @@ void CDualQueueStrategy::HandlePendingCloseOrder(boost::chrono::steady_clock::ti
 
 CLevelOrderPlacer* CDualQueueStrategy::FindLowestOrderPlacer(double lowestPx)
 {
+	LOG_DEBUG(logger, boost::str(boost::format("Looking for orderplacer with px < %.2f ...") % lowestPx));
+
     for (LevelOrderPlacersIter iter = m_levelOrderPlacers.begin(); iter != m_levelOrderPlacers.end(); ++iter)
 	{
 		if(iter->second->GetStatus() == DQ_IS_OPENING)
 		{
 			double levelPx = iter->second->GetLevelPx();
-			if (lowestPx - levelPx > m_priceTick / 10)
+			if (DoubleLess(levelPx, lowestPx))
 				return (iter->second).get();
 		}
 	}
@@ -774,12 +776,14 @@ CLevelOrderPlacer* CDualQueueStrategy::FindLowestOrderPlacer(double lowestPx)
 
 CLevelOrderPlacer* CDualQueueStrategy::FindHighestOrderPlacer(double highestPx)
 {
+	LOG_DEBUG(logger, boost::str(boost::format("Looking for orderplacer with px > %.2f ...") % highestPx));
+
     for (LevelOrderPlacersIter iter = m_levelOrderPlacers.begin(); iter != m_levelOrderPlacers.end(); ++iter)
 	{
 		if (iter->second->GetStatus() == DQ_IS_OPENING)
 		{
 			double levelPx = iter->second->GetLevelPx();
-			if (levelPx - highestPx > m_priceTick / 10)
+			if (DoubleGreater(levelPx, highestPx))
 				return (iter->second).get();
 		}
 	}
