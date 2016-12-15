@@ -87,7 +87,7 @@ public:
 
 protected:
 
-	void OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::PosiDirectionType direction, double openPx, boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote);
+	void OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::PosiDirectionType direction, double openPx, boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote, bool async = false);
 	
 	CPortfolioOrderPlacer* CreateOrderPlacer();
 

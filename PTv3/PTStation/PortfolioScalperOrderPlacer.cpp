@@ -106,6 +106,12 @@ void CPortfolioQueueOrderPlacer::QueueOrder(entity::PosiDirectionType posiDirect
 	Run(posiDirection, lmtPrice, 2, trigQuoteTimestamp);
 }
 
+void CPortfolioQueueOrderPlacer::AsyncQueueOrder(entity::PosiDirectionType posiDirection, double openPx, double closePx, boost::chrono::steady_clock::time_point trigQuoteTimestamp)
+{
+	m_threadWorker.QueueWorkItem(boost::bind(&CPortfolioQueueOrderPlacer::QueueOrder, this,
+		posiDirection, openPx, closePx, trigQuoteTimestamp));
+}
+
 bool CPortfolioQueueOrderPlacer::IsOpening()
 {
 	return IsWorking() && m_activeOrdPlacer->SequenceNo() == 0;

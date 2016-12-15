@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PortfolioOrderPlacer.h"
+#include "BufferRunner.h"
 
 class CPortfolioScalperOrderPlacer : public CPortfolioOrderPlacer
 {
@@ -25,6 +26,8 @@ public:
 
 	void QueueOrder(entity::PosiDirectionType posiDirection, double openPx, double closePx,
 	                boost::chrono::steady_clock::time_point trigQuoteTimestamp);
+	void AsyncQueueOrder(entity::PosiDirectionType posiDirection, double openPx, double closePx,
+		boost::chrono::steady_clock::time_point trigQuoteTimestamp);
 
 	bool IsOpening();
 	bool IsClosing();
@@ -46,5 +49,6 @@ protected:
 private:
 	double m_openPrice;
 	double m_closePrice;
+	CThreadWorker m_threadWorker;
 };
 

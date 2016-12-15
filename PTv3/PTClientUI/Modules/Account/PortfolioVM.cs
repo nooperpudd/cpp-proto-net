@@ -1528,8 +1528,9 @@ namespace PortfolioTrading.Modules.Account
                 else if (ol.Direction == PosiDirectionType.SHORT)
                     shortOrderLevels.Add(ol);
             }
-            var l = longOrderLevels.Select(ol => ol.GetDisplayText());
-            var s = shortOrderLevels.Select(ol => ol.GetDisplayText());
+
+            var l = longOrderLevels.OrderByDescending(ol => ol.Price).Select(ol => ol.GetDisplayText());
+            var s = shortOrderLevels.OrderBy(ol => ol.Price).Select(ol => ol.GetDisplayText());
             longSideStatus = string.Join(" | ", l);
             shortSideStatus = string.Join(" | ", s);
         }

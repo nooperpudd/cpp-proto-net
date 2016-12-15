@@ -446,7 +446,7 @@ void CDualQueueStrategy::GetLevelOrderPlacerStatus(string* outStatus)
 }
 
 
-void CDualQueueStrategy::OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::PosiDirectionType direction, double openPx, boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote)
+void CDualQueueStrategy::OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::PosiDirectionType direction, double openPx, boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote, bool async)
 {
 	if (direction > entity::NET)
 	{
@@ -480,7 +480,10 @@ void CDualQueueStrategy::OpenPosition(CLevelOrderPlacer* pLevelPlacer, entity::P
 		pLevelPlacer->SetLevelPx(openPx);
 		pLevelPlacer->GetOrderPlacer()->SetMlOrderStatus(openComment);
 		pLevelPlacer->SetStatus(DQ_IS_OPENING);
-		pLevelPlacer->GetOrderPlacer()->QueueOrder(direction, lmtPrice[0], lmtPrice[1], timestamp);
+		if(async)
+			pLevelPlacer->GetOrderPlacer()->AsyncQueueOrder(direction, lmtPrice[0], lmtPrice[1], timestamp);
+		else
+			pLevelPlacer->GetOrderPlacer()->QueueOrder(direction, lmtPrice[0], lmtPrice[1], timestamp);
 		ResetForceOpen();
 	}
 }
@@ -553,7 +556,7 @@ void CDualQueueStrategy::OnOrderPlacerDone(int execId, PortfolioFinishState done
 							{
 								LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Replace LONG order @%.2f (Level Id: %d)")
 									% buyPx % execId));
-								OpenPosition(lvlOrdPlacer, entity::LONG, buyPx, nowTime, NULL);
+								OpenPosition(lvlOrdPlacer, entity::LONG, buyPx, nowTime, NULL, true);
 							}
 							else
 							{
@@ -571,7 +574,7 @@ void CDualQueueStrategy::OnOrderPlacerDone(int execId, PortfolioFinishState done
 							{
 								LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Replace SHORT order @%.2f (Level Id: %d)")
 									% sellPx % execId));
-								OpenPosition(lvlOrdPlacer, entity::SHORT, sellPx, nowTime, NULL);
+								OpenPosition(lvlOrdPlacer, entity::SHORT, sellPx, nowTime, NULL, true);
 							}
 							else
 							{

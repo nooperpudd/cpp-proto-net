@@ -747,8 +747,8 @@ void CPortfolioOrderPlacer::OnCompleted()
 	
 	m_pPortf->UpdatePosition();
 
-	RaisePortfolioDoneEvent(PortfolioFilled, volumeTraded, GetPortfolioOffset());
 	AfterPortfolioDone(PortfolioFilled);
+	RaisePortfolioDoneEvent(PortfolioFilled, volumeTraded, GetPortfolioOffset());
 }
 
 void CPortfolioOrderPlacer::OnCanceling()
@@ -862,8 +862,9 @@ void CPortfolioOrderPlacer::OnLegRejected(const RtnOrderWrapperPtr& pRtnOrder )
 void CPortfolioOrderPlacer::OnPortfolioCanceled()
 {
 	AfterLegDone();
-	RaisePortfolioDoneEvent(PortfolioCanceled, 0, GetPortfolioOffset());
 	AfterPortfolioDone(PortfolioCanceled);
+	// Move PortfolioDoneEvent after AfterPortfolioDone particularly for DualQueueStrategy
+	RaisePortfolioDoneEvent(PortfolioCanceled, 0, GetPortfolioOffset());
 }
 
 void CPortfolioOrderPlacer::OnError(const string& errMsg)
@@ -877,8 +878,9 @@ void CPortfolioOrderPlacer::OnError(const string& errMsg)
 	m_multiLegOrderTemplate->set_statusmsg(ordStatusMsg);
 
 	UpdateMultiLegOrder();
-	RaisePortfolioDoneEvent(PortfolioError, 0, GetPortfolioOffset());
+	
 	AfterPortfolioDone(PortfolioError);
+	RaisePortfolioDoneEvent(PortfolioError, 0, GetPortfolioOffset());
 }
 
 void CPortfolioOrderPlacer::OnPendingTimeUp()
@@ -1024,10 +1026,9 @@ void CPortfolioOrderPlacer::AfterPortfolioDone(PortfolioFinishState portfState)
 	// set first leg for next start
 	SetFirstLeg();
 
-	// set isWorking false particularly for DualQueueStrategy
-	m_isWorking.store(false, boost::memory_order_release);
-
 	OnPortfolioDone(portfState);
+
+	m_isWorking.store(false, boost::memory_order_release);
 }
 
 void CPortfolioOrderPlacer::OnOrderPlaceFailed( const string& errMsg )
