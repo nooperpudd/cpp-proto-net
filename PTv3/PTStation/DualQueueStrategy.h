@@ -108,6 +108,8 @@ private:
     void HandlePendingCloseOrder(boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote);
 	CLevelOrderPlacer* FindLowestOrderPlacer(double lowestPx);
 	CLevelOrderPlacer* FindHighestOrderPlacer(double highestPx);
+	void ResetLevelOrderPlacer(int execId, CLevelOrderPlacer* levelOrderPlacer);
+
 	double m_lastAsk;
 	double m_lastBid;
 	int m_stableQuoteCount;
@@ -123,6 +125,8 @@ private:
 	entity::PosiDirectionType m_direction;
 	int m_levelsNum;
 	int m_profitCount;
+	int m_lossCount;
+	int m_interval;
 	double m_openThresholdTimes;
 	int m_stableMinutesThreshold;
 	boost::chrono::minutes m_stableMinutes;

@@ -98,6 +98,8 @@ CDualQueueStrategy::CDualQueueStrategy()
 	, m_stableTickThreshold(6)
 	, m_levelsNum(4)
 	, m_profitCount(1)
+	, m_lossCount(2)
+	, m_interval(1)
 	, m_stableMinutesThreshold(5)
 	, m_openThresholdTimes(2)
 	, m_latestHigh(-9999)
@@ -245,7 +247,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                         CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
                         if(lvlOrdPlacer != NULL)
                         {
-                            OpenPosition(lvlOrdPlacer, entity::LONG, pQuote->bid() - (i * m_priceTick), timestamp, pQuote);
+                            OpenPosition(lvlOrdPlacer, entity::LONG, pQuote->bid() - (i * m_priceTick) * m_interval, timestamp, pQuote);
                         }
                     }
 
@@ -255,7 +257,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                         CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
                         if(lvlOrdPlacer != NULL)
                         {
-                            OpenPosition(lvlOrdPlacer, entity::SHORT, pQuote->ask() + (i * m_priceTick), timestamp, pQuote);
+                            OpenPosition(lvlOrdPlacer, entity::SHORT, pQuote->ask() + (i * m_priceTick) * m_interval, timestamp, pQuote);
                         }
                     }
 
@@ -287,7 +289,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                             buyPx -= m_priceTick;
                         }
 
-						double nShifts = m_levelsNum * m_priceTick;
+						double nShifts = m_levelsNum * m_priceTick * m_interval;
                         double sellPx = ask + nShifts;
                         while(DoubleGreater(sellPx, m_lastAsk + nShifts))
                         {
@@ -301,7 +303,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                                     OpenPosition(lvlOrdPlacer, entity::SHORT, sellPx, timestamp, pQuote);
                                 }
                             }
-                            sellPx -= m_priceTick;
+                            sellPx -= m_priceTick * m_interval;
                         } 
                     }
 
@@ -326,7 +328,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                             sellPx += m_priceTick;
                         }
 
-						double nShifts = m_levelsNum * m_priceTick;
+						double nShifts = m_levelsNum * m_priceTick * m_interval;
                         double buyPx = bid - nShifts;
                         while(DoubleLess(buyPx, m_lastBid - nShifts))
                         {
@@ -340,7 +342,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                                     OpenPosition(lvlOrdPlacer, entity::LONG, buyPx, timestamp, pQuote);
                                 }
                             }
-                            buyPx += m_priceTick;
+                            buyPx += m_priceTick * m_interval;
                         } 
                     }
                 }
@@ -516,7 +518,6 @@ void CDualQueueStrategy::OnLegFilled(int sendingIdx, const string & symbol, trad
 	}
 }
 
-
 void CDualQueueStrategy::OnOrderPlacerDone(int execId, PortfolioFinishState doneState, entity::PosiOffsetFlag offsetFlag, int volumeTraded, entity::PosiDirectionType direction)
 {
 	if(execId > 0)
@@ -525,8 +526,7 @@ void CDualQueueStrategy::OnOrderPlacerDone(int execId, PortfolioFinishState done
 		{
 			LOG_DEBUG(logger, boost::str(boost::format("Double Queue - %s Order(Level Id: %d) Finished")
 				% (direction == trade::LONG ? "LONG" : "SHORT") % execId));
-			boost::mutex::scoped_lock l(m_mutLevels);
-			m_readyQueue.push(execId);
+			ResetLevelOrderPlacer(execId);
 		}
 		else if (doneState == PortfolioCanceled)
 		{
@@ -541,18 +541,19 @@ void CDualQueueStrategy::OnOrderPlacerDone(int execId, PortfolioFinishState done
 					CLevelOrderPlacer* lvlOrdPlacer = (iter->second).get();
 					if (lvlOrdPlacer != NULL)
 					{
-						double cancelBid = lvlOrdPlacer->CancelQuoteBid();
-						double cancelAsk = lvlOrdPlacer->CancelQuoteAsk();
+						double cancelQuoteBid = lvlOrdPlacer->CancelQuoteBid();
+						double cancelQuoteAsk = lvlOrdPlacer->CancelQuoteAsk();
 						boost::chrono::steady_clock::time_point nowTime(boost::chrono::steady_clock::now());
 
 						// Resend the order at position near ask/bid
 						if (direction == entity::LONG)
 						{
-							double buyPx = cancelBid - m_priceTick;
-							
+							double buyPx = lvlOrdPlacer->GetLevelPx() + m_priceTick * m_interval;
 							while (IfLevelExists(buyPx))
-								buyPx -= m_priceTick;
-							if (buyPx > 0 && DoubleGreaterEqual(buyPx, cancelBid - m_levelsNum * m_priceTick)) // still a valid price
+								buyPx += m_priceTick * m_interval;
+							LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Possible Replacing BUY Price @%.2f and Reference Bid @%.2f")
+								% buyPx % cancelQuoteBid));
+							if(DoubleLess(buyPx, cancelQuoteBid))
 							{
 								LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Replace LONG order @%.2f (Level Id: %d)")
 									% buyPx % execId));
@@ -560,17 +561,17 @@ void CDualQueueStrategy::OnOrderPlacerDone(int execId, PortfolioFinishState done
 							}
 							else
 							{
-								LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Push back Level Id: %d to queue") % execId));
-								boost::mutex::scoped_lock l(m_mutLevels);
-								m_readyQueue.push(execId);
+								ResetLevelOrderPlacer(execId, lvlOrdPlacer);
 							}
 						}
 						else if (direction == entity::SHORT)
 						{
-							double sellPx = cancelAsk + m_priceTick;
+							double sellPx = lvlOrdPlacer->GetLevelPx() - m_priceTick * m_interval;
 							while (IfLevelExists(sellPx))
-								sellPx += m_priceTick;
-							if (sellPx > 0 && DoubleLessEqual(sellPx, cancelAsk + m_levelsNum * m_priceTick)) // still a valid price
+								sellPx -= m_priceTick * m_interval;
+							LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Possible Replacing SELL Price @%.2f and Reference Ask @%.2f")
+								% sellPx % cancelQuoteAsk));
+							if (DoubleGreater(sellPx, cancelQuoteAsk)) // still a valid price
 							{
 								LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Replace SHORT order @%.2f (Level Id: %d)")
 									% sellPx % execId));
@@ -578,9 +579,7 @@ void CDualQueueStrategy::OnOrderPlacerDone(int execId, PortfolioFinishState done
 							}
 							else
 							{
-								LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Push back Level Id: %d to queue") % execId));
-								boost::mutex::scoped_lock l(m_mutLevels);
-								m_readyQueue.push(execId);
+								ResetLevelOrderPlacer(execId, lvlOrdPlacer);
 							}
 						}
 					}
@@ -756,7 +755,27 @@ void CDualQueueStrategy::HandlePendingCloseOrder(boost::chrono::steady_clock::ti
 {
     for (LevelOrderPlacersIter iter = m_levelOrderPlacers.begin(); iter != m_levelOrderPlacers.end(); ++iter)
 	{
-		iter->second->HandlePendingCloseOrder(timestamp, pQuote);
+		CLevelOrderPlacer* placer = (iter->second).get();
+		if(placer != NULL)
+		{
+			DQ_STATUS status = placer->GetStatus();
+			if(DQ_IS_CLOSING == status)
+			{
+				if(placer->GetDirection() == entity::LONG)
+				{
+					if(DoubleGreaterEqual(placer->GetLevelPx() - pQuote->bid(), m_lossCount))
+					{
+						iter->second->HandlePendingCloseOrder(timestamp, pQuote);
+					}
+				}else if(placer->GetDirection() == entity::SHORT)
+				{
+					if (DoubleGreaterEqual(pQuote->ask() - placer->GetLevelPx(), m_lossCount))
+					{
+						iter->second->HandlePendingCloseOrder(timestamp, pQuote);
+					}
+				}
+			}
+		}
 	}
 }
 
@@ -792,4 +811,24 @@ CLevelOrderPlacer* CDualQueueStrategy::FindHighestOrderPlacer(double highestPx)
 	}
 
     return NULL;
+}
+
+void CDualQueueStrategy::ResetLevelOrderPlacer(int execId, CLevelOrderPlacer* levelOrderPlacer = NULL)
+{
+	LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Push back Level Id: %d to queue") % execId));
+	boost::mutex::scoped_lock l(m_mutLevels);
+	m_readyQueue.push(execId);
+
+	if(NULL != levelOrderPlacer)
+	{
+		levelOrderPlacer->SetLevelPx(0);
+	}
+	else
+	{
+		boost::unordered_map<int, LevelOrderPlacerPtr>::iterator iter = m_levelOrderPlacers.find(execId);
+		if (iter != m_levelOrderPlacers.end())
+		{
+			(iter->second)->SetLevelPx(0);	// reset level price
+		}
+	}
 }
