@@ -823,7 +823,8 @@ void CPortfolioOrderPlacer::OnQuoteReceived( boost::chrono::steady_clock::time_p
 			return; // in case other symbol's quote coming
 
 #ifdef LOG_FOR_TRADE
-		LOG_DEBUG(logger, boost::str(boost::format("Check If need orderplacer(%d) to cancel and retry") % m_activeOrdPlacer->SequenceNo()));
+		LOG_DEBUG(logger, boost::str(boost::format("Check If need orderplacer[Level Id: %d (%d)] to cancel and retry") 
+			% m_execId % m_activeOrdPlacer->SequenceNo()));
 #endif
 		// if order placer is closing order and retry times available
 		if (m_activeOrdPlacer->IsLegPlacerEligibleRetry())

@@ -4,6 +4,7 @@
 
 #include <boost/unordered_map.hpp>
 #include <queue>
+#include <deque>
 
 class CPortfolioQueueOrderPlacer;
 
@@ -108,7 +109,7 @@ private:
     void HandlePendingCloseOrder(boost::chrono::steady_clock::time_point& timestamp, entity::Quote* pQuote);
 	CLevelOrderPlacer* FindLowestOrderPlacer(double lowestPx);
 	CLevelOrderPlacer* FindHighestOrderPlacer(double highestPx);
-	void ResetLevelOrderPlacer(int execId, CLevelOrderPlacer* levelOrderPlacer);
+	void ResetLevelOrderPlacer(int execId, CLevelOrderPlacer* levelOrderPlacer = NULL);
 
 	double m_lastAsk;
 	double m_lastBid;
@@ -141,6 +142,8 @@ private:
 	boost::unordered_map<int, LevelOrderPlacerPtr> m_levelOrderPlacers;
 	typedef boost::unordered_map<int, LevelOrderPlacerPtr>::iterator LevelOrderPlacersIter;
 	queue<int> m_readyQueue;
+	deque<CLevelOrderPlacer*> m_longOrderQueue;
+	deque<CLevelOrderPlacer*> m_shortOrderQueue;
 
 	bool m_stopping;
     bool m_orderQueued;

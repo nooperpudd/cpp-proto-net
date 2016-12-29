@@ -248,6 +248,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                         if(lvlOrdPlacer != NULL)
                         {
                             OpenPosition(lvlOrdPlacer, entity::LONG, pQuote->bid() - (i * m_priceTick) * m_interval, timestamp, pQuote);
+							m_longOrderQueue.push_back(lvlOrdPlacer);	// desc
                         }
                     }
 
@@ -258,6 +259,7 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                         if(lvlOrdPlacer != NULL)
                         {
                             OpenPosition(lvlOrdPlacer, entity::SHORT, pQuote->ask() + (i * m_priceTick) * m_interval, timestamp, pQuote);
+							m_shortOrderQueue.push_back(lvlOrdPlacer);	// asc
                         }
                     }
 
@@ -271,79 +273,109 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                     // Shift queued orders up/down
                     if(bid > m_lastBid) // bid is going up
                     {
-						LOG_INFO(logger, 
-							boost::str(boost::format("DualQueue - bid is going UP %.2f -> %.2f") % m_lastBid % bid));
-                        // find out the lowest buy order
-                        double buyPx = bid;
-                        while(DoubleGreater(buyPx, m_lastBid))
-                        {
-                            CLevelOrderPlacer* lowestOrdPlacer = FindLowestOrderPlacer(bid - (m_levelsNum * m_priceTick));
-                            if(lowestOrdPlacer != NULL)
-                            {
-                                // Cancel Order and replace at buyPx
-								LOG_INFO(logger,
-									boost::str(boost::format("DualQueue - Cancel LONG order @%.2f [Level Id: %d]") 
-										% lowestOrdPlacer->GetLevelPx() % lowestOrdPlacer->Id()));
-                                lowestOrdPlacer->CancelPendingOpenOrder(pQuote);
-                            }
-                            buyPx -= m_priceTick;
-                        }
-
 						double nShifts = m_levelsNum * m_priceTick * m_interval;
-                        double sellPx = ask + nShifts;
-                        while(DoubleGreater(sellPx, m_lastAsk + nShifts))
-                        {
-                            if(!IfLevelExists(sellPx))
-                            {
-                                CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
-                                if(lvlOrdPlacer != NULL)
-                                {
+						double expectedLowestBuyPx = bid - nShifts;
+
+						LOG_INFO(logger, 
+							boost::str(boost::format("DualQueue - bid is going UP %.2f -> %.2f. Exp Lowest Buy: %.2f")
+								% m_lastBid % bid % expectedLowestBuyPx));
+                        // find out the lowest buy order
+						CLevelOrderPlacer* lowestOrdPlacer = NULL;
+						double lowestDiff = -1;
+						while (lowestOrdPlacer == NULL || DoubleGreaterEqual(lowestDiff, m_priceTick * m_interval))
+						{
+							if (lowestOrdPlacer != NULL)
+							{
+								// Cancel Order and replace at buyPx
+								LOG_INFO(logger,
+									boost::str(boost::format("DualQueue - Cancel LONG order @%.2f [Level Id: %d]")
+										% lowestOrdPlacer->GetLevelPx() % lowestOrdPlacer->Id()));
+								lowestOrdPlacer->CancelPendingOpenOrder(pQuote);
+								m_longOrderQueue.pop_back();
+							}
+
+							lowestOrdPlacer = m_longOrderQueue.back();
+							double lowestBuyPx = lowestOrdPlacer->GetLevelPx();
+							lowestDiff = expectedLowestBuyPx - lowestBuyPx;
+						}
+						
+						double expectedHighestSellPx = ask + nShifts;
+						// find out the highest sell order
+						CLevelOrderPlacer* highestOrdPlacer = NULL;
+						double highestDiff = -1;
+						while(highestOrdPlacer == NULL || DoubleGreaterEqual(highestDiff, m_priceTick * m_interval))
+						{
+							if(highestOrdPlacer != NULL)
+							{
+								double sellPx = highestOrdPlacer->GetLevelPx() + m_priceTick * m_interval;
+								CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
+								if (lvlOrdPlacer != NULL)
+								{
 									LOG_INFO(logger,
 										boost::str(boost::format("DualQueue - Re-queue SHORT order @%.2f (HIGHEST)") % sellPx));
-                                    OpenPosition(lvlOrdPlacer, entity::SHORT, sellPx, timestamp, pQuote);
-                                }
-                            }
-                            sellPx -= m_priceTick * m_interval;
-                        } 
+									OpenPosition(lvlOrdPlacer, entity::SHORT, sellPx, timestamp, pQuote);
+									m_shortOrderQueue.push_back(lvlOrdPlacer);
+								}
+							}
+
+							highestOrdPlacer = m_shortOrderQueue.back();
+							double highestSellPx = highestOrdPlacer->GetLevelPx();
+							highestDiff = expectedHighestSellPx - highestSellPx;
+						}
                     }
 
                     if(ask < m_lastAsk)
                     {
-						LOG_INFO(logger,
-							boost::str(boost::format("DualQueue - ask is going DOWN %.2f -> %.2f") % m_lastAsk % ask));
-
-                        // find out the highest buy order
-                        double sellPx = ask;
-						while(DoubleLess(sellPx, m_lastAsk))
-                        {
-                            CLevelOrderPlacer* highestOrdPlacer = FindHighestOrderPlacer(ask + (m_levelsNum * m_priceTick));
-                            if(highestOrdPlacer != NULL)
-                            {
-                                // Cancel Order and replace at buyPx
-								LOG_INFO(logger,
-									boost::str(boost::format("DualQueue - Cancel SHORT order @%.2f [Level Id: %d]") 
-										% highestOrdPlacer->GetLevelPx() % highestOrdPlacer->Id()));
-                                highestOrdPlacer->CancelPendingOpenOrder(pQuote);
-                            }
-                            sellPx += m_priceTick;
-                        }
-
 						double nShifts = m_levelsNum * m_priceTick * m_interval;
-                        double buyPx = bid - nShifts;
-                        while(DoubleLess(buyPx, m_lastBid - nShifts))
-                        {
-                            if(!IfLevelExists(buyPx))
-                            {
-                                CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
-                                if(lvlOrdPlacer != NULL)
-                                {
+						double expectedHighestSellPx = ask + nShifts;
+
+						LOG_INFO(logger,
+							boost::str(boost::format("DualQueue - ask is going DOWN %.2f -> %.2f. Exp Lowest Buy: %.2f") 
+								% m_lastAsk % ask % expectedHighestSellPx));
+
+						// find out the highest sell order
+						CLevelOrderPlacer* highestOrdPlacer = NULL;
+						double highestDiff = -1;
+						while (highestOrdPlacer == NULL || DoubleGreaterEqual(highestDiff, m_priceTick * m_interval))
+						{
+							if (highestOrdPlacer != NULL)
+							{
+								// Cancel Order and replace at buyPx
+								LOG_INFO(logger,
+									boost::str(boost::format("DualQueue - Cancel LONG order @%.2f [Level Id: %d]")
+										% highestOrdPlacer->GetLevelPx() % highestOrdPlacer->Id()));
+								highestOrdPlacer->CancelPendingOpenOrder(pQuote);
+								m_shortOrderQueue.pop_back();
+							}
+
+							highestOrdPlacer = m_shortOrderQueue.back();
+							double highestSellPx = highestOrdPlacer->GetLevelPx();
+							highestDiff = highestSellPx - expectedHighestSellPx;
+						}
+
+						double expectedLowestBuyPx = bid - nShifts;
+						// find out the lowest buy order
+						CLevelOrderPlacer* lowestOrdPlacer = NULL;
+						double lowestDiff = -1;
+						while (lowestOrdPlacer == NULL || DoubleGreaterEqual(lowestDiff, m_priceTick * m_interval))
+						{
+							if (lowestOrdPlacer != NULL)
+							{
+								double buyPx = lowestOrdPlacer->GetLevelPx() - m_priceTick * m_interval;
+								CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
+								if (lvlOrdPlacer != NULL)
+								{
 									LOG_INFO(logger,
-										boost::str(boost::format("DualQueue - Re-queue LONG order @%.2f (LOWEST)") % buyPx));
-                                    OpenPosition(lvlOrdPlacer, entity::LONG, buyPx, timestamp, pQuote);
-                                }
-                            }
-                            buyPx += m_priceTick * m_interval;
-                        } 
+										boost::str(boost::format("DualQueue - Re-queue SHORT order @%.2f (HIGHEST)") % buyPx));
+									OpenPosition(lvlOrdPlacer, entity::SHORT, buyPx, timestamp, pQuote);
+									m_longOrderQueue.push_back(lvlOrdPlacer);
+								}
+							}
+
+							lowestOrdPlacer = m_longOrderQueue.back();
+							double lowestBuyPx = lowestOrdPlacer->GetLevelPx();
+							lowestDiff = lowestBuyPx - expectedLowestBuyPx;
+						}
                     }
                 }
 
@@ -813,7 +845,7 @@ CLevelOrderPlacer* CDualQueueStrategy::FindHighestOrderPlacer(double highestPx)
     return NULL;
 }
 
-void CDualQueueStrategy::ResetLevelOrderPlacer(int execId, CLevelOrderPlacer* levelOrderPlacer = NULL)
+void CDualQueueStrategy::ResetLevelOrderPlacer(int execId, CLevelOrderPlacer* levelOrderPlacer)
 {
 	LOG_DEBUG(logger, boost::str(boost::format("Double Queue - Push back Level Id: %d to queue") % execId));
 	boost::mutex::scoped_lock l(m_mutLevels);
