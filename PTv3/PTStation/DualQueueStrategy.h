@@ -110,6 +110,8 @@ private:
 	CLevelOrderPlacer* FindLowestOrderPlacer(double lowestPx);
 	CLevelOrderPlacer* FindHighestOrderPlacer(double highestPx);
 	void ResetLevelOrderPlacer(int execId, CLevelOrderPlacer* levelOrderPlacer = NULL);
+	static deque<CLevelOrderPlacer*>::iterator FindLevelOrderPlacer(deque<CLevelOrderPlacer*>& queue, int execId);
+
 
 	double m_lastAsk;
 	double m_lastBid;
@@ -117,7 +119,7 @@ private:
 	
 	bool m_stableQuote;
 
-	boost::mutex m_mut;
+	boost::mutex m_mutSettings;
 	boost::mutex m_mutLevels;
 
 	double m_priceTick;
@@ -144,6 +146,7 @@ private:
 	queue<int> m_readyQueue;
 	deque<CLevelOrderPlacer*> m_longOrderQueue;
 	deque<CLevelOrderPlacer*> m_shortOrderQueue;
+	boost::mutex m_mutOrderQueue;
 
 	bool m_stopping;
     bool m_orderQueued;
