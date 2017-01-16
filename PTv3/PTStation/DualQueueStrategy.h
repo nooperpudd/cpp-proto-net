@@ -3,6 +3,7 @@
 #include "Strategy.h"
 
 #include <boost/unordered_map.hpp>
+#include <boost/unordered_set.hpp>
 #include <queue>
 #include <deque>
 
@@ -147,6 +148,10 @@ private:
 	deque<CLevelOrderPlacer*> m_longOrderQueue;
 	deque<CLevelOrderPlacer*> m_shortOrderQueue;
 	boost::mutex m_mutOrderQueue;
+
+	boost::unordered_set<int> m_longStopLossPlacers;
+	boost::unordered_set<int> m_shortStopLossPlacers;
+	boost::mutex m_mutStopLoss;
 
 	bool m_stopping;
     bool m_orderQueued;
