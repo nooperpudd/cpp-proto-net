@@ -111,8 +111,9 @@ private:
 	CLevelOrderPlacer* FindLowestOrderPlacer(double lowestPx);
 	CLevelOrderPlacer* FindHighestOrderPlacer(double highestPx);
 	void ResetLevelOrderPlacer(int execId, CLevelOrderPlacer* levelOrderPlacer = NULL);
-	static deque<CLevelOrderPlacer*>::iterator FindLevelOrderPlacer(deque<CLevelOrderPlacer*>& queue, int execId);
 
+	static deque<CLevelOrderPlacer*>::iterator FindLevelOrderPlacer(deque<CLevelOrderPlacer*>& queue, int execId);
+	static trade::PosiDirectionType GetOrderDirection(const trade::MultiLegOrder & multiLegOrder);
 
 	double m_lastAsk;
 	double m_lastBid;
@@ -155,6 +156,9 @@ private:
 
 	bool m_stopping;
     bool m_orderQueued;
+
+	bool m_longGain;
+	bool m_shortGain;
 };
 
 

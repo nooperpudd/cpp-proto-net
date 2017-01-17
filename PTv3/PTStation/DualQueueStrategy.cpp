@@ -104,7 +104,7 @@ CDualQueueStrategy::CDualQueueStrategy()
 	, m_direction(entity::NET)
 	, m_levelsNum(3)
 	, m_profitCount(1)
-	, m_lossCount(2)
+	, m_lossCount(10)
 	, m_interval(1)
 	, m_openThresholdTimes(2)
 	, m_stableMinutesThreshold(5)
@@ -112,6 +112,8 @@ CDualQueueStrategy::CDualQueueStrategy()
 	, m_latestLow(9999999)
 	, m_stopping(false)
     , m_orderQueued(false)
+	, m_longGain(false)
+	, m_shortGain(false)
 {
 }
 
@@ -269,6 +271,36 @@ void CDualQueueStrategy::Test(entity::Quote * pQuote, CPortfolio * pPortfolio, b
                 {
                     // Handle pending closing order first
                     HandlePendingCloseOrder(timestamp, pQuote);
+
+					// Quote keeps unchanged
+					if(DoubleEqual(bid, m_lastBid) && DoubleEqual(ask, m_lastAsk))
+					{
+						if(m_longGain && !IfLevelExists(bid))
+						{
+							CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
+							if (lvlOrdPlacer != NULL)
+							{
+								m_longGain = false;
+								LOG_INFO(logger,
+									boost::str(boost::format("DualQueue - Ever gain and Re-Place LONG order @%.2f") % bid));
+								OpenPosition(lvlOrdPlacer, entity::LONG, bid, timestamp, pQuote);
+								m_longOrderQueue.push_front(lvlOrdPlacer);
+							}
+						}
+
+						if(m_shortGain && !IfLevelExists(ask))
+						{
+							CLevelOrderPlacer* lvlOrdPlacer = GetReadyOrderPlacer();
+							if (lvlOrdPlacer != NULL)
+							{
+								m_shortGain = false;
+								LOG_INFO(logger,
+									boost::str(boost::format("DualQueue - Ever gain and Re-Place SHORT order @%.2f") % ask));
+								OpenPosition(lvlOrdPlacer, entity::SHORT, ask, timestamp, pQuote);
+								m_shortOrderQueue.push_front(lvlOrdPlacer);
+							}
+						}
+					}
 
                     // Shift queued orders up/down
                     if(bid > m_lastBid) // bid is going up
@@ -819,7 +851,39 @@ int CDualQueueStrategy::OnPortfolioAddPosition(CPortfolio * pPortfolio, const tr
 	int totalOpenTimes = IncrementOpenTimes(pPortfolio, qty);
 	IncrementCloseTimes(pPortfolio, qty);
 
+	trade::PosiDirectionType gainDirection = GetOrderDirection(openOrder);
+	if(ord_profit - 0.001 > 0)
+	{
+		if (gainDirection == trade::LONG)
+			m_longGain = true;
+		else if (gainDirection == trade::SHORT)
+			m_shortGain = true;
+	}
+	else
+	{
+		if (gainDirection == trade::LONG)
+			m_longGain = false;
+		else if (gainDirection == trade::SHORT)
+			m_shortGain = false;
+	}
+
+
 	return totalOpenTimes;
+}
+
+trade::PosiDirectionType CDualQueueStrategy::GetOrderDirection(const trade::MultiLegOrder& multiLegOrder)
+{
+	int legCount = multiLegOrder.legs_size();
+	if(legCount > 0)
+	{
+		const trade::Order& legOrd = multiLegOrder.legs(0);
+		if (legOrd.direction() == trade::BUY)
+			return trade::LONG;
+		else
+			return trade::SHORT;
+	}
+
+	return trade::NET;
 }
 
 void CDualQueueStrategy::OnStrategyError(CPortfolio * portf, const string & errorMsg) const
