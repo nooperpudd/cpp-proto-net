@@ -49,91 +49,10 @@ int CFakeDealer::ReqOrderInsert( CThostFtdcInputOrderField *pInputOrder, int nRe
 	boost::shared_ptr<CThostFtdcInputOrderField> tmpInputOrder( new CThostFtdcInputOrderField);
 	memcpy(tmpInputOrder.get(), pInputOrder, sizeof(CThostFtdcInputOrderField));
 
-	if(m_testPartiallyFill)
-	{
-		// Partially fill test
-		if(times % 4 == 1)
-		{
-			boost::thread thIns(boost::bind(
-				//&CFakeDealer::PartiallyFillOrder, this, tmpInputOrder, nRequestID)
-				&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-				);
-		}
-		else if(times % 4 == 2)
-		{
-			boost::thread thIns(boost::bind(
-				//&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-				&CFakeDealer::PartiallyFillOrder, this, tmpInputOrder, nRequestID)
-				);
-		}
-		else if(times % 4 == 3)
-		{
-			boost::thread thIns(boost::bind(
-				&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-				//&CFakeDealer::PartiallyFillOrder, this, tmpInputOrder, nRequestID)
-				);
-		}
-		else{
-			boost::thread thIns(boost::bind(
-				&CFakeDealer::PartiallyFillOrder, this, tmpInputOrder, nRequestID)
-				//&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-				);
-		}
-	}
-	else
-	{
-		/*
-		boost::thread thIns(boost::bind(
-			&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
-			);
-		*/
-		// Fill and pending
+	boost::thread thIns(boost::bind(
+		&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
+		);
 
-		if(times % 4 == 1)
-		{
-			boost::thread thIns(boost::bind(
-				&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-				//&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
-				);
-		}
-		else if (times % 4 == 2)
-		{
-			boost::thread thIns(boost::bind(
-				//&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-				&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
-				);
-		}
-		else if (times % 4 == 3)
-		{
-			boost::thread thIns(boost::bind(
-				&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-				//&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
-				);
-		}
-		else if (times % 4 == 0)
-		{
-			boost::thread thIns(boost::bind(
-				//&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-				&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
-				);
-		}
-		
-		
-		//if (IfFillOrder())
-		/*if(false)
-		{
-			boost::thread thIns(boost::bind(
-				&CFakeDealer::FullFillOrder, this, tmpInputOrder, nRequestID)
-				);
-		}
-		else
-		{
-			boost::thread thIns(boost::bind(
-				&CFakeDealer::PendingOrder, this, tmpInputOrder, nRequestID)
-				);
-		}*/
-		
-	}
 	
 	return 0;
 }

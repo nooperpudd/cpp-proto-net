@@ -54,7 +54,7 @@
     <Filter Include="proto">
       <UniqueIdentifier>{cac62b77-fdf6-4601-8a55-87e86fff37ff}</UniqueIdentifier>
     </Filter>
-    <Filter Include="proto\Resource Files">
+    <Filter Include="Resource Files">
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
@@ -428,6 +428,9 @@
     <ClInclude Include="DualTradingEnums.h">
       <Filter>Header Files\strategy</Filter>
     </ClInclude>
+    <ClInclude Include="VolScalperStrategy.h">
+      <Filter>Header Files\strategy</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">
@@ -727,10 +730,13 @@
     <ClCompile Include="DualQueueStrategy.cpp">
       <Filter>Source Files\strategy</Filter>
     </ClCompile>
+    <ClCompile Include="VolScalperStrategy.cpp">
+      <Filter>Source Files\strategy</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="appres.rc">
-      <Filter>proto\Resource Files</Filter>
+      <Filter>Resource Files</Filter>
     </ResourceCompile>
   </ItemGroup>
 </Project>

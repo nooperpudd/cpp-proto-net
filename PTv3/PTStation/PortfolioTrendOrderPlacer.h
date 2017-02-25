@@ -5,6 +5,7 @@
 class CPortfolioTrendOrderPlacer : public CPortfolioOrderPlacer
 {
 public:
+	CPortfolioTrendOrderPlacer(int execId);
 	CPortfolioTrendOrderPlacer(void);
 	~CPortfolioTrendOrderPlacer(void);
 
@@ -14,6 +15,8 @@ public:
 	bool IsClosing();
 
 	double CostPrice();
+	double EntryPrice() const { return m_entryPrice; }
+	void SetEntryPrice(double entryPx) { m_entryPrice = entryPx; }
 
 protected:
 	virtual void BuildTemplateOrder();
@@ -28,5 +31,6 @@ protected:
 
 	int m_sentOrderIdx;
 
+	double m_entryPrice;
 };
 

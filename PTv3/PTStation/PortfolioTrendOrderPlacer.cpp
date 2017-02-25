@@ -6,8 +6,15 @@
 #include <boost/date_time.hpp>
 
 
+CPortfolioTrendOrderPlacer::CPortfolioTrendOrderPlacer(int execId)
+	: CPortfolioTrendOrderPlacer()
+{
+	SetExecId(execId);
+}
+
 CPortfolioTrendOrderPlacer::CPortfolioTrendOrderPlacer(void)
 	: m_sentOrderIdx(-1)
+	, m_entryPrice(0)
 {
 	// This is important for TrendOrderPlacer. The next leg is always triggered explicitly.
 	SendNextOnFilled(false);

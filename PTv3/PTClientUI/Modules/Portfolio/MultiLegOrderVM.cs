@@ -223,7 +223,7 @@ namespace PortfolioTrading.Modules.Portfolio
 
             IsAllFinished = allFinished;
 
-            IsCanceled = ("高频" == Reason ? CheckMlOrderCanceled(_orders) : string.Empty);
+            IsCanceled = ("高频" == Reason || "排队" == Reason ? CheckMlOrderCanceled(_orders) : string.Empty);
             if (IsPortfolio)
                 IsOpenOrder = mlOrder.Offset == PTEntity.MlOrderOffset.ML_OF_OPEN;
             else
@@ -278,7 +278,7 @@ namespace PortfolioTrading.Modules.Portfolio
                     allFinished = oVm.IsFinished;
                 }
                 IsAllFinished = allFinished;
-                IsCanceled =  ("高频" == Reason ? CheckMlOrderCanceled(_orders) : String.Empty);
+                IsCanceled =  ("高频" == Reason || "排队" == Reason ? CheckMlOrderCanceled(_orders) : String.Empty);
             }
         }
 

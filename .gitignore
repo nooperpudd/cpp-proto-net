@@ -27,3 +27,9 @@
 /PTv3/PTProxy/Debug
 /PTv3/HistoryDataServer/*.user
 /PTv3/hist-data-linux
+/PTv3/Debug
+/PTv3/HistoryDataServer/HistData
+/PTv3/HistoryDataServer/log
+/PTv3/HistoryDataServer/9030000712
+/TradeAdmin
+/PTv3/PTProxy/PTProxy.vcxproj.user

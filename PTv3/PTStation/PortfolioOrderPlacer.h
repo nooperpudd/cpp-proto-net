@@ -102,9 +102,9 @@ public:
 	void OutputStatus(const string& statusMsg);
 	void SetMlOrderStatus(const string& statusMsg);
 
-	int ExecId(){ return m_execId; }
+	int ExecId() const { return m_execId; }
 	void SetExecId(int execId){ m_execId = execId; }
-	CPortfolio* Portfolio(){ return m_pPortf; }
+	CPortfolio* Portfolio() const { return m_pPortf; }
 	void SetPortfolioTradedEventHandler(PortfolioTradedEvent portfTradedHandler)
 	{
 		m_portfTradedEventHandler = portfTradedHandler;
@@ -112,12 +112,10 @@ public:
 
 	void GetStateName(string& stateName, int stateId);
 
-	bool IsCloseYesterday(){ return m_closeYesterday; }
+	bool IsCloseYesterday() const { return m_closeYesterday; }
 	void SetCloseYesterday(bool closeYesterday){ m_closeYesterday = closeYesterday; }
 
 protected:
-
-	void Initialize(const string& mlOrdId);
 
 	virtual void BuildTemplateOrder(){}
 	virtual void SetDirection(entity::PosiDirectionType posiDirection);
