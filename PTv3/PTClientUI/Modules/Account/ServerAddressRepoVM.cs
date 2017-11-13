@@ -114,6 +114,7 @@ namespace PortfolioTrading.Modules.Account
             _trade_stations.Add(new ServerAddress { Name = "国泰君安移动", Address = ConfigurationHelper.GetAppSettingValue("gtja-fm", "114.80.82.243:20010") });
             _trade_stations.Add(new ServerAddress { Name = "广发飞马", Address = ConfigurationHelper.GetAppSettingValue("gf-fm", "124.74.248.198:30009") });
             _trade_stations.Add(new ServerAddress { Name = "中信众信", Address = ConfigurationHelper.GetAppSettingValue("zeusing", "172.31.78.79:16181") });
+            _trade_stations.Add(new ServerAddress { Name = "方正CTP", Address = ConfigurationHelper.GetAppSettingValue("fangzheng", "172.16.115.33:16181") });
 
             string localHostIP = NativeHost.GetLocalIP();
             string localPort = "16181";

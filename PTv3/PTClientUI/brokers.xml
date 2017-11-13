@@ -26,15 +26,15 @@
 		-->
 
 		<Servers>
-			<Server>
-				<Name>招商CTP</Name>
-				<Trading>
-					<item>180.166.85.37:41205</item>
-					</Trading>
-				<MarketData>
-					<item>180.166.85.37:41213</item>
-				</MarketData>
-			</Server>
+      <Server>
+        <Name>方正CTP</Name>
+        <Trading>
+          <item>172.16.116.72:31803</item>
+        </Trading>
+        <MarketData>
+          <item>172.16.116.72:31807</item>
+        </MarketData>
+      </Server>
 			<Server>
 				<Name>2000场内系统</Name>
 				<Trading>
